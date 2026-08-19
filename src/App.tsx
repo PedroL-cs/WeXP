@@ -1,29 +1,15 @@
-import { ToastContainer } from 'react-toastify';
-import { Container } from './components/Container';
 import './styles/global.css';
 import Header from './components/Header';
+import Sidebar from './components/Sidebar';
 
 function App() {
-   return (
-      <>
-         <Header />
+  return (
+    <>
+      <Header />
 
-         <Container>
-            {/* Container do Toast */}
-            <ToastContainer
-               position='top-center'
-               autoClose={5000}
-               hideProgressBar={false}
-               newestOnTop={false}
-               closeOnClick={true}
-               rtl={false}
-               pauseOnFocusLoss
-               draggable
-               pauseOnHover
-            />
-         </Container>
-      </>
-   );
+      <Sidebar />
+    </>
+  );
 }
 
 export default App;
