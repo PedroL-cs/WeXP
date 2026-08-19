@@ -1,3 +1,4 @@
+import { BellIcon } from '@phosphor-icons/react';
 import styles from './styles.module.css';
 
 function Header() {
@@ -17,7 +18,8 @@ function Header() {
 
         <div className={styles['header-actions']}>
           <button className={styles['header-button']} aria-label='Notificações'>
-            🔔
+            <BellIcon size={22} />
+            {/* <BellRingingIcon size={22} weight='fill' /> */}
           </button>
 
           <button className={styles['profile-button']} aria-label='Perfil'>
