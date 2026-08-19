@@ -1,0 +1,161 @@
+.container {
+  margin: 0;
+  padding: 2rem 4rem;
+}
+
+.container h1 {
+  margin: 0;
+}
+
+/* Logo */
+
+.header {
+  background: #020617;
+  border-bottom: 1px solid #1e293b;
+  /* padding: 20px; */
+}
+
+.header-content {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 15px;
+}
+
+/* Container que agrupa Texto + Teclado */
+.logo-container {
+  display: flex;
+  gap: 8px;
+  cursor: pointer;
+}
+
+/* Texto Wexp */
+.logo {
+  color: white;
+  font-size: 2rem;
+  font-weight: bold;
+  text-decoration: none;
+  margin: 0;
+  transition: color 0.1s ease-in-out;
+}
+
+.logo-container:hover .logo {
+  color: var(--accent-hover);
+}
+
+.logo-container:hover .key {
+  background-color: var(--accent-hover);
+}
+
+/* Subtítulo do Header */
+.subtitle {
+  color: var(--muted);
+}
+
+/* Ícone WASD (Grid) */
+.wasd-icon {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  grid-template-rows: repeat(2, 1fr);
+  gap: 3px;
+  width: 36px;
+  height: 23px;
+  /* transform: translateY(2px); */
+}
+
+/* Cada quadradinho */
+.key {
+  background-color: #fff;
+  border-radius: 2px;
+  aspect-ratio: 1;
+  transition: background-color 0.1s ease-in-out;
+}
+
+/* Posições das teclas na tabela */
+.key-w {
+  grid-column: 2;
+  grid-row: 1;
+}
+.key-a {
+  grid-column: 1;
+  grid-row: 2;
+}
+.key-s {
+  grid-column: 2;
+  grid-row: 2;
+}
+.key-d {
+  grid-column: 3;
+  grid-row: 2;
+}
+
+/* Botões */
+
+.header-actions {
+  display: flex;
+  gap: 1rem;
+}
+
+.header-button {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  width: 40px;
+  height: 40px;
+
+  border: none;
+  border-radius: 50%;
+
+  background: transparent;
+  color: white;
+
+  cursor: pointer;
+
+  font-size: 18px;
+
+  transition: background-color 0.15s ease-in-out;
+}
+
+.header-button:hover {
+  background-color: #1e293b;
+}
+
+.profile-button {
+  display: flex;
+  align-items: center;
+  /* gap: 8px; */
+
+  width: 35px;
+  height: 35px;
+
+  border: none;
+  border-radius: 20px;
+
+  background: transparent;
+  color: white;
+
+  cursor: pointer;
+
+  transition: filter 0.1s ease-in-out;
+}
+
+.profile-button:hover {
+  filter: brightness(0.7);
+}
+
+.profile-avatar {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  width: 35px;
+  height: 35px;
+
+  border-radius: 50%;
+
+  background: var(--accent);
+  color: white;
+
+  font-weight: bold;
+}
