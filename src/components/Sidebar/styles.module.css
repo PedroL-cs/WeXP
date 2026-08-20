@@ -6,8 +6,10 @@
 .sidebar {
   font-size: 14px;
   width: 300px;
+  height: 100%;
 
   flex-shrink: 0;
+  position: fixed;
 
   background: #020617;
   border-right: 1px solid #1e293b;

@@ -8,18 +8,24 @@
 }
 
 * {
-   margin: 0;
-   padding: 0;
-   box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
 }
 
 body {
   margin: 0;
-  font-family: "Segoe UI", Arial, sans-serif;
+  font-family: 'Segoe UI', Arial, sans-serif;
   background: var(--bg);
   color: var(--text);
 }
 
 html {
-   font-size: 62.5%;
+  font-size: 62.5%;
+}
+
+.layout {
+  display: flex;
+  margin-top: 80px;
+  margin-left: 299px;
 }

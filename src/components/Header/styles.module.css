@@ -10,6 +10,11 @@
 /* Logo */
 
 .header {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  z-index: 1000;
   background: #020617;
   border-bottom: 1px solid #1e293b;
   /* padding: 20px; */
