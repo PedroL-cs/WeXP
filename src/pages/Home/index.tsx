@@ -1,11 +1,15 @@
 import GameCard from '../../components/GameCard';
 import styles from './styles.module.css';
 import { featuredGames } from '../../mocks/featuredGames';
+import FeaturedGame from '../../components/FeaturedGame';
 
 export function HomePage() {
   return (
     <>
-      <section>
+      <section className={styles.homePage}>
+        <h2>Destaques</h2>
+        <FeaturedGame game={featuredGames.topSellers[0]} />
+
         <h2>Mais vendidos</h2>
 
         <div className={styles.gameGrid}>
