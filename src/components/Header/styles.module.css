@@ -15,9 +15,8 @@
   left: 0;
   width: 100%;
   z-index: 1000;
-  background: #020617;
-  border-bottom: 1px solid #1e293b;
-  /* padding: 20px; */
+  background: var(--bg-dark);
+  border-bottom: 1px solid var(--card);
 }
 
 .header-content {

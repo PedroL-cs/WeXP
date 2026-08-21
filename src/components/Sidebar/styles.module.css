@@ -6,8 +6,8 @@
   flex-shrink: 0;
   position: fixed;
 
-  background: #020617;
-  border-right: 1px solid #1e293b;
+  background: var(--bg-dark);
+  border-right: 1px solid var(--card);
 }
 
 .main {
