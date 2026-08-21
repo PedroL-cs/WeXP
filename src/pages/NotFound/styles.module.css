@@ -1,0 +1,24 @@
+.notFound {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4rem;
+
+  font-size: 1.5rem;
+  letter-spacing: 1px;
+}
+
+.notFound h1 {
+  font-size: 10rem;
+  letter-spacing: 1rem;
+}
+
+.notFound a {
+  text-decoration: none;
+  color: var(--accent);
+  transition: color 0.2s ease;
+}
+
+.notFound a:hover {
+  color: var(--text);
+}
