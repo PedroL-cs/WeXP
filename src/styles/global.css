@@ -26,6 +26,9 @@ html {
 
 .layout {
   display: flex;
-  margin-top: 80px;
-  margin-left: 259px;
+  margin-top: 60px;
+  margin-left: 179px;
+  min-height: calc(100vh - 64px);
+  justify-content: center;
+  align-items: center;
 }
