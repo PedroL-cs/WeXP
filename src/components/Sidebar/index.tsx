@@ -2,7 +2,7 @@ import {
   BookBookmarkIcon,
   BookOpenIcon,
   GameControllerIcon,
-  GearIcon,
+  GearSixIcon,
   HouseIcon,
   InfoIcon,
   TrophyIcon,
@@ -43,8 +43,8 @@ function Sidebar() {
         <div className={styles.divider}></div>
 
         <a href='#' className={styles['navigation-item']}>
-          <GearIcon size={22} />
-          <span>Configurações</span>
+          <GearSixIcon size={22} />
+          <span>Opções</span>
         </a>
 
         <a href='#' className={styles['navigation-item']}>
