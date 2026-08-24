@@ -3,60 +3,60 @@ import styles from './styles.module.css';
 
 type AchievementCardProps = {
   achievement: Achievement;
+  showSecret: boolean;
 };
 
-function AchievementCard({ achievement }: AchievementCardProps) {
-  const isHidden = achievement.is_hidden;
+function AchievementCard({ achievement, showSecret }: AchievementCardProps) {
+  const isHidden = achievement.is_hidden && !showSecret;
 
-  return (
-    <div
-      className={`${styles.achievementCard} ${isHidden ? styles.hidden : ''}`}
-    >
-      <div className={styles.iconContainer}>
-        {isHidden ? (
-          <>
-            <span className={styles.hiddenIcon}>?</span>
-
-            <img
-              className={styles.revealedIcon}
-              src={achievement.icon_url}
-              alt={achievement.name}
-            />
-          </>
-        ) : (
+  // Se a conquista NÃO for secreta desde o início, usamos a renderização padrão
+  if (!achievement.is_hidden) {
+    return (
+      <div className={styles.achievementCard}>
+        <div className={styles.iconContainer}>
           <img
             className={styles.achievementIcon}
             src={achievement.icon_url}
             alt={achievement.name}
           />
-        )}
+        </div>
+
+        <div className={styles.achievementInfo}>
+          <h3>{achievement.name}</h3>
+          {achievement.description && <p>{achievement.description}</p>}
+        </div>
+      </div>
+    );
+  }
+
+  // Para conquistas secretas, mantemos AMBOS os elementos renderizados no DOM
+  return (
+    <div
+      className={`${styles.achievementCard} ${
+        isHidden ? styles.hidden : ''
+      } ${showSecret ? styles.revealed : ''}`}
+    >
+      <div className={styles.iconContainer}>
+        <span className={styles.hiddenIcon}>?</span>
+        <img
+          className={styles.revealedIcon}
+          src={achievement.icon_url}
+          alt={achievement.name}
+        />
       </div>
 
       <div className={styles.achievementInfo}>
-        {isHidden ? (
-          <>
-            <h3 className={styles.hiddenTitle}>Conquista secreta</h3>
+        <div className={styles.hiddenInfo}>
+          <h3>Conquista secreta</h3>
+          <p>Passe o mouse em cima para revelar detalhes</p>
+        </div>
 
-            <p className={styles.hiddenDescription}>
-              Passe o mouse em cima para revelar detalhes
-            </p>
-
-            <div className={styles.revealedInfo}>
-              <h3>{achievement.name}</h3>
-
-              {achievement.description && <p>{achievement.description}</p>}
-            </div>
-          </>
-        ) : (
-          <>
-            <h3>{achievement.name}</h3>
-
-            {achievement.description && <p>{achievement.description}</p>}
-          </>
-        )}
+        <div className={styles.revealedInfo}>
+          <h3>{achievement.name}</h3>
+          {achievement.description && <p>{achievement.description}</p>}
+        </div>
       </div>
     </div>
   );
 }
-
 export default AchievementCard;

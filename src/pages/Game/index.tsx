@@ -6,11 +6,14 @@ import { mockGame } from '../../mocks/gameMocks';
 import { gameAchievements } from '../../mocks/gameAchievements';
 
 import AchievementCard from '../../components/AchievementCard';
+import { EyeIcon, EyeSlashIcon } from '@phosphor-icons/react';
 
 function GamePage() {
   const game = mockGame;
 
   const [search, setSearch] = useState('');
+
+  const [showSecretAchievements, setShowSecretAchievements] = useState(false);
 
   const filteredAchievements = gameAchievements['RE9']
     .filter(achievement =>
@@ -75,11 +78,26 @@ function GamePage() {
           {/* Lista */}
           <div className={styles.achievementsList}>
             {filteredAchievements.map(achievement => (
-              <AchievementCard key={achievement.id} achievement={achievement} />
+              <AchievementCard
+                key={achievement.id}
+                achievement={achievement}
+                showSecret={showSecretAchievements}
+              />
             ))}
           </div>
         </section>
       </div>
+      <button
+        className={styles.secretToggle}
+        title='Alternar visibilidade de conquistas secretas'
+        onClick={() => setShowSecretAchievements(prev => !prev)}
+      >
+        {showSecretAchievements ? (
+          <EyeIcon size={24} />
+        ) : (
+          <EyeSlashIcon size={24} />
+        )}
+      </button>
     </main>
   );
 }
