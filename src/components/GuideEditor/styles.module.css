@@ -1,0 +1,22 @@
+.editor {
+  position: relative;
+  width: 100%;
+  min-height: 400px;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 8px;
+  background: var(--card);
+}
+
+.contentEditable {
+  min-height: 400px;
+  padding: 16px;
+  outline: none;
+}
+
+.placeholder {
+  position: absolute;
+  top: 16px;
+  left: 16px;
+  color: var(--muted);
+  pointer-events: none;
+}
