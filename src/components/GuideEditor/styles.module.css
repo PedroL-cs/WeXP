@@ -139,3 +139,49 @@
   color: var(--text);
   cursor: pointer;
 }
+
+/* DIALOG DO CREATELINK */
+
+:global([class*='linkDialogPopoverContent']) {
+  --basePageBg: var(--bg-dark);
+  --baseBg: var(--card);
+  --baseBgHover: #222;
+  --baseBgActive: rgba(0, 229, 255, 0.12);
+  --baseText: var(--text);
+  --baseTextContrast: var(--text);
+
+  background-color: var(--bg-dark);
+  color: var(--text);
+  border-color: var(--card);
+}
+
+:global([class*='linkDialogPopoverContent'] input) {
+  background-color: var(--card);
+  color: var(--text);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 6px;
+}
+
+:global([class*='linkDialogPopoverContent'] input:focus) {
+  outline: none;
+  border-color: var(--accent);
+}
+
+:global([class*='linkDialogPopoverContent'] input::placeholder) {
+  color: var(--muted);
+}
+
+:global([class*='linkDialogPopoverContent'] button) {
+  border: none;
+  color: var(--text);
+}
+
+:global([class*='linkDialogPopoverContent'] button:hover) {
+  filter: brightness(80%);
+  cursor: pointer;
+}
+
+:global([class*='linkDialogPopoverContent'] button[type='submit']) {
+  background-color: var(--accent);
+  color: var(--bg-dark);
+}

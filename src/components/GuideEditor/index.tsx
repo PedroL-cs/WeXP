@@ -6,13 +6,14 @@ import {
   markdownShortcutPlugin,
   thematicBreakPlugin,
   linkPlugin,
-  codeBlockPlugin,
   toolbarPlugin,
   UndoRedo,
   BoldItalicUnderlineToggles,
   BlockTypeSelect,
   ListsToggle,
   CreateLink,
+  linkDialogPlugin,
+  CodeToggle,
 } from '@mdxeditor/editor';
 
 import '@mdxeditor/editor/style.css';
@@ -36,7 +37,7 @@ Experimente usar **negrito**, *itálico*, # ou > para formatar na hora.
           quotePlugin(),
           thematicBreakPlugin(),
           linkPlugin(),
-          codeBlockPlugin(),
+          linkDialogPlugin(),
           markdownShortcutPlugin(),
 
           toolbarPlugin({
@@ -47,6 +48,7 @@ Experimente usar **negrito**, *itálico*, # ou > para formatar na hora.
                 <BoldItalicUnderlineToggles />
                 <BlockTypeSelect />
                 <ListsToggle options={['bullet', 'number']} />
+                <CodeToggle />
                 <CreateLink />
               </>
             ),
