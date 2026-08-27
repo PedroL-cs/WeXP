@@ -1,0 +1,176 @@
+.guideContent {
+  width: 100%;
+  max-width: 1100px;
+
+  margin: 2rem auto;
+  padding: 0 3rem;
+
+  box-sizing: border-box;
+
+  color: var(--text);
+  font-size: 1.6rem;
+  line-height: 1.7;
+
+  background: var(--card);
+  border: 1px solid rgba(255, 255, 255, 0.06);
+  border-radius: 8px;
+}
+
+/* HEADINGS */
+
+.guideContent h1,
+.guideContent h2,
+.guideContent h3 {
+  color: var(--text);
+  line-height: 1.25;
+}
+
+.guideContent h1 {
+  margin: 2.8rem 0 1.4rem;
+  font-size: 2.8rem;
+}
+
+.guideContent h2 {
+  margin: 2.4rem 0 1.2rem;
+  font-size: 2.2rem;
+}
+
+.guideContent h3 {
+  margin: 2rem 0 1rem;
+  font-size: 1.8rem;
+}
+
+/* PARÁGRAFOS, NEGRITO E ITÁLICO */
+
+.guideContent p {
+  margin: 0 0 1.4rem;
+}
+
+.guideContent strong {
+  color: var(--text);
+  font-weight: 700;
+}
+
+.guideContent em {
+  color: var(--muted);
+}
+
+/* QUOTE */
+
+.guideContent blockquote {
+  margin: 1.8rem 0;
+  padding: 1rem 1.6rem;
+
+  border-left: 3px solid var(--accent);
+  background: var(--card);
+  color: var(--muted);
+
+  border-radius: 0 6px 6px 0;
+}
+
+.guideContent blockquote p {
+  margin: 0;
+}
+
+/* LISTAS E LINKS */
+
+.guideContent ul,
+.guideContent ol {
+  margin: 1rem 0 1.6rem;
+  padding-left: 2.8rem;
+}
+
+.guideContent li {
+  margin: 0.4rem 0;
+}
+
+.guideContent li::marker {
+  color: var(--accent);
+}
+
+.guideContent a {
+  color: var(--accent);
+  text-decoration: none;
+}
+
+.guideContent a:hover {
+  color: var(--accent-hover);
+  text-decoration: underline;
+}
+
+/* CÓDIGO */
+
+.guideContent pre {
+  margin: 1.6rem 0;
+  padding: 1.6rem;
+
+  overflow-x: auto;
+
+  background: var(--bg-dark);
+  border: 1px solid rgba(255, 255, 255, 0.06);
+  border-radius: 8px;
+
+  color: var(--text);
+
+  font-family: 'Cascadia Code', 'Consolas', monospace;
+  font-size: 1.4rem;
+  line-height: 1.6;
+}
+
+.guideContent :not(pre) > code {
+  padding: 0.2rem 0.5rem;
+
+  background: var(--card);
+  border-radius: 4px;
+
+  color: var(--accent);
+
+  font-family: 'Cascadia Code', 'Consolas', monospace;
+  font-size: 0.9em;
+}
+
+/* TABELAS */
+
+.guideContent table {
+  width: 100%;
+  margin: 2rem 0;
+
+  border-collapse: collapse;
+
+  background: var(--card);
+  border-radius: 8px;
+  overflow: hidden;
+}
+
+.guideContent th {
+  padding: 1rem 1.2rem;
+
+  background: var(--bg-dark);
+  color: var(--text);
+
+  font-weight: 600;
+  text-align: left;
+}
+
+.guideContent td {
+  padding: 1rem 1.2rem;
+  color: var(--text);
+}
+
+.guideContent th,
+.guideContent td {
+  border: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.guideContent tbody tr:hover {
+  background: rgba(255, 255, 255, 0.03);
+}
+
+/* LINHA HORIZONTAL */
+
+.guideContent hr {
+  margin: 3rem 0;
+
+  border: 0;
+  border-top: 1px solid rgba(255, 255, 255, 0.1);
+}
