@@ -1,18 +1,11 @@
-export type Achievement = {
-  id: number;
-  game_id: number;
-  name: string;
-  description: string;
-  icon_url: string;
-  icon_grey_url: string;
-  is_hidden: boolean;
-};
+import type { Achievement } from '../types/Achievement';
 
 export const gameAchievements: { RE9: Achievement[] } = {
   RE9: [
     {
       id: 1,
       game_id: 3764200,
+      steam_api_name: '',
       name: 'Déjà vu',
       description: '',
       icon_url:
@@ -24,6 +17,7 @@ export const gameAchievements: { RE9: Achievement[] } = {
     {
       id: 2,
       game_id: 3764200,
+      steam_api_name: '',
       name: 'Descent Into Darkness',
       description: '',
       icon_url:
@@ -35,6 +29,7 @@ export const gameAchievements: { RE9: Achievement[] } = {
     {
       id: 3,
       game_id: 3764200,
+      steam_api_name: '',
       name: "It's Been a Long Night",
       description: '',
       icon_url:
@@ -46,6 +41,7 @@ export const gameAchievements: { RE9: Achievement[] } = {
     {
       id: 4,
       game_id: 3764200,
+      steam_api_name: '',
       name: 'A Harsh Reality',
       description: '',
       icon_url:
@@ -57,6 +53,7 @@ export const gameAchievements: { RE9: Achievement[] } = {
     {
       id: 5,
       game_id: 3764200,
+      steam_api_name: '',
       name: 'Going Down?',
       description: '',
       icon_url:
@@ -68,6 +65,7 @@ export const gameAchievements: { RE9: Achievement[] } = {
     {
       id: 6,
       game_id: 3764200,
+      steam_api_name: '',
       name: 'The Hero Returns',
       description: '',
       icon_url:
@@ -79,6 +77,7 @@ export const gameAchievements: { RE9: Achievement[] } = {
     {
       id: 7,
       game_id: 3764200,
+      steam_api_name: '',
       name: 'I Remember That, Too',
       description: '',
       icon_url:
@@ -90,6 +89,7 @@ export const gameAchievements: { RE9: Achievement[] } = {
     {
       id: 8,
       game_id: 3764200,
+      steam_api_name: '',
       name: "Umbrella's Legacy",
       description: '',
       icon_url:
@@ -101,6 +101,7 @@ export const gameAchievements: { RE9: Achievement[] } = {
     {
       id: 9,
       game_id: 3764200,
+      steam_api_name: '',
       name: 'The Final Mission',
       description: '',
       icon_url:
@@ -112,6 +113,7 @@ export const gameAchievements: { RE9: Achievement[] } = {
     {
       id: 10,
       game_id: 3764200,
+      steam_api_name: '',
       name: 'Hope and Requiem',
       description: '',
       icon_url:
@@ -123,6 +125,7 @@ export const gameAchievements: { RE9: Achievement[] } = {
     {
       id: 11,
       game_id: 3764200,
+      steam_api_name: '',
       name: 'Rookie Agent',
       description: 'Complete the main story on at least Casual difficulty.',
       icon_url:
@@ -134,6 +137,7 @@ export const gameAchievements: { RE9: Achievement[] } = {
     {
       id: 12,
       game_id: 3764200,
+      steam_api_name: '',
       name: 'Rising Agent',
       description:
         'Complete the main story on at least Standard (Modern) difficulty.',
@@ -146,6 +150,7 @@ export const gameAchievements: { RE9: Achievement[] } = {
     {
       id: 13,
       game_id: 3764200,
+      steam_api_name: '',
       name: 'Resolute Agent',
       description:
         'Complete the main story on at least Standard (Classic) difficulty.',
@@ -158,6 +163,7 @@ export const gameAchievements: { RE9: Achievement[] } = {
     {
       id: 14,
       game_id: 3764200,
+      steam_api_name: '',
       name: 'Remarkable Agent',
       description: '',
       icon_url:
@@ -169,6 +175,7 @@ export const gameAchievements: { RE9: Achievement[] } = {
     {
       id: 15,
       game_id: 3764200,
+      steam_api_name: '',
       name: 'Out of Sight, Out of Mind',
       description: 'Store an item in the item box as Grace.',
       icon_url:
@@ -180,6 +187,7 @@ export const gameAchievements: { RE9: Achievement[] } = {
     {
       id: 16,
       game_id: 3764200,
+      steam_api_name: '',
       name: "The Ol' Fashioned Way",
       description: '',
       icon_url:
@@ -191,6 +199,7 @@ export const gameAchievements: { RE9: Achievement[] } = {
     {
       id: 17,
       game_id: 3764200,
+      steam_api_name: '',
       name: 'Like Mother, Like Daughter',
       description: 'Unlock a drawer with a lockpick.',
       icon_url:
@@ -202,6 +211,7 @@ export const gameAchievements: { RE9: Achievement[] } = {
     {
       id: 18,
       game_id: 3764200,
+      steam_api_name: '',
       name: 'Fatal Dose',
       description: '',
       icon_url:
@@ -213,6 +223,7 @@ export const gameAchievements: { RE9: Achievement[] } = {
     {
       id: 19,
       game_id: 3764200,
+      steam_api_name: '',
       name: 'Science!',
       description: '',
       icon_url:
@@ -224,6 +235,7 @@ export const gameAchievements: { RE9: Achievement[] } = {
     {
       id: 20,
       game_id: 3764200,
+      steam_api_name: '',
       name: 'The Power of Blood',
       description: '',
       icon_url:
@@ -235,6 +247,7 @@ export const gameAchievements: { RE9: Achievement[] } = {
     {
       id: 21,
       game_id: 3764200,
+      steam_api_name: '',
       name: 'Blood! More Blood!',
       description: '',
       icon_url:
@@ -246,6 +259,7 @@ export const gameAchievements: { RE9: Achievement[] } = {
     {
       id: 22,
       game_id: 3764200,
+      steam_api_name: '',
       name: 'Bring Out the Big Guns',
       description: '',
       icon_url:
@@ -257,6 +271,7 @@ export const gameAchievements: { RE9: Achievement[] } = {
     {
       id: 23,
       game_id: 3764200,
+      steam_api_name: '',
       name: 'The Hunt Begins',
       description: 'Destroy one Mr. Raccoon memoriam.',
       icon_url:
@@ -268,6 +283,7 @@ export const gameAchievements: { RE9: Achievement[] } = {
     {
       id: 24,
       game_id: 3764200,
+      steam_api_name: '',
       name: 'Untouchable',
       description: 'Parry an enemy attack.',
       icon_url:
@@ -279,6 +295,7 @@ export const gameAchievements: { RE9: Achievement[] } = {
     {
       id: 25,
       game_id: 3764200,
+      steam_api_name: '',
       name: 'Can I Borrow This?',
       description: 'Throw a weapon dropped by an enemy.',
       icon_url:
@@ -290,6 +307,7 @@ export const gameAchievements: { RE9: Achievement[] } = {
     {
       id: 26,
       game_id: 3764200,
+      steam_api_name: '',
       name: 'Chop Chop',
       description: 'Defeat three zombies with a hatchet finishing attack.',
       icon_url:
@@ -301,6 +319,7 @@ export const gameAchievements: { RE9: Achievement[] } = {
     {
       id: 27,
       game_id: 3764200,
+      steam_api_name: '',
       name: 'Retail Therapy',
       description: 'Purchase an item from the supply box.',
       icon_url:
@@ -312,6 +331,7 @@ export const gameAchievements: { RE9: Achievement[] } = {
     {
       id: 28,
       game_id: 3764200,
+      steam_api_name: '',
       name: 'Tailor Made',
       description: 'Upgrade a weapon.',
       icon_url:
@@ -323,6 +343,7 @@ export const gameAchievements: { RE9: Achievement[] } = {
     {
       id: 29,
       game_id: 3764200,
+      steam_api_name: '',
       name: 'Road Rage',
       description: '',
       icon_url:
@@ -334,6 +355,7 @@ export const gameAchievements: { RE9: Achievement[] } = {
     {
       id: 30,
       game_id: 3764200,
+      steam_api_name: '',
       name: 'Master Craftsman',
       description: 'Craft every possible item with Leon.',
       icon_url:
@@ -345,6 +367,7 @@ export const gameAchievements: { RE9: Achievement[] } = {
     {
       id: 31,
       game_id: 3764200,
+      steam_api_name: '',
       name: 'Bang For Your Buck',
       description: 'Defeat at least three enemies with a single Requiem shot.',
       icon_url:
@@ -356,6 +379,7 @@ export const gameAchievements: { RE9: Achievement[] } = {
     {
       id: 32,
       game_id: 3764200,
+      steam_api_name: '',
       name: 'Cat Got Your Tongue?',
       description: '',
       icon_url:
@@ -367,6 +391,7 @@ export const gameAchievements: { RE9: Achievement[] } = {
     {
       id: 33,
       game_id: 3764200,
+      steam_api_name: '',
       name: 'Order Up!',
       description: '',
       icon_url:
@@ -378,6 +403,7 @@ export const gameAchievements: { RE9: Achievement[] } = {
     {
       id: 34,
       game_id: 3764200,
+      steam_api_name: '',
       name: 'Deadly Duet',
       description: '',
       icon_url:
@@ -389,6 +415,7 @@ export const gameAchievements: { RE9: Achievement[] } = {
     {
       id: 35,
       game_id: 3764200,
+      steam_api_name: '',
       name: 'Grace and Goliath',
       description: '',
       icon_url:
@@ -400,6 +427,7 @@ export const gameAchievements: { RE9: Achievement[] } = {
     {
       id: 36,
       game_id: 3764200,
+      steam_api_name: '',
       name: 'Internal Dispute',
       description: '',
       icon_url:
@@ -411,6 +439,7 @@ export const gameAchievements: { RE9: Achievement[] } = {
     {
       id: 37,
       game_id: 3764200,
+      steam_api_name: '',
       name: 'Seasoned Pro',
       description: 'Defeat 300 enemies.',
       icon_url:
@@ -422,6 +451,7 @@ export const gameAchievements: { RE9: Achievement[] } = {
     {
       id: 38,
       game_id: 3764200,
+      steam_api_name: '',
       name: 'Not Today, Buds!',
       description: '',
       icon_url:
@@ -433,6 +463,7 @@ export const gameAchievements: { RE9: Achievement[] } = {
     {
       id: 39,
       game_id: 3764200,
+      steam_api_name: '',
       name: 'No Safe is Safe',
       description: '',
       icon_url:
@@ -444,6 +475,7 @@ export const gameAchievements: { RE9: Achievement[] } = {
     {
       id: 40,
       game_id: 3764200,
+      steam_api_name: '',
       name: 'Crate Expectations',
       description: '',
       icon_url:
@@ -455,6 +487,7 @@ export const gameAchievements: { RE9: Achievement[] } = {
     {
       id: 41,
       game_id: 3764200,
+      steam_api_name: '',
       name: 'Case Closed',
       description: 'Read all the files in the main story.',
       icon_url:
@@ -466,6 +499,7 @@ export const gameAchievements: { RE9: Achievement[] } = {
     {
       id: 42,
       game_id: 3764200,
+      steam_api_name: '',
       name: 'You Little Rascal!',
       description: 'Destroy every Mr. Raccoon memoriam.',
       icon_url:
@@ -477,6 +511,7 @@ export const gameAchievements: { RE9: Achievement[] } = {
     {
       id: 43,
       game_id: 3764200,
+      steam_api_name: '',
       name: 'Speed Demon',
       description: '',
       icon_url:
@@ -488,6 +523,7 @@ export const gameAchievements: { RE9: Achievement[] } = {
     {
       id: 44,
       game_id: 3764200,
+      steam_api_name: '',
       name: 'Credit Where Credit Is Due',
       description: '',
       icon_url:
@@ -499,6 +535,7 @@ export const gameAchievements: { RE9: Achievement[] } = {
     {
       id: 45,
       game_id: 3764200,
+      steam_api_name: '',
       name: 'Bloodlust',
       description: '',
       icon_url:
@@ -510,6 +547,7 @@ export const gameAchievements: { RE9: Achievement[] } = {
     {
       id: 46,
       game_id: 3764200,
+      steam_api_name: '',
       name: 'Model Mania',
       description: 'View all models.',
       icon_url:
@@ -521,6 +559,7 @@ export const gameAchievements: { RE9: Achievement[] } = {
     {
       id: 47,
       game_id: 3764200,
+      steam_api_name: '',
       name: 'Curator',
       description: 'View all concept art.',
       icon_url:
@@ -532,6 +571,7 @@ export const gameAchievements: { RE9: Achievement[] } = {
     {
       id: 48,
       game_id: 3764200,
+      steam_api_name: '',
       name: 'Never Touch the Stuff',
       description:
         'Complete the main story without using herbs or med injectors.',
@@ -544,6 +584,7 @@ export const gameAchievements: { RE9: Achievement[] } = {
     {
       id: 49,
       game_id: 3764200,
+      steam_api_name: '',
       name: 'Minimalist',
       description: '',
       icon_url:
