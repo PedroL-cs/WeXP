@@ -41,4 +41,7 @@ public class SteamApiClient {
         return steamGames;
     }
 
+    public JsonNode getSchemaForGame(Long steamAppId) {
+        return steamApi.getSchemaForGame(steamAppId);
+    }
 }

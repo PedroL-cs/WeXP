@@ -166,7 +166,7 @@ public class GameService {
 
     private GameEntity getUpdatedSteamGame(GameEntity game) throws ApiException {
         LocalDateTime updatedAt = game.getUpdatedAt();
-        if (updatedAt != null && updatedAt.isAfter(LocalDateTime.now().minusMinutes(1))) return game;
+        if (updatedAt != null && updatedAt.isAfter(LocalDateTime.now().minusDays(7))) return game;
 
         GameEntity updatedGame = steamStoreClient.getGameDetails(game.getSteamAppId(), game.getPublicId(), game)
                 .orElseThrow(() -> new ApiException(ExceptionResponse.SteamGameNotFound));

@@ -14,4 +14,15 @@ public interface SteamApi {
     default JsonNode getAppList(Long lastAppid) {
         return getAppList(lastAppid, 50_000L);
     }
+
+    @GetExchange("/ISteamUserStats/GetSchemaForGame/v2")
+    JsonNode getSchemaForGame(
+            @RequestParam("appid") Long appId,
+            @RequestParam("l") String language
+    );
+
+    default JsonNode getSchemaForGame(Long appId) {
+        return getSchemaForGame(appId, "brazilian");
+    }
+
 }

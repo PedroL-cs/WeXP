@@ -10,7 +10,6 @@ import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
 import java.time.LocalDateTime;
 import java.util.*;
-import java.util.stream.Collectors;
 
 @Getter
 @Setter
@@ -44,14 +43,10 @@ public class GameEntity {
     @Builder.Default
     private Long viewsCount = 0L;
 
-    @JsonIgnore
-    @OneToMany(mappedBy = "game", cascade = CascadeType.ALL, orphanRemoval = true)
-    @Builder.Default
-    private List<ImageEntity> images = new ArrayList<>();
-
     @Column(name = "release_date")
     private LocalDateTime releaseDate;
 
+    @JsonIgnore
     @ManyToMany(cascade = {CascadeType.MERGE})
     @JoinTable(
             name = "game_categories",
@@ -61,6 +56,7 @@ public class GameEntity {
     @Builder.Default
     private Set<CategoryEntity> categories = new HashSet<>();
 
+    @JsonIgnore
     @ManyToMany(cascade = {CascadeType.MERGE})
     @JoinTable(
             name = "game_genres",
@@ -69,6 +65,11 @@ public class GameEntity {
     )
     @Builder.Default
     private Set<GenreEntity> genres = new HashSet<>();
+
+    @JsonIgnore
+    @OneToMany(mappedBy = "game", cascade = CascadeType.ALL, orphanRemoval = true)
+    @Builder.Default
+    private List<AchievementEntity> achievements = new ArrayList<>();
 
     @Column(name = "created_at", nullable = false, updatable = false)
     private LocalDateTime createdAt;
@@ -88,23 +89,47 @@ public class GameEntity {
         this.updatedAt = LocalDateTime.now();
     }
 
-    public void addImage(ImageEntity image) {
-        images.add(image);
-        image.setGame(this);
+    @JsonProperty("categories")
+    public Map<String, Object> getCategoriesResponse() {
+        return wrapCollection(this.categories);
+    }
+
+    @JsonProperty("genres")
+    public Map<String, Object> getGenresResponse() {
+        return wrapCollection(this.genres);
+    }
+
+    @JsonProperty("achievements")
+    public Map<String, Object> getAchievementsResponse() {
+        return wrapCollection(this.achievements);
+    }
+
+    private <T extends Collection<?>> Map<String, Object> wrapCollection(T collection) {
+        Map<String, Object> map = new LinkedHashMap<>();
+        map.put("total", collection != null ? collection.size() : 0);
+        map.put("items", collection != null ? collection : Collections.emptyList());
+        return map;
     }
 
     @JsonProperty("images")
     public Map<String, String> getImageMap() {
-        if (this.images == null || this.images.isEmpty()) return new HashMap<>();
-
         String baseUrl;
         try { baseUrl = ServletUriComponentsBuilder.fromCurrentContextPath().build().toUriString(); }
         catch (Exception e) { baseUrl = "http://localhost:8080"; }
         final String finalBaseUrl = baseUrl;
 
-        return this.images.stream().collect(Collectors.toMap(
-                img -> img.getType().name().toLowerCase(),
-                img -> finalBaseUrl + "/api/v1/images/" + this.publicId + "/" + img.getType().name().toLowerCase()
-        ));
+        Map<String, String> map = new LinkedHashMap<>();
+        for (ImageType type : ImageType.values()) {
+            String typeName = type.name().toLowerCase();
+            map.put(typeName, finalBaseUrl + "/api/v1/images/games/" + this.publicId + "/" + typeName);
+        }
+
+        return map;
+    }
+
+    public void addAchievement(AchievementEntity achievement) {
+        if (this.achievements == null) this.achievements = new ArrayList<>();
+        this.achievements.add(achievement);
+        achievement.setGame(this);
     }
 }

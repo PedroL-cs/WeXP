@@ -17,7 +17,8 @@ public enum ExceptionResponse {
     SteamGameNotFound(2, "Jogo da steam não encontrado", HttpStatus.NOT_FOUND),
     ImageNotFound(3, "Image não encontrada", HttpStatus.NOT_FOUND),
     CategoryNotFound(4, "Categoria não encontrada", HttpStatus.NOT_FOUND),
-    GenreNotFound(5, "Genero não encontrado", HttpStatus.NOT_FOUND),;
+    GenreNotFound(5, "Género não encontrado", HttpStatus.NOT_FOUND),
+    AchievementNotFound(6, "Conquista não encontrada", HttpStatus.NOT_FOUND),;
 
     private final Integer code;
     private final String message;

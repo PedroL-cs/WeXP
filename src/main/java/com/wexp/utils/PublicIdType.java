@@ -7,7 +7,7 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 public enum PublicIdType {
     GAME("g"),
-    IMAGE("i"),
+    ACHIEVEMENT("a"),
     CATEGORY("c"),
     GENRE("r"),;
 
