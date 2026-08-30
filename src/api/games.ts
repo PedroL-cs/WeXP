@@ -1,3 +1,4 @@
+import type { Game } from '../types/Game';
 import type { SteamGame } from '../types/SteamGame';
 
 export async function instantSearchGames(query: string): Promise<SteamGame[]> {
@@ -31,6 +32,16 @@ export async function searchGames(query: string, page = 0, size = 20) {
 
   if (!response.ok) {
     throw new Error('Erro ao buscar jogos');
+  }
+
+  return response.json();
+}
+
+export async function getGame(id: string): Promise<Game> {
+  const response = await fetch(`/api/v1/games/${id}`);
+
+  if (!response.ok) {
+    throw new Error('Não foi possível carregar o jogo.');
   }
 
   return response.json();

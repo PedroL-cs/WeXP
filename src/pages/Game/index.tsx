@@ -1,21 +1,48 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
+import { useParams } from 'react-router';
 
 import styles from './styles.module.css';
-
-import { mockGame } from '../../mocks/gameMocks';
-import { gameAchievements } from '../../mocks/gameAchievements';
 
 import AchievementCard from '../../components/AchievementCard';
 import { EyeIcon, EyeSlashIcon } from '@phosphor-icons/react';
 
+import { getGame } from '../../api/games';
+
+import type { Game } from '../../types/Game';
+import type { Achievement } from '../../types/Achievement';
+
 function GamePage() {
-  const game = mockGame;
+  const { id } = useParams();
+
+  const [game, setGame] = useState<Game | null>(null);
+  const [achievements, setAchievements] = useState<Achievement[]>([]);
 
   const [search, setSearch] = useState('');
-
   const [showSecretAchievements, setShowSecretAchievements] = useState(false);
 
-  const filteredAchievements = gameAchievements['RE9']
+  useEffect(() => {
+    if (!id) {
+      console.log('GamePage - sem ID');
+      return;
+    }
+
+    console.log('Buscando jogo:', id);
+
+    getGame(id)
+      .then(data => {
+        console.log('Jogo recebido:', data);
+        setGame(data);
+      })
+      .catch(error => {
+        console.error('Erro ao buscar jogo:', error);
+      });
+  }, [id]);
+
+  if (!game) {
+    return <div>Carregando...</div>;
+  }
+
+  const filteredAchievements = achievements
     .filter(achievement =>
       achievement.name.toLowerCase().includes(search.toLowerCase()),
     )
@@ -34,18 +61,15 @@ function GamePage() {
         <div className={styles.heroOverlay} />
 
         <div className={styles.heroContent}>
-          {/* <img
-            className={styles.gameCapsule}
-            src={game.images.capsule}
-            alt={game.name}
-          /> */}
-
           <div className={styles.gameInfo}>
             <h1>{game.name}</h1>
 
             <p>{game.shortDescription}</p>
 
-            <span>Lançamento: {game.releaseDate}</span>
+            <span>
+              Lançamento:{' '}
+              {new Date(game.releaseDate).toLocaleDateString('pt-BR')}
+            </span>
           </div>
         </div>
       </section>
@@ -64,7 +88,6 @@ function GamePage() {
             </span>
           </div>
 
-          {/* Filtro */}
           <div className={styles.searchContainer}>
             <input
               type='text'
@@ -75,7 +98,6 @@ function GamePage() {
             />
           </div>
 
-          {/* Lista */}
           <div className={styles.achievementsList}>
             {filteredAchievements.map(achievement => (
               <AchievementCard
@@ -87,6 +109,7 @@ function GamePage() {
           </div>
         </section>
       </div>
+
       <button
         className={styles.secretToggle}
         title='Alternar visibilidade de conquistas secretas'
