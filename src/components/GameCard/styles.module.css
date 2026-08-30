@@ -22,7 +22,6 @@
 .gameCard img {
   display: block;
   width: 100%;
-  aspect-ratio: 616 / 353;
   object-fit: cover;
 }
 

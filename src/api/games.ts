@@ -46,3 +46,27 @@ export async function getGame(id: string): Promise<Game> {
 
   return response.json();
 }
+
+export async function getFeaturedGames(): Promise<Game[]> {
+  const response = await fetch('/api/v1/games/featured');
+
+  if (!response.ok) {
+    throw new Error('Erro ao buscar jogos em destaque');
+  }
+
+  const data = await response.json();
+
+  return data.content;
+}
+
+export async function getReleasedGames(): Promise<Game[]> {
+  const response = await fetch('/api/v1/games/released');
+
+  if (!response.ok) {
+    throw new Error('Erro ao buscar jogos mais recentes');
+  }
+
+  const data = await response.json();
+
+  return data.content;
+}

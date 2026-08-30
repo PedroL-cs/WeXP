@@ -1,30 +1,87 @@
+import { useEffect, useState } from 'react';
 import styles from './styles.module.css';
 import type { Game } from '../../types/Game';
 
 type FeaturedGameProps = {
-  game: Game;
+  games: Game[];
 };
 
-function FeaturedGame({ game }: FeaturedGameProps) {
-  console.log(game); // Pro lint parar de reclamar
+function FeaturedGame({ games }: FeaturedGameProps) {
+  const [currentIndex, setCurrentIndex] = useState(0);
+
+  const currentGame = games[currentIndex];
+
+  const goToPrevious = () => {
+    setCurrentIndex(current =>
+      current === 0 ? games.length - 1 : current - 1,
+    );
+  };
+
+  const goToNext = () => {
+    setCurrentIndex(current => (current + 1) % games.length);
+  };
+
+  useEffect(() => {
+    if (games.length <= 1) return;
+
+    const interval = setInterval(() => {
+      setCurrentIndex(current => (current + 1) % games.length);
+    }, 5000);
+
+    return () => clearInterval(interval);
+  }, [games.length]);
+
+  if (!currentGame) {
+    return null;
+  }
+
   return (
-    // Tudo mockado!!!!
     <section className={styles.featuredGame}>
       <img
+        key={currentGame.id}
         className={styles.background}
-        src='https://shared.cloudflare.steamstatic.com/store_item_assets/steam/apps/730/library_hero.jpg'
+        src={currentGame.images.hero}
         alt=''
       />
-      <div className={styles.overlay}>
-        <h1>Counter-Strike 2</h1>
 
-        <p>
-          Há mais de duas décadas, o Counter-Strike oferece uma experiência
-          competitiva de elite moldada por milhões de jogadores mundialmente.
-          Agora, o próximo capítulo da história do CS vai começar. Isso é
-          Counter-Strike 2. Uma atualização gratuita para o CS:GO
-        </p>
+      <div className={styles.overlay}>
+        <h1>{currentGame.name}</h1>
+
+        <p>{currentGame.shortDescription}</p>
       </div>
+
+      {games.length > 1 && (
+        <>
+          <button
+            className={`${styles.control} ${styles.previous}`}
+            onClick={goToPrevious}
+            aria-label='Jogo anterior'
+          >
+            ‹
+          </button>
+
+          <button
+            className={`${styles.control} ${styles.next}`}
+            onClick={goToNext}
+            aria-label='Próximo jogo'
+          >
+            ›
+          </button>
+
+          <div className={styles.dots}>
+            {games.map((game, index) => (
+              <button
+                key={game.id}
+                className={`${styles.dot} ${
+                  index === currentIndex ? styles.active : ''
+                }`}
+                onClick={() => setCurrentIndex(index)}
+                aria-label={`Mostrar ${game.name}`}
+              />
+            ))}
+          </div>
+        </>
+      )}
     </section>
   );
 }
