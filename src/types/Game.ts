@@ -1,10 +1,18 @@
 export type Game = {
-  id: number;
+  id: string;
+  steamAppId: number;
   name: string;
-  discountPercent: number;
-  originalPrice: number | null;
-  finalPrice: number;
-  achievements: number;
-  largeCapsuleImage: string;
-  headerImage: string;
+  shortDescription: string;
+  detailedDescription: string;
+  images: {
+    cover: string;
+    capsule: string;
+    background: string;
+    header: string;
+    logo: string;
+    hero: string;
+  };
+  releaseDate: string;
+  createdAt: string;
+  updatedAt: string;
 };

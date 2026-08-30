@@ -19,3 +19,19 @@ export async function instantSearchGames(query: string): Promise<SteamGame[]> {
 
   return data.content;
 }
+
+export async function searchGames(query: string, page = 0, size = 20) {
+  const params = new URLSearchParams({
+    q: query,
+    page: page.toString(),
+    size: size.toString(),
+  });
+
+  const response = await fetch(`/api/v1/games/search?${params.toString()}`);
+
+  if (!response.ok) {
+    throw new Error('Erro ao buscar jogos');
+  }
+
+  return response.json();
+}
