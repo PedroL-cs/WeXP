@@ -33,5 +33,5 @@ html {
   margin-left: 179px;
   min-height: calc(100vh - 64px);
   justify-content: center;
-  align-items: center;
+  /* align-items: center; */
 }
