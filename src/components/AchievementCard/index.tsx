@@ -1,4 +1,4 @@
-import type { Achievement } from '../../mocks/gameAchievements';
+import type { Achievement } from '../../types/Achievement';
 import styles from './styles.module.css';
 
 type AchievementCardProps = {
@@ -7,16 +7,16 @@ type AchievementCardProps = {
 };
 
 function AchievementCard({ achievement, showSecret }: AchievementCardProps) {
-  const isHidden = achievement.is_hidden && !showSecret;
+  const isHidden = achievement.hidden && !showSecret;
 
   // Se a conquista NÃO for secreta desde o início, usamos a renderização padrão
-  if (!achievement.is_hidden) {
+  if (!achievement.hidden) {
     return (
       <div className={styles.achievementCard}>
         <div className={styles.iconContainer}>
           <img
             className={styles.achievementIcon}
-            src={achievement.icon_url}
+            src={achievement.icon}
             alt={achievement.name}
           />
         </div>
@@ -40,7 +40,7 @@ function AchievementCard({ achievement, showSecret }: AchievementCardProps) {
         <span className={styles.hiddenIcon}>?</span>
         <img
           className={styles.revealedIcon}
-          src={achievement.icon_url}
+          src={achievement.icon}
           alt={achievement.name}
         />
       </div>

@@ -211,3 +211,34 @@
 .searchInput:focus {
   border-color: var(--accent);
 }
+
+/* =========================
+   Sem conquista
+========================= */
+
+.noAchievements {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+
+  min-height: 180px;
+  padding: 2rem;
+
+  text-align: center;
+
+  background: var(--card);
+  border: 1px solid rgba(255, 255, 255, 0.06);
+  border-radius: 10px;
+}
+
+.noAchievements h3 {
+  margin: 0 0 0.5rem;
+  font-size: 1.5rem;
+}
+
+.noAchievements p {
+  font-size: 1.2rem;
+  margin: 0;
+  color: var(--muted);
+}

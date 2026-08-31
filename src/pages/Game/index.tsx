@@ -9,13 +9,11 @@ import { EyeIcon, EyeSlashIcon } from '@phosphor-icons/react';
 import { getGame } from '../../api/games';
 
 import type { Game } from '../../types/Game';
-import type { Achievement } from '../../types/Achievement';
 
 function GamePage() {
   const { id } = useParams();
 
   const [game, setGame] = useState<Game | null>(null);
-  const [achievements, setAchievements] = useState<Achievement[]>([]);
 
   const [search, setSearch] = useState('');
   const [showSecretAchievements, setShowSecretAchievements] = useState(false);
@@ -42,11 +40,11 @@ function GamePage() {
     return <div>Carregando...</div>;
   }
 
-  const filteredAchievements = achievements
+  const filteredAchievements = game.achievements.items
     .filter(achievement =>
       achievement.name.toLowerCase().includes(search.toLowerCase()),
     )
-    .sort((a, b) => Number(a.is_hidden) - Number(b.is_hidden));
+    .sort((a, b) => Number(a.hidden) - Number(b.hidden));
 
   return (
     <main className={styles.gamePage}>
@@ -76,51 +74,74 @@ function GamePage() {
 
       {/* Conteúdo */}
       <div className={styles.gameContent}>
-        <section className={styles.achievementsSection}>
-          <div className={styles.sectionHeader}>
-            <div>
-              <h2>Conquistas</h2>
-              <p>Explore as conquistas e descubra como desbloqueá-las.</p>
-            </div>
+        {game.achievements.total > 0 ? (
+          <>
+            <section className={styles.achievementsSection}>
+              <div className={styles.sectionHeader}>
+                <div>
+                  <h2>Conquistas</h2>
+                  <p>Explore as conquistas e descubra como desbloqueá-las.</p>
+                </div>
 
-            <span className={styles.achievementCount}>
-              {filteredAchievements.length} conquistas
-            </span>
-          </div>
+                <span className={styles.achievementCount}>
+                  {filteredAchievements.length} conquistas
+                </span>
+              </div>
 
-          <div className={styles.searchContainer}>
-            <input
-              type='text'
-              placeholder='Buscar conquista...'
-              value={search}
-              onChange={event => setSearch(event.target.value)}
-              className={styles.searchInput}
-            />
-          </div>
+              <div className={styles.searchContainer}>
+                <input
+                  type='text'
+                  placeholder='Buscar conquista...'
+                  value={search}
+                  onChange={event => setSearch(event.target.value)}
+                  className={styles.searchInput}
+                />
+              </div>
 
-          <div className={styles.achievementsList}>
-            {filteredAchievements.map(achievement => (
-              <AchievementCard
-                key={achievement.id}
-                achievement={achievement}
-                showSecret={showSecretAchievements}
-              />
-            ))}
-          </div>
-        </section>
+              <div className={styles.achievementsList}>
+                {filteredAchievements.map(achievement => (
+                  <AchievementCard
+                    key={achievement.id}
+                    achievement={achievement}
+                    showSecret={showSecretAchievements}
+                  />
+                ))}
+              </div>
+            </section>
+
+            <button
+              className={styles.secretToggle}
+              title='Alternar visibilidade de conquistas secretas'
+              onClick={() => setShowSecretAchievements(prev => !prev)}
+            >
+              {showSecretAchievements ? (
+                <EyeIcon size={24} />
+              ) : (
+                <EyeSlashIcon size={24} />
+              )}
+            </button>
+          </>
+        ) : (
+          <section className={styles.noAchievements}>
+            <h3>Este jogo não possui conquistas</h3>
+            <p>Não encontramos conquistas disponíveis para este jogo.</p>
+          </section>
+        )}
       </div>
 
-      <button
-        className={styles.secretToggle}
-        title='Alternar visibilidade de conquistas secretas'
-        onClick={() => setShowSecretAchievements(prev => !prev)}
-      >
-        {showSecretAchievements ? (
-          <EyeIcon size={24} />
-        ) : (
-          <EyeSlashIcon size={24} />
-        )}
-      </button>
+      {game.achievements.total > 0 && (
+        <button
+          className={styles.secretToggle}
+          title='Alternar visibilidade de conquistas secretas'
+          onClick={() => setShowSecretAchievements(prev => !prev)}
+        >
+          {showSecretAchievements ? (
+            <EyeIcon size={24} />
+          ) : (
+            <EyeSlashIcon size={24} />
+          )}
+        </button>
+      )}
     </main>
   );
 }
