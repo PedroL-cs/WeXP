@@ -158,7 +158,7 @@ function Header() {
                     onClick={() => handleSelectGame(game.appid)}
                   >
                     <div className={styles['search-result-image']}>
-                      <img src={''} alt={game.name} />
+                      <img src={game.capsuleUrl} alt={game.name} />
                     </div>
                     <span>{game.name}</span>
                   </button>

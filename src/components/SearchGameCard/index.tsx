@@ -13,9 +13,6 @@ function SearchGameCard({ game }: SearchGameCardProps) {
     navigate(`/games/${game.id}`);
   }
 
-  let fixedDate =
-    game.releaseDate != null ? game.releaseDate.slice(0, 10) : null;
-
   return (
     <article
       className={styles.card}
@@ -43,7 +40,9 @@ function SearchGameCard({ game }: SearchGameCardProps) {
           <p className={styles.description}>{game.shortDescription}</p>
         )}
 
-        <span className={styles.releaseDate}>{fixedDate}</span>
+        <span className={styles.releaseDate}>
+          Lançamento: {new Date(game.releaseDate).toLocaleDateString('pt-BR')}
+        </span>
       </div>
     </article>
   );
