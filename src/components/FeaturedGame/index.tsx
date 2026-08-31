@@ -1,12 +1,15 @@
 import { useEffect, useState } from 'react';
 import styles from './styles.module.css';
 import type { Game } from '../../types/Game';
+import { useNavigate } from 'react-router';
 
 type FeaturedGameProps = {
   games: Game[];
 };
 
 function FeaturedGame({ games }: FeaturedGameProps) {
+  const navigate = useNavigate();
+
   const [currentIndex, setCurrentIndex] = useState(0);
 
   const currentGame = games[currentIndex];
@@ -21,6 +24,10 @@ function FeaturedGame({ games }: FeaturedGameProps) {
     setCurrentIndex(current => (current + 1) % games.length);
   };
 
+  const goToGame = () => {
+    navigate(`/games/${currentGame.id}`);
+  };
+
   useEffect(() => {
     if (games.length <= 1) return;
 
@@ -29,7 +36,7 @@ function FeaturedGame({ games }: FeaturedGameProps) {
     }, 5000);
 
     return () => clearInterval(interval);
-  }, [games.length]);
+  }, [games.length, currentIndex]);
 
   if (!currentGame) {
     return null;
@@ -41,10 +48,11 @@ function FeaturedGame({ games }: FeaturedGameProps) {
         key={currentGame.id}
         className={styles.background}
         src={currentGame.images.hero}
+        onClick={goToGame}
         alt=''
       />
 
-      <div className={styles.overlay}>
+      <div className={styles.overlay} onClick={goToGame}>
         <h1>{currentGame.name}</h1>
 
         <p>{currentGame.shortDescription}</p>

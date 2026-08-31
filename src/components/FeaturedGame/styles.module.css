@@ -7,6 +7,7 @@
   overflow: hidden;
   border-radius: 10px;
 
+  cursor: pointer;
   /* margin-top: 2rem; */
 }
 
@@ -93,13 +94,12 @@
 
   cursor: pointer;
 
-  transition:
-    background 0.2s ease,
-    opacity 0.2s ease;
+  transition: all 0.2s ease;
 }
 
 .control:hover {
   background: rgb(0 0 0 / 65%);
+  color: var(--accent);
 }
 
 .previous {
