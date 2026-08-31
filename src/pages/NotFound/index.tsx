@@ -1,3 +1,4 @@
+import { Link } from 'react-router';
 import styles from './styles.module.css';
 
 function NotFound() {
@@ -7,7 +8,7 @@ function NotFound() {
       <p>...Página não encontrada!</p>
       <p>A página que você está procurando não existe ou foi removida.</p>
       <p>
-        Retornar para a <a href='/'>Home</a>
+        Retornar para a <Link to='/'>Home</Link>
       </p>
     </div>
   );
