@@ -4,7 +4,11 @@ export type Achievement = {
   steam_api_name: string;
   name: string;
   description: string;
-  icon_url: string;
-  icon_grey_url: string;
-  is_hidden: boolean;
+  icon: string;
+  hidden: boolean;
+};
+
+export type PaginatedResponse<T> = {
+  total: number;
+  items: T[];
 };

@@ -1,3 +1,5 @@
+import type { Achievement, PaginatedResponse } from './Achievement';
+
 export interface GameImage {
   cover: string;
   capsule: string;
@@ -26,8 +28,9 @@ export interface Game {
   viewsCount: number;
   images: GameImage;
   releaseDate: string;
-  categories: GameCategory[];
-  genres: GameGenre[];
+  categories: PaginatedResponse<GameCategory>;
+  genres: PaginatedResponse<GameGenre>;
+  achievements: PaginatedResponse<Achievement>;
   createdAt: string;
   updatedAt: string;
 }
