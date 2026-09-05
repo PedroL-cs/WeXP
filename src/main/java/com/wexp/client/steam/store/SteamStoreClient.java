@@ -160,6 +160,7 @@ public class SteamStoreClient {
                 String achName = achNode.has("displayName") ? achNode.get("displayName").asString() : achNode.get("name").asString();
                 String description = achNode.path("description").asString("");
                 String iconUrl = achNode.path("icon").asString(null);
+                boolean isHidden = achNode.path("hidden").asInt(0) == 1;
 
                 Optional<AchievementEntity> existingAch = gameToSave.getAchievements().stream()
                         .filter(a -> a.getName().equalsIgnoreCase(achName))
@@ -177,6 +178,7 @@ public class SteamStoreClient {
                             .publicId(PublicIdGenerator.generate(PublicIdType.ACHIEVEMENT))
                             .name(achName)
                             .description(description)
+                            .isHidden(isHidden)
                             .build();
                     gameToSave.addAchievement(achievement);
                 }

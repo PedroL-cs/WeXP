@@ -32,6 +32,9 @@ public class AchievementEntity {
     @Column(columnDefinition = "TEXT")
     private String description;
 
+    @Column(name = "is_hidden", nullable = false)
+    private Boolean isHidden;
+
     @JsonIgnore
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "game_id", nullable = false, updatable = false)
