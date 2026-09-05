@@ -18,7 +18,13 @@ public enum ExceptionResponse {
     ImageNotFound(3, "Image não encontrada", HttpStatus.NOT_FOUND),
     CategoryNotFound(4, "Categoria não encontrada", HttpStatus.NOT_FOUND),
     GenreNotFound(5, "Género não encontrado", HttpStatus.NOT_FOUND),
-    AchievementNotFound(6, "Conquista não encontrada", HttpStatus.NOT_FOUND),;
+    AchievementNotFound(6, "Conquista não encontrada", HttpStatus.NOT_FOUND),
+    UserNotFound(7, "Usuário não encontrado", HttpStatus.NOT_FOUND),
+    EmailAlreadyInUse(8, "O email já está sendo utilizado", HttpStatus.CONFLICT),
+    UsernameAlreadyInUse(9, "O nome de usuário já está sendo utilizado", HttpStatus.CONFLICT),
+    InvalidCredentials(10, "Usuário ou senha inválidos", HttpStatus.UNAUTHORIZED),
+    Unauthorized(11, "Acesso não autorizado. Faça login para continuar", HttpStatus.UNAUTHORIZED),
+    InvalidInput(12, "Dados de entrada inválidos", HttpStatus.BAD_REQUEST);
 
     private final Integer code;
     private final String message;

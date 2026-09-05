@@ -9,7 +9,8 @@ public enum PublicIdType {
     GAME("g"),
     ACHIEVEMENT("a"),
     CATEGORY("c"),
-    GENRE("r"),;
+    GENRE("r"),
+    USER("u");
 
     private final String prefix;
 }

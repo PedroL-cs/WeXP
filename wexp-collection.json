@@ -1,0 +1,378 @@
+{
+  "info": {
+    "_postman_id": "wexp-api-collection-v1",
+    "name": "Wexp API",
+    "description": "Collection completa da API Wexp com rotas de Auth, Users, Games, Achievements, Categories, Genres e Images.",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "item": [
+    {
+      "name": "Auth",
+      "item": [
+        {
+          "name": "Register",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "if (pm.response.code === 201 || pm.response.code === 200) {",
+                  "    var jsonData = pm.response.json();",
+                  "    if (jsonData.token) {",
+                  "        pm.environment.set(\"token\", jsonData.token);",
+                  "    }",
+                  "}"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"username\": \"devuser\",\n  \"email\": \"dev@wexp.com\",\n  \"fullName\": \"Desenvolvedor Wexp\",\n  \"password\": \"senhaSegura123\",\n  \"birthDate\": \"15/05/2000\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/auth/register",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "v1", "auth", "register"]
+            }
+          }
+        },
+        {
+          "name": "Login",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "if (pm.response.code === 200) {",
+                  "    var jsonData = pm.response.json();",
+                  "    if (jsonData.token) {",
+                  "        pm.environment.set(\"token\", jsonData.token);",
+                  "    }",
+                  "}"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"username\": \"devuser\",\n  \"password\": \"senhaSegura123\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/auth/login",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "v1", "auth", "login"]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Users",
+      "item": [
+        {
+          "name": "Get Current User",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/users/me",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "v1", "users", "me"]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Games",
+      "item": [
+        {
+          "name": "Get Featured Games",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/games/featured?page=0&size=20",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "v1", "games", "featured"],
+              "query": [
+                { "key": "page", "value": "0" },
+                { "key": "size", "value": "20" }
+              ]
+            }
+          }
+        },
+        {
+          "name": "Get Recent Games",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/games/released?page=0&size=20",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "v1", "games", "released"],
+              "query": [
+                { "key": "page", "value": "0" },
+                { "key": "size", "value": "20" }
+              ]
+            }
+          }
+        },
+        {
+          "name": "Search Games",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/games/search?q=portal&page=0&size=20",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "v1", "games", "search"],
+              "query": [
+                { "key": "q", "value": "portal" },
+                { "key": "page", "value": "0" },
+                { "key": "size", "value": "20" }
+              ]
+            }
+          }
+        },
+        {
+          "name": "Instant Search Games",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/games/search/instant?q=portal&page=0&size=5",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "v1", "games", "search", "instant"],
+              "query": [
+                { "key": "q", "value": "portal" },
+                { "key": "page", "value": "0" },
+                { "key": "size", "value": "5" }
+              ]
+            }
+          }
+        },
+        {
+          "name": "Get Game Details",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/games/:publicId",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "v1", "games", ":publicId"],
+              "variable": [
+                { "key": "publicId", "value": "g_123456789012" }
+              ]
+            }
+          }
+        },
+        {
+          "name": "Get Steam Game Details",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/games/steam/:steamAppId",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "v1", "games", "steam", ":steamAppId"],
+              "variable": [
+                { "key": "steamAppId", "value": "400" }
+              ]
+            }
+          }
+        },
+        {
+          "name": "Get Game ID by Steam ID",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/games/steam/:steamAppId/id",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "v1", "games", "steam", ":steamAppId", "id"],
+              "variable": [
+                { "key": "steamAppId", "value": "400" }
+              ]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Achievements",
+      "item": [
+        {
+          "name": "Get Achievement Details",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/achievements/:achievementId",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "v1", "achievements", ":achievementId"],
+              "variable": [
+                { "key": "achievementId", "value": "a_123456789012" }
+              ]
+            }
+          }
+        },
+        {
+          "name": "Search Achievements",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/achievements/search?q=headshot&hidden=false&page=0&size=20",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "v1", "achievements", "search"],
+              "query": [
+                { "key": "q", "value": "headshot" },
+                { "key": "hidden", "value": "false" },
+                { "key": "page", "value": "0" },
+                { "key": "size", "value": "20" }
+              ]
+            }
+          }
+        },
+        {
+          "name": "Get Achievements by Game",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/achievements/game/:gameId?q=&hidden=false&page=0&size=20",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "v1", "achievements", "game", ":gameId"],
+              "variable": [
+                { "key": "gameId", "value": "g_123456789012" }
+              ],
+              "query": [
+                { "key": "q", "value": "" },
+                { "key": "hidden", "value": "false" },
+                { "key": "page", "value": "0" },
+                { "key": "size", "value": "20" }
+              ]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Categories",
+      "item": [
+        {
+          "name": "Get All Categories",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/categories",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "v1", "categories"]
+            }
+          }
+        },
+        {
+          "name": "Get Games by Category",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/categories/:publicId/games?page=0&size=20",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "v1", "categories", ":publicId", "games"],
+              "variable": [
+                { "key": "publicId", "value": "c_123456789012" }
+              ],
+              "query": [
+                { "key": "page", "value": "0" },
+                { "key": "size", "value": "20" }
+              ]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Genres",
+      "item": [
+        {
+          "name": "Get All Genres",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/genres",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "v1", "genres"]
+            }
+          }
+        },
+        {
+          "name": "Get Games by Genre",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/genres/:publicId/games?page=0&size=20",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "v1", "genres", ":publicId", "games"],
+              "variable": [
+                { "key": "publicId", "value": "r_123456789012" }
+              ],
+              "query": [
+                { "key": "page", "value": "0" },
+                { "key": "size", "value": "20" }
+              ]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Images",
+      "item": [
+        {
+          "name": "Get Game Image",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/images/games/:gameId/:imageType",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "v1", "images", "games", ":gameId", ":imageType"],
+              "variable": [
+                { "key": "gameId", "value": "g_123456789012" },
+                { "key": "imageType", "value": "cover" }
+              ]
+            }
+          }
+        },
+        {
+          "name": "Get Achievement Icon",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/images/achievements/:achievementId",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "v1", "images", "achievements", ":achievementId"],
+              "variable": [
+                { "key": "achievementId", "value": "a_123456789012" }
+              ]
+            }
+          }
+        }
+      ]
+    }
+  ]
+}
