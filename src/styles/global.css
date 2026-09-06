@@ -8,6 +8,29 @@
 
   --text: #f1f1f1;
   --muted: #999999;
+
+  --danger: #ff2a5f;
+  --danger-hover: #d61f4b;
+  --danger-bg: rgba(ff, 42, 95, 0.12);
+
+  --warn: #ffb800;
+  --warn-hover: #cca300;
+  --warn-bg: rgba(ff, 184, 0, 0.12);
+
+  --success: #00e676;
+  --success-hover: #00b35c;
+  --success-bg: rgba(0, 230, 118, 0.12);
+
+  --info: #29b6f6;
+  --info-hover: #0288d1;
+  --info-bg: rgba(41, 182, 246, 0.12);
+
+  --border: #2a2a2a;
+  --border-hover: #3d3d3d;
+  --card-hover: #222222;
+  --input-bg: #141414;
+
+  --overlay: rgba(0, 0, 0, 0.75);
 }
 
 * {
@@ -33,5 +56,4 @@ html {
   margin-left: 179px;
   min-height: calc(100vh - 64px);
   justify-content: center;
-  /* align-items: center; */
 }
