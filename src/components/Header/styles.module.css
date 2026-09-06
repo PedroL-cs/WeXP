@@ -245,3 +245,47 @@
   color: white;
   font-weight: bold;
 }
+
+.profile-area {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.auth-buttons {
+  display: flex;
+  align-items: center;
+  gap: 18px;
+}
+
+.login-link,
+.register-link {
+  text-decoration: none;
+  font-size: 14px;
+  font-weight: 500;
+  transition: color 0.15s ease;
+}
+
+.login-link {
+  color: var(--text);
+}
+
+.login-link:hover {
+  color: var(--accent);
+}
+
+.register-link {
+  padding: 8px 14px;
+  border-radius: 6px;
+
+  background: var(--accent);
+  color: #fff;
+
+  transition:
+    background 0.15s ease,
+    color 0.15s ease;
+}
+
+.register-link:hover {
+  background: var(--accent-hover);
+}

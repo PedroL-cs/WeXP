@@ -52,3 +52,7 @@
 
   background: #1e293b;
 }
+
+.logout-item {
+  color: var(--danger);
+}

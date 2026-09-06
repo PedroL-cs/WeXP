@@ -1,19 +1,30 @@
 import { type FormEvent, useState } from 'react';
 import styles from './styles.module.css';
-import { Link } from 'react-router';
+import { Link, useNavigate } from 'react-router';
 import Logo from '../../components/Logo';
+import { useAuth } from '../../contexts/AuthContext';
 
 function LoginPage() {
+  const navigate = useNavigate();
+
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
+  const [rememberMe, setRememberMe] = useState(false);
+
+  const { login } = useAuth();
 
   async function handleSubmit(event: FormEvent) {
     event.preventDefault();
 
     const response = await fetch('/api/v1/auth/login', {
       method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ username, password }),
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        username,
+        password,
+      }),
     });
 
     const data = await response.json();
@@ -22,8 +33,9 @@ function LoginPage() {
     console.log('Resposta:', data);
 
     if (response.ok) {
-      localStorage.setItem('token', data.token);
-      alert('Login realizado com sucesso!');
+      login(data.token, rememberMe);
+
+      navigate('/');
     } else {
       alert('Usuário ou senha inválidos.');
     }
@@ -34,6 +46,7 @@ function LoginPage() {
       <section className={styles.showcase}>
         <div className={styles.showcaseOverlay}>
           <h1>Explore novos mundos.</h1>
+
           <p>Descubra jogos, conquistas e guias em um só lugar.</p>
         </div>
       </section>
@@ -73,14 +86,19 @@ function LoginPage() {
               />
             </div>
 
-            {/* <div className={styles.formOptions}>
+            <div className={styles.formOptions}>
               <label className={styles.remember}>
-                <input type='checkbox' />
+                <input
+                  type='checkbox'
+                  checked={rememberMe}
+                  onChange={event => setRememberMe(event.target.checked)}
+                />
+
                 <span>Lembrar-me</span>
               </label>
 
-              <a href='#'>Esqueceu sua senha?</a>
-            </div> */}
+              {/* <Link to='/forgot-password'>Esqueceu sua senha?</Link> */}
+            </div>
 
             <button type='submit' className={styles.loginButton}>
               Entrar

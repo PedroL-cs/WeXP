@@ -5,11 +5,15 @@ import {
   GearSixIcon,
   HouseIcon,
   InfoIcon,
+  SignOutIcon,
   TrophyIcon,
 } from '@phosphor-icons/react';
 import styles from './styles.module.css';
+import { useAuth } from '../../contexts/AuthContext';
 
 function Sidebar() {
+  const { isAuthenticated, logout } = useAuth();
+
   return (
     <aside className={styles.sidebar}>
       <nav className={styles.navigation}>
@@ -51,6 +55,17 @@ function Sidebar() {
           <InfoIcon size={22} />
           <span>Sobre</span>
         </a>
+
+        {isAuthenticated && (
+          <a
+            href='#'
+            className={styles['navigation-item'] + ' ' + styles['logout-item']}
+            onClick={logout}
+          >
+            <SignOutIcon size={22} />
+            <span onClick={logout}>Sair</span>
+          </a>
+        )}
       </nav>
     </aside>
   );

@@ -4,14 +4,16 @@ import {
   XCircleIcon,
 } from '@phosphor-icons/react';
 import { useEffect, useState, useRef } from 'react';
-import { useNavigate } from 'react-router';
+import { useNavigate, Link } from 'react-router';
 import styles from './styles.module.css';
 import type { SteamGame } from '../../types/SteamGame';
 import { instantSearchGames } from '../../api/games';
 import Logo from '../Logo';
+import { useAuth } from '../../contexts/AuthContext';
 
 function Header() {
   const navigate = useNavigate();
+  const { isAuthenticated, logout } = useAuth();
 
   const [search, setSearch] = useState('');
   const [searchResults, setSearchResults] = useState<SteamGame[]>([]);
@@ -162,13 +164,32 @@ function Header() {
 
         {/* Ações de Perfil / Notificação */}
         <div className={styles['header-actions']}>
-          <button className={styles['header-button']} aria-label='Notificações'>
-            <BellIcon size={22} />
-          </button>
+          {isAuthenticated && (
+            <button
+              className={styles['header-button']}
+              aria-label='Notificações'
+            >
+              <BellIcon size={22} />
+            </button>
+          )}
 
-          <button className={styles['profile-button']} aria-label='Perfil'>
-            <div className={styles['profile-avatar']}>P</div>
-          </button>
+          {isAuthenticated ? (
+            <div className={styles['profile-area']}>
+              <button className={styles['profile-button']} aria-label='Perfil'>
+                <div className={styles['profile-avatar']}>P</div>
+              </button>
+            </div>
+          ) : (
+            <div className={styles['auth-buttons']}>
+              <Link to='/login' className={styles['login-link']}>
+                Logar
+              </Link>
+
+              <Link to='/register' className={styles['register-link']}>
+                Cadastrar
+              </Link>
+            </div>
+          )}
         </div>
       </div>
     </header>
