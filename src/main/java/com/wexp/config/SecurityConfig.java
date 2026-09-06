@@ -37,8 +37,9 @@ public class SecurityConfig {
                         .requestMatchers(HttpMethod.GET, "/api/v1/genres/**").permitAll()
                         .requestMatchers(HttpMethod.GET, "/api/v1/achievements/**").permitAll()
                         .requestMatchers(HttpMethod.GET, "/api/v1/images/**").permitAll()
+                        .requestMatchers(HttpMethod.GET, "/api/v1/users/*").permitAll()
                         // Rotas protegidas
-                        .requestMatchers(HttpMethod.GET, "/api/v1/users/**").authenticated()
+                        .requestMatchers("/api/v1/users/me").authenticated()
                         // Todas as outras rotas
                         .anyRequest().authenticated()
                 )

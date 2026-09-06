@@ -41,8 +41,15 @@
             },
             "url": {
               "raw": "{{baseUrl}}/api/v1/auth/register",
-              "host": ["{{baseUrl}}"],
-              "path": ["api", "v1", "auth", "register"]
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "auth",
+                "register"
+              ]
             }
           }
         },
@@ -78,8 +85,15 @@
             },
             "url": {
               "raw": "{{baseUrl}}/api/v1/auth/login",
-              "host": ["{{baseUrl}}"],
-              "path": ["api", "v1", "auth", "login"]
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "auth",
+                "login"
+              ]
             }
           }
         }
@@ -100,8 +114,40 @@
             ],
             "url": {
               "raw": "{{baseUrl}}/api/v1/users/me",
-              "host": ["{{baseUrl}}"],
-              "path": ["api", "v1", "users", "me"]
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "users",
+                "me"
+              ]
+            }
+          }
+        },
+        {
+          "name": "Get User Profile",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/users/:publicId",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "users",
+                ":publicId"
+              ],
+              "variable": [
+                {
+                  "key": "publicId",
+                  "value": "u123456789"
+                }
+              ]
             }
           }
         },
@@ -133,8 +179,15 @@
             },
             "url": {
               "raw": "{{baseUrl}}/api/v1/users/me",
-              "host": ["{{baseUrl}}"],
-              "path": ["api", "v1", "users", "me"]
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "users",
+                "me"
+              ]
             }
           }
         }
@@ -149,11 +202,24 @@
             "method": "GET",
             "url": {
               "raw": "{{baseUrl}}/api/v1/games/featured?page=0&size=20",
-              "host": ["{{baseUrl}}"],
-              "path": ["api", "v1", "games", "featured"],
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "games",
+                "featured"
+              ],
               "query": [
-                { "key": "page", "value": "0" },
-                { "key": "size", "value": "20" }
+                {
+                  "key": "page",
+                  "value": "0"
+                },
+                {
+                  "key": "size",
+                  "value": "20"
+                }
               ]
             }
           }
@@ -164,11 +230,24 @@
             "method": "GET",
             "url": {
               "raw": "{{baseUrl}}/api/v1/games/released?page=0&size=20",
-              "host": ["{{baseUrl}}"],
-              "path": ["api", "v1", "games", "released"],
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "games",
+                "released"
+              ],
               "query": [
-                { "key": "page", "value": "0" },
-                { "key": "size", "value": "20" }
+                {
+                  "key": "page",
+                  "value": "0"
+                },
+                {
+                  "key": "size",
+                  "value": "20"
+                }
               ]
             }
           }
@@ -179,12 +258,28 @@
             "method": "GET",
             "url": {
               "raw": "{{baseUrl}}/api/v1/games/search?q=portal&page=0&size=20",
-              "host": ["{{baseUrl}}"],
-              "path": ["api", "v1", "games", "search"],
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "games",
+                "search"
+              ],
               "query": [
-                { "key": "q", "value": "portal" },
-                { "key": "page", "value": "0" },
-                { "key": "size", "value": "20" }
+                {
+                  "key": "q",
+                  "value": "portal"
+                },
+                {
+                  "key": "page",
+                  "value": "0"
+                },
+                {
+                  "key": "size",
+                  "value": "20"
+                }
               ]
             }
           }
@@ -195,12 +290,29 @@
             "method": "GET",
             "url": {
               "raw": "{{baseUrl}}/api/v1/games/search/instant?q=portal&page=0&size=5",
-              "host": ["{{baseUrl}}"],
-              "path": ["api", "v1", "games", "search", "instant"],
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "games",
+                "search",
+                "instant"
+              ],
               "query": [
-                { "key": "q", "value": "portal" },
-                { "key": "page", "value": "0" },
-                { "key": "size", "value": "5" }
+                {
+                  "key": "q",
+                  "value": "portal"
+                },
+                {
+                  "key": "page",
+                  "value": "0"
+                },
+                {
+                  "key": "size",
+                  "value": "5"
+                }
               ]
             }
           }
@@ -211,10 +323,20 @@
             "method": "GET",
             "url": {
               "raw": "{{baseUrl}}/api/v1/games/:publicId",
-              "host": ["{{baseUrl}}"],
-              "path": ["api", "v1", "games", ":publicId"],
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "games",
+                ":publicId"
+              ],
               "variable": [
-                { "key": "publicId", "value": "g_123456789012" }
+                {
+                  "key": "publicId",
+                  "value": "g_123456789012"
+                }
               ]
             }
           }
@@ -225,10 +347,21 @@
             "method": "GET",
             "url": {
               "raw": "{{baseUrl}}/api/v1/games/steam/:steamAppId",
-              "host": ["{{baseUrl}}"],
-              "path": ["api", "v1", "games", "steam", ":steamAppId"],
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "games",
+                "steam",
+                ":steamAppId"
+              ],
               "variable": [
-                { "key": "steamAppId", "value": "400" }
+                {
+                  "key": "steamAppId",
+                  "value": "400"
+                }
               ]
             }
           }
@@ -239,10 +372,22 @@
             "method": "GET",
             "url": {
               "raw": "{{baseUrl}}/api/v1/games/steam/:steamAppId/id",
-              "host": ["{{baseUrl}}"],
-              "path": ["api", "v1", "games", "steam", ":steamAppId", "id"],
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "games",
+                "steam",
+                ":steamAppId",
+                "id"
+              ],
               "variable": [
-                { "key": "steamAppId", "value": "400" }
+                {
+                  "key": "steamAppId",
+                  "value": "400"
+                }
               ]
             }
           }
@@ -258,10 +403,20 @@
             "method": "GET",
             "url": {
               "raw": "{{baseUrl}}/api/v1/achievements/:achievementId",
-              "host": ["{{baseUrl}}"],
-              "path": ["api", "v1", "achievements", ":achievementId"],
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "achievements",
+                ":achievementId"
+              ],
               "variable": [
-                { "key": "achievementId", "value": "a_123456789012" }
+                {
+                  "key": "achievementId",
+                  "value": "a123456789012"
+                }
               ]
             }
           }
@@ -272,13 +427,32 @@
             "method": "GET",
             "url": {
               "raw": "{{baseUrl}}/api/v1/achievements/search?q=headshot&hidden=false&page=0&size=20",
-              "host": ["{{baseUrl}}"],
-              "path": ["api", "v1", "achievements", "search"],
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "achievements",
+                "search"
+              ],
               "query": [
-                { "key": "q", "value": "headshot" },
-                { "key": "hidden", "value": "false" },
-                { "key": "page", "value": "0" },
-                { "key": "size", "value": "20" }
+                {
+                  "key": "q",
+                  "value": "headshot"
+                },
+                {
+                  "key": "hidden",
+                  "value": "false"
+                },
+                {
+                  "key": "page",
+                  "value": "0"
+                },
+                {
+                  "key": "size",
+                  "value": "20"
+                }
               ]
             }
           }
@@ -289,16 +463,39 @@
             "method": "GET",
             "url": {
               "raw": "{{baseUrl}}/api/v1/achievements/game/:gameId?q=&hidden=false&page=0&size=20",
-              "host": ["{{baseUrl}}"],
-              "path": ["api", "v1", "achievements", "game", ":gameId"],
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "achievements",
+                "game",
+                ":gameId"
+              ],
               "variable": [
-                { "key": "gameId", "value": "g_123456789012" }
+                {
+                  "key": "gameId",
+                  "value": "g123456789012"
+                }
               ],
               "query": [
-                { "key": "q", "value": "" },
-                { "key": "hidden", "value": "false" },
-                { "key": "page", "value": "0" },
-                { "key": "size", "value": "20" }
+                {
+                  "key": "q",
+                  "value": ""
+                },
+                {
+                  "key": "hidden",
+                  "value": "false"
+                },
+                {
+                  "key": "page",
+                  "value": "0"
+                },
+                {
+                  "key": "size",
+                  "value": "20"
+                }
               ]
             }
           }
@@ -314,8 +511,14 @@
             "method": "GET",
             "url": {
               "raw": "{{baseUrl}}/api/v1/categories",
-              "host": ["{{baseUrl}}"],
-              "path": ["api", "v1", "categories"]
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "categories"
+              ]
             }
           }
         },
@@ -325,14 +528,31 @@
             "method": "GET",
             "url": {
               "raw": "{{baseUrl}}/api/v1/categories/:publicId/games?page=0&size=20",
-              "host": ["{{baseUrl}}"],
-              "path": ["api", "v1", "categories", ":publicId", "games"],
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "categories",
+                ":publicId",
+                "games"
+              ],
               "variable": [
-                { "key": "publicId", "value": "c_123456789012" }
+                {
+                  "key": "publicId",
+                  "value": "c123456789012"
+                }
               ],
               "query": [
-                { "key": "page", "value": "0" },
-                { "key": "size", "value": "20" }
+                {
+                  "key": "page",
+                  "value": "0"
+                },
+                {
+                  "key": "size",
+                  "value": "20"
+                }
               ]
             }
           }
@@ -348,8 +568,14 @@
             "method": "GET",
             "url": {
               "raw": "{{baseUrl}}/api/v1/genres",
-              "host": ["{{baseUrl}}"],
-              "path": ["api", "v1", "genres"]
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "genres"
+              ]
             }
           }
         },
@@ -359,14 +585,31 @@
             "method": "GET",
             "url": {
               "raw": "{{baseUrl}}/api/v1/genres/:publicId/games?page=0&size=20",
-              "host": ["{{baseUrl}}"],
-              "path": ["api", "v1", "genres", ":publicId", "games"],
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "genres",
+                ":publicId",
+                "games"
+              ],
               "variable": [
-                { "key": "publicId", "value": "r_123456789012" }
+                {
+                  "key": "publicId",
+                  "value": "r123456789012"
+                }
               ],
               "query": [
-                { "key": "page", "value": "0" },
-                { "key": "size", "value": "20" }
+                {
+                  "key": "page",
+                  "value": "0"
+                },
+                {
+                  "key": "size",
+                  "value": "20"
+                }
               ]
             }
           }
@@ -382,11 +625,26 @@
             "method": "GET",
             "url": {
               "raw": "{{baseUrl}}/api/v1/images/games/:gameId/:imageType",
-              "host": ["{{baseUrl}}"],
-              "path": ["api", "v1", "images", "games", ":gameId", ":imageType"],
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "images",
+                "games",
+                ":gameId",
+                ":imageType"
+              ],
               "variable": [
-                { "key": "gameId", "value": "g_123456789012" },
-                { "key": "imageType", "value": "cover" }
+                {
+                  "key": "gameId",
+                  "value": "g123456789012"
+                },
+                {
+                  "key": "imageType",
+                  "value": "cover"
+                }
               ]
             }
           }
@@ -397,10 +655,21 @@
             "method": "GET",
             "url": {
               "raw": "{{baseUrl}}/api/v1/images/achievements/:achievementId",
-              "host": ["{{baseUrl}}"],
-              "path": ["api", "v1", "images", "achievements", ":achievementId"],
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "images",
+                "achievements",
+                ":achievementId"
+              ],
               "variable": [
-                { "key": "achievementId", "value": "a_123456789012" }
+                {
+                  "key": "achievementId",
+                  "value": "a123456789012"
+                }
               ]
             }
           }
@@ -411,10 +680,21 @@
             "method": "GET",
             "url": {
               "raw": "{{baseUrl}}/api/v1/images/users/:publicId",
-              "host": ["{{baseUrl}}"],
-              "path": ["api", "v1", "images", "users", ":publicId"],
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "images",
+                "users",
+                ":publicId"
+              ],
               "variable": [
-                { "key": "publicId", "value": "usr_123456789" }
+                {
+                  "key": "publicId",
+                  "value": "u123456789"
+                }
               ]
             }
           }

@@ -25,12 +25,12 @@ public class AuthService {
     public LoginResponseDto login(LoginRequestDto request) {
         authenticationManager.authenticate(
                 new UsernamePasswordAuthenticationToken(
-                        request.getUsername(),
+                        request.getLogin(),
                         request.getPassword()
                 )
         );
 
-        UserEntity user = userRepository.findByUsername(request.getUsername())
+        UserEntity user = userRepository.findByLogin(request.getLogin())
                 .orElseThrow(() -> new ApiException(ExceptionResponse.UserNotFound));
 
         String token = jwtService.generateToken(user);
@@ -42,14 +42,14 @@ public class AuthService {
             throw new ApiException(ExceptionResponse.EmailAlreadyInUse);
         }
 
-        if (userRepository.findByUsername(request.getUsername()).isPresent()) {
+        if (userRepository.findByLogin(request.getLogin()).isPresent()) {
             throw new ApiException(ExceptionResponse.UsernameAlreadyInUse);
         }
 
         UserEntity user = UserEntity.builder()
-                .username(request.getUsername())
+                .login(request.getLogin())
                 .email(request.getEmail())
-                .fullName(request.getFullName())
+                .username(request.getUsername())
                 .birthDate(request.getBirthDate())
                 .passwordHash(passwordEncoder.encode(request.getPassword()))
                 .build();

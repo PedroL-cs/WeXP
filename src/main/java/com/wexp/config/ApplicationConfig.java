@@ -22,7 +22,7 @@ public class ApplicationConfig {
 
     @Bean
     public UserDetailsService userDetailsService() {
-        return username -> userRepository.findByUsername(username)
+        return login -> userRepository.findByLogin(login)
                 .orElseThrow(() -> new ApiException(ExceptionResponse.UserNotFound));
     }
 

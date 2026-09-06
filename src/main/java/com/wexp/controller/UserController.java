@@ -1,6 +1,7 @@
 package com.wexp.controller;
 
 import com.wexp.dto.UpdateUserRequestDto;
+import com.wexp.dto.UserPublicResponseDto;
 import com.wexp.dto.UserResponseDto;
 import com.wexp.service.UserService;
 import jakarta.validation.Valid;
@@ -30,5 +31,11 @@ public class UserController {
             @RequestPart(value = "avatar", required = false) MultipartFile avatar
     ) {
         return userService.updateCurrentUser(dto, avatar);
+    }
+
+    @GetMapping("/{publicId}")
+    @ResponseStatus(HttpStatus.OK)
+    public UserPublicResponseDto getPublicProfile(@PathVariable String publicId) {
+        return userService.getPublicProfile(publicId);
     }
 }

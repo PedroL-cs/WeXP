@@ -18,9 +18,9 @@ import java.time.LocalDate;
 @AllArgsConstructor
 public class UserResponseDto {
     private String publicId;
-    private String username;
+    private String login;
     private String email;
-    private String fullName;
+    private String username;
     private String bio;
     private String avatar;
 
@@ -29,9 +29,9 @@ public class UserResponseDto {
 
     public UserResponseDto(UserEntity user) {
         this.publicId = user.getPublicId();
-        this.username = user.getUsername();
+        this.login = user.getUsername();
         this.email = user.getEmail();
-        this.fullName = user.getFullName();
+        this.username= user.getUsername();
         this.bio = user.getBio();
         this.birthDate = user.getBirthDate();
         this.avatar = ImageService.getAvatarUrl(user.getPublicId());

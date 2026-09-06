@@ -34,13 +34,13 @@ public class UserEntity implements UserDetails {
     private String publicId;
 
     @Column(nullable = false, unique = true, updatable = false, length = 30)
-    private String username;
+    private String login;
 
     @Column(nullable = false, unique = true, updatable = false, length = 256)
     private String email;
 
     @Column(nullable = false, length = 100)
-    private String fullName;
+    private String username;
 
     @Column(columnDefinition = "TEXT")
     private String bio;
@@ -86,7 +86,7 @@ public class UserEntity implements UserDetails {
     @Override
     @NullMarked
     public String getUsername() {
-        return this.username;
+        return this.login;
     }
 
     @Override
