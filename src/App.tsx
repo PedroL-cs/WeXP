@@ -5,6 +5,8 @@ import SearchPage from './pages/Search';
 import GamePage from './pages/Game';
 import NotFound from './pages/NotFound';
 import Layout from './components/Layout';
+import RegisterPage from './pages/Register';
+import LoginPage from './pages/Login';
 
 function App() {
   return (
@@ -17,8 +19,8 @@ function App() {
           <Route path='*' element={<NotFound />} />
         </Route>
 
-        {/* <Route path='/login' element={<LoginPage />} />
-      <Route path='/register' element={<RegisterPage />} /> */}
+        <Route path='/login' element={<LoginPage />} />
+        <Route path='/register' element={<RegisterPage />} />
       </Routes>
     </BrowserRouter>
   );
