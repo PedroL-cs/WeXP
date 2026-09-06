@@ -12,8 +12,11 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
+import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
 import java.io.InputStream;
+import java.net.MalformedURLException;
 import java.net.URI;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -27,17 +30,81 @@ public class ImageService {
 
     private static final Logger logger = LoggerFactory.getLogger(ImageService.class);
 
-    private final Path gamesStorageLocation = Paths.get("uploads/games");
-    private final Path achievementsStorageLocation = Paths.get("uploads/achievements");
+    private static final Path gamesStorageLocation = Paths.get("uploads/games");
+    private static final Path achievementsStorageLocation = Paths.get("uploads/achievements");
+    private static final Path avatarsStorageLocation = Paths.get("uploads/avatars");
 
     public ImageService() {
         try {
-            Files.createDirectories(this.gamesStorageLocation);
-            Files.createDirectories(this.achievementsStorageLocation);
+            Files.createDirectories(ImageService.gamesStorageLocation);
+            Files.createDirectories(ImageService.achievementsStorageLocation);
+            Files.createDirectories(ImageService.avatarsStorageLocation);
         } catch (Exception e) {
             logger.error("Erro ao inicializar diretórios de armazenamento de imagens", e);
             throw new RuntimeException("Não foi possível criar os diretórios de uploads.", e);
         }
+    }
+
+    public void saveUserAvatar(String userPublicId, MultipartFile file) {
+        if (file == null || file.isEmpty()) throw new ApiException(ExceptionResponse.InvalidInput);
+
+        String contentType = file.getContentType();
+        if (contentType == null || (!contentType.equals("image/jpeg") && !contentType.equals("image/png"))) {
+            throw new ApiException(ExceptionResponse.InvalidInput);
+        }
+
+        String extension = contentType.equals("image/jpeg") ? ".jpg" : ".png";
+
+        try {
+            Files.deleteIfExists(avatarsStorageLocation.resolve(userPublicId + ".png"));
+            Files.deleteIfExists(avatarsStorageLocation.resolve(userPublicId + ".png"));
+
+            Path targetLocation = avatarsStorageLocation.resolve(userPublicId + extension);
+            Files.copy(file.getInputStream(), targetLocation, StandardCopyOption.REPLACE_EXISTING);
+        } catch (Exception e) {
+            logger.error("Erro ao salvar avatar do usuário {} {}", userPublicId, e.getMessage());
+            throw new ApiException(ExceptionResponse.InternalServerError);
+        }
+    }
+
+    public ResponseEntity<Resource> getUserAvatar(String userPublicId) {
+        Resource file = loadUserAvatarResource(userPublicId);
+        if (file == null) throw new ApiException(ExceptionResponse.ImageNotFound);
+        return buildImageResponseEntity(file);
+    }
+
+    public static String getAvatarUrl(String userPublicId) {
+        if (userPublicId == null) return null;
+
+        boolean exists = Files.exists(avatarsStorageLocation.resolve(userPublicId + ".png")) ||
+                Files.exists(avatarsStorageLocation.resolve(userPublicId + ".jpg"));
+
+        String baseUrl;
+        try { baseUrl = ServletUriComponentsBuilder.fromCurrentContextPath().build().toUriString(); }
+        catch (Exception e) { baseUrl = "http://localhost:8080"; }
+
+        return exists ? baseUrl +  "/api/v1/images/users/" + userPublicId : null;
+    }
+
+    private Resource getImageResource(Path storageLocation, String name) throws MalformedURLException {
+        Path pngPath = storageLocation.resolve(name + ".png");
+        if (Files.exists(pngPath)) return new UrlResource(pngPath.toUri());
+
+        Path jpgPath = storageLocation.resolve(name + ".jpg");
+        if (Files.exists(jpgPath)) return new UrlResource(jpgPath.toUri());
+        return null;
+    }
+
+    private Resource loadUserAvatarResource(String userPublicId) {
+        if (userPublicId == null || userPublicId.isEmpty()) return null;
+
+        try {
+            return getImageResource(avatarsStorageLocation, userPublicId);
+        } catch (Exception e) {
+            logger.error("Erro ao carregar avatar do usuário {}: {}", userPublicId, e.getMessage());
+        }
+
+        return null;
     }
 
     public void processAndCacheImagesAsync(GameEntity game, Map<ImageType, String> imageUrls) {
@@ -108,15 +175,7 @@ public class ImageService {
         if (gamePublicId == null || imageType == null) return null;
 
         try {
-            Path pngPath = gamesStorageLocation.resolve(gamePublicId + "_" + imageType.toLowerCase() + ".png");
-            if (Files.exists(pngPath)) {
-                return new UrlResource(pngPath.toUri());
-            }
-
-            Path jpgPath = gamesStorageLocation.resolve(gamePublicId + "_" + imageType.toLowerCase() + ".jpg");
-            if (Files.exists(jpgPath)) {
-                return new UrlResource(jpgPath.toUri());
-            }
+            return getImageResource(gamesStorageLocation, gamePublicId + "_" + imageType.toLowerCase());
         } catch (Exception e) {
             logger.error("Erro ao carregar imagem do jogo {}: {}", gamePublicId, e.getMessage());
         }
@@ -127,15 +186,7 @@ public class ImageService {
         if (achievementPublicId == null) return null;
 
         try {
-            Path pngPath = achievementsStorageLocation.resolve(achievementPublicId + ".png");
-            if (Files.exists(pngPath)) {
-                return new UrlResource(pngPath.toUri());
-            }
-
-            Path jpgPath = achievementsStorageLocation.resolve(achievementPublicId + ".jpg");
-            if (Files.exists(jpgPath)) {
-                return new UrlResource(jpgPath.toUri());
-            }
+            return getImageResource(achievementsStorageLocation,  achievementPublicId);
         } catch (Exception e) {
             logger.error("Erro ao carregar ícone da conquista {}: {}", achievementPublicId, e.getMessage());
         }

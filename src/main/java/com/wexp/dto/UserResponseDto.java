@@ -2,6 +2,7 @@ package com.wexp.dto;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.wexp.database.model.UserEntity;
+import com.wexp.service.ImageService;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -21,6 +22,7 @@ public class UserResponseDto {
     private String email;
     private String fullName;
     private String bio;
+    private String avatar;
 
     @JsonFormat(pattern = "dd/MM/yyyy")
     private LocalDate birthDate;
@@ -32,5 +34,6 @@ public class UserResponseDto {
         this.fullName = user.getFullName();
         this.bio = user.getBio();
         this.birthDate = user.getBirthDate();
+        this.avatar = ImageService.getAvatarUrl(user.getPublicId());
     }
 }

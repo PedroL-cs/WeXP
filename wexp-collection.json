@@ -104,6 +104,39 @@
               "path": ["api", "v1", "users", "me"]
             }
           }
+        },
+        {
+          "name": "Update Current User",
+          "request": {
+            "method": "PATCH",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
+            ],
+            "body": {
+              "mode": "formdata",
+              "formdata": [
+                {
+                  "key": "data",
+                  "value": "{\n  \"fullName\": \"Desenvolvedor Wexp Atualizado\",\n  \"bio\": \"Entusiasta de jogos indie e desenvolvedor Java.\",\n  \"birthDate\": \"15/05/2000\"\n}",
+                  "contentType": "application/json",
+                  "type": "text"
+                },
+                {
+                  "key": "avatar",
+                  "type": "file",
+                  "src": []
+                }
+              ]
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/users/me",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "v1", "users", "me"]
+            }
+          }
         }
       ]
     },
@@ -368,6 +401,20 @@
               "path": ["api", "v1", "images", "achievements", ":achievementId"],
               "variable": [
                 { "key": "achievementId", "value": "a_123456789012" }
+              ]
+            }
+          }
+        },
+        {
+          "name": "Get User Avatar",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/images/users/:publicId",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "v1", "images", "users", ":publicId"],
+              "variable": [
+                { "key": "publicId", "value": "usr_123456789" }
               ]
             }
           }

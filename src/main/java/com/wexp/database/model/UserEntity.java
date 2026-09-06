@@ -72,7 +72,6 @@ public class UserEntity implements UserDetails {
         this.updatedAt = LocalDateTime.now();
     }
 
-
     @Override
     @NullMarked
     public Collection<? extends GrantedAuthority> getAuthorities() {
