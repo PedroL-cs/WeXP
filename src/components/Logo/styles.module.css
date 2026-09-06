@@ -1,0 +1,84 @@
+/* Valores padrão (tamanho médio) */
+.logo-container {
+  --logo-font-size: 2.7rem;
+  --wasd-width: 32px;
+  --wasd-height: 20px;
+  --wasd-gap: 2px;
+  --wasd-radius: 2px;
+
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  cursor: pointer;
+  user-select: none;
+}
+
+/* Variações de Tamanho */
+.size-sm {
+  --logo-font-size: 1.5rem;
+  --wasd-width: 20px;
+  --wasd-height: 12px;
+  --wasd-gap: 1px;
+  --wasd-radius: 1px;
+}
+
+.size-lg {
+  --logo-font-size: 4rem;
+  --wasd-width: 48px;
+  --wasd-height: 30px;
+  --wasd-gap: 3px;
+  --wasd-radius: 3px;
+}
+
+/* Aplicação das variáveis nos elementos */
+.logo {
+  color: white;
+  font-size: var(--logo-font-size);
+  font-weight: 700;
+  margin: 0;
+  line-height: 1;
+  transform: translateY(-1px);
+  transition: color 0.1s ease-in-out;
+}
+
+.wasd-icon {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  grid-template-rows: repeat(2, 1fr);
+  gap: var(--wasd-gap);
+  width: var(--wasd-width);
+  height: var(--wasd-height);
+}
+
+.key {
+  background-color: #fff;
+  border-radius: var(--wasd-radius);
+  transition: background-color 0.1s ease-in-out;
+}
+
+/* Hover effects */
+.logo-container:hover .logo {
+  color: var(--accent-hover);
+}
+
+.logo-container:hover .key {
+  background-color: var(--accent-hover);
+}
+
+/* Posições das teclas no Grid */
+.key-w {
+  grid-column: 2;
+  grid-row: 1;
+}
+.key-a {
+  grid-column: 1;
+  grid-row: 2;
+}
+.key-s {
+  grid-column: 2;
+  grid-row: 2;
+}
+.key-d {
+  grid-column: 3;
+  grid-row: 2;
+}

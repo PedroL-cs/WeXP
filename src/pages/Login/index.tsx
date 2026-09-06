@@ -1,6 +1,7 @@
 import { type FormEvent, useState } from 'react';
 import styles from './styles.module.css';
 import { Link } from 'react-router';
+import Logo from '../../components/Logo';
 
 function LoginPage() {
   const [username, setUsername] = useState('');
@@ -39,8 +40,8 @@ function LoginPage() {
 
       <section className={styles.loginSection}>
         <div className={styles.loginContainer}>
-          <div className={styles.logo}>
-            We<span>XP</span>
+          <div className={styles.logoContainer}>
+            <Logo size='lg' />
           </div>
 
           <h2>Bem-vindo de volta!</h2>

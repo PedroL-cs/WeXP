@@ -1,6 +1,7 @@
 import { type FormEvent, useState } from 'react';
 import { Link } from 'react-router';
 import styles from './styles.module.css';
+import Logo from '../../components/Logo';
 
 function RegisterPage() {
   const [username, setUsername] = useState('');
@@ -53,8 +54,8 @@ function RegisterPage() {
 
       <section className={styles.registerSection}>
         <div className={styles.registerContainer}>
-          <div className={styles.logo}>
-            We<span>XP</span>
+          <div className={styles.logoContainer}>
+            <Logo size='lg' />
           </div>
 
           <h2>Crie sua conta</h2>

@@ -8,6 +8,7 @@ import { useNavigate } from 'react-router';
 import styles from './styles.module.css';
 import type { SteamGame } from '../../types/SteamGame';
 import { instantSearchGames } from '../../api/games';
+import Logo from '../Logo';
 
 function Header() {
   const navigate = useNavigate();
@@ -90,16 +91,7 @@ function Header() {
     <header className={styles.header}>
       <div className={`${styles.container} ${styles['header-content']}`}>
         {/* Logo */}
-        <div className={styles['logo-container']} onClick={handleGoHome}>
-          <div className={styles['wasd-icon']} aria-label='Ícone WASD'>
-            <div className={`${styles.key} ${styles['key-w']}`}></div>
-            <div className={`${styles.key} ${styles['key-a']}`}></div>
-            <div className={`${styles.key} ${styles['key-s']}`}></div>
-            <div className={`${styles.key} ${styles['key-d']}`}></div>
-          </div>
-          <h1 className={styles.logo}>WeXP</h1>
-        </div>
-
+        <Logo onClick={handleGoHome} />
         {/* Form de Pesquisa */}
         <form
           ref={searchContainerRef}
