@@ -1,4 +1,6 @@
 import { type FormEvent, useState } from 'react';
+import { Link } from 'react-router';
+import styles from './styles.module.css';
 
 function RegisterPage() {
   const [username, setUsername] = useState('');
@@ -38,58 +40,100 @@ function RegisterPage() {
   }
 
   return (
-    <div>
-      <h1>Criar conta</h1>
+    <div className={styles.registerPage}>
+      <section className={styles.showcase}>
+        <div className={styles.showcaseOverlay}>
+          <h1>Comece sua jornada.</h1>
 
-      <form onSubmit={handleSubmit}>
-        <div>
-          <label>Usuário</label>
-          <input
-            type='text'
-            value={username}
-            onChange={event => setUsername(event.target.value)}
-          />
+          <p>
+            Crie sua conta e descubra jogos, conquistas e guias em um só lugar.
+          </p>
         </div>
+      </section>
 
-        <div>
-          <label>E-mail</label>
-          <input
-            type='email'
-            value={email}
-            onChange={event => setEmail(event.target.value)}
-          />
+      <section className={styles.registerSection}>
+        <div className={styles.registerContainer}>
+          <div className={styles.logo}>
+            We<span>XP</span>
+          </div>
+
+          <h2>Crie sua conta</h2>
+
+          <p className={styles.subtitle}>Preencha seus dados para começar.</p>
+
+          <form onSubmit={handleSubmit} className={styles.form}>
+            <div className={styles.inputGroup}>
+              <label htmlFor='username'>Usuário</label>
+
+              <input
+                id='username'
+                type='text'
+                value={username}
+                placeholder='Digite seu usuário'
+                onChange={event => setUsername(event.target.value)}
+              />
+            </div>
+
+            <div className={styles.inputGroup}>
+              <label htmlFor='email'>E-mail</label>
+
+              <input
+                id='email'
+                type='email'
+                value={email}
+                placeholder='Digite seu e-mail'
+                onChange={event => setEmail(event.target.value)}
+              />
+            </div>
+
+            <div className={styles.inputGroup}>
+              <label htmlFor='fullName'>Nome completo</label>
+
+              <input
+                id='fullName'
+                type='text'
+                value={fullName}
+                placeholder='Digite seu nome completo'
+                onChange={event => setFullName(event.target.value)}
+              />
+            </div>
+
+            <div className={styles.formRow}>
+              <div className={styles.inputGroup}>
+                <label htmlFor='password'>Senha</label>
+
+                <input
+                  id='password'
+                  type='password'
+                  value={password}
+                  placeholder='Digite sua senha'
+                  onChange={event => setPassword(event.target.value)}
+                />
+              </div>
+
+              <div className={styles.inputGroup}>
+                <label htmlFor='birthDate'>Data de nascimento</label>
+
+                <input
+                  id='birthDate'
+                  type='text'
+                  placeholder='dd/MM/yyyy'
+                  value={birthDate}
+                  onChange={event => setBirthDate(event.target.value)}
+                />
+              </div>
+            </div>
+
+            <button type='submit' className={styles.registerButton}>
+              Criar conta
+            </button>
+          </form>
+
+          <p className={styles.login}>
+            Já possui uma conta? <Link to='/login'>Entrar</Link>
+          </p>
         </div>
-
-        <div>
-          <label>Nome completo</label>
-          <input
-            type='text'
-            value={fullName}
-            onChange={event => setFullName(event.target.value)}
-          />
-        </div>
-
-        <div>
-          <label>Senha</label>
-          <input
-            type='password'
-            value={password}
-            onChange={event => setPassword(event.target.value)}
-          />
-        </div>
-
-        <div>
-          <label>Data de nascimento</label>
-          <input
-            type='text'
-            placeholder='dd/MM/yyyy'
-            value={birthDate}
-            onChange={event => setBirthDate(event.target.value)}
-          />
-        </div>
-
-        <button type='submit'>Cadastrar</button>
-      </form>
+      </section>
     </div>
   );
 }

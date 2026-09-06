@@ -1,0 +1,206 @@
+.registerPage {
+  width: 100vw;
+  height: 100vh;
+  display: flex;
+  background: var(--bg-dark);
+  overflow: hidden;
+}
+
+/* SHOWCASE */
+
+.showcase {
+  position: relative;
+  width: 55%;
+  height: 100%;
+  background-image: url('../../assets/images/login/game2.jpg');
+  background-size: cover;
+  background-position: center;
+  overflow: hidden;
+}
+
+.showcase::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background:
+    linear-gradient(to right, rgba(2, 6, 23, 0.15), rgba(2, 6, 23, 0.65)),
+    linear-gradient(to top, rgba(2, 6, 23, 0.9), transparent 60%);
+}
+
+.showcaseOverlay {
+  position: absolute;
+  left: 60px;
+  bottom: 70px;
+  max-width: 500px;
+  z-index: 1;
+  color: var(--text);
+}
+
+.showcaseOverlay h1 {
+  margin: 0 0 12px;
+  font-size: 44px;
+  line-height: 1.1;
+}
+
+.showcaseOverlay p {
+  margin: 0;
+  font-size: 17px;
+  line-height: 1.6;
+  color: var(--muted);
+}
+
+/* REGISTER */
+
+.registerSection {
+  width: 45%;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 40px;
+  box-sizing: border-box;
+  background: var(--bg-dark);
+  overflow-y: auto;
+}
+
+.registerContainer {
+  width: 100%;
+  max-width: 420px;
+}
+
+/* LOGO */
+
+.logo {
+  margin-bottom: 30px;
+  font-size: 36px;
+  font-weight: 700;
+  color: var(--accent);
+}
+
+.logo span {
+  color: var(--text);
+}
+
+/* TITLE */
+
+.registerContainer h2 {
+  margin: 0 0 8px;
+  color: var(--text);
+  font-size: 30px;
+  font-weight: 600;
+}
+
+.subtitle {
+  margin: 0 0 26px;
+  color: var(--muted);
+  font-size: 15px;
+}
+
+/* FORM */
+
+.form {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.inputGroup {
+  display: flex;
+  flex-direction: column;
+  gap: 7px;
+}
+
+.inputGroup label {
+  color: var(--text);
+  font-size: 14px;
+  font-weight: 500;
+}
+
+.inputGroup input {
+  width: 100%;
+  box-sizing: border-box;
+  padding: 12px 15px;
+  border: 1px solid #334155;
+  border-radius: 7px;
+  outline: none;
+  background: var(--card);
+  color: var(--text);
+  font-size: 15px;
+  transition: border-color 0.2s ease;
+}
+
+.inputGroup input::placeholder {
+  color: var(--muted);
+}
+
+.inputGroup input:focus {
+  border-color: var(--accent);
+}
+
+/* TWO COLUMNS */
+
+.formRow {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 14px;
+}
+
+/* BUTTON */
+
+.registerButton {
+  width: 100%;
+  padding: 13px;
+  margin-top: 4px;
+  border: none;
+  border-radius: 7px;
+  background: var(--accent);
+  color: #fff;
+  font-size: 15px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.2s ease;
+}
+
+.registerButton:hover {
+  background: var(--accent-hover);
+}
+
+/* LOGIN LINK */
+
+.login {
+  margin-top: 25px;
+  text-align: center;
+  color: var(--muted);
+  font-size: 13px;
+}
+
+.login a {
+  color: var(--accent);
+  text-decoration: none;
+}
+
+.login a:hover {
+  text-decoration: underline;
+}
+
+/* RESPONSIVE */
+
+@media (max-width: 900px) {
+  .showcase {
+    display: none;
+  }
+
+  .registerSection {
+    width: 100%;
+  }
+}
+
+@media (max-width: 500px) {
+  .registerSection {
+    padding: 30px 20px;
+  }
+
+  .formRow {
+    grid-template-columns: 1fr;
+  }
+}
