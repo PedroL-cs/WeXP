@@ -2,7 +2,7 @@
   "info": {
     "_postman_id": "wexp-api-collection-v1",
     "name": "Wexp API",
-    "description": "Collection completa da API Wexp com rotas de Auth, Users, Games, Achievements, Categories, Genres e Images.",
+    "description": "Collection completa da API Wexp com rotas de Auth, Users, Games, Achievements, Guides, Categories, Genres e Images.",
     "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
   },
   "item": [
@@ -145,7 +145,7 @@
               "variable": [
                 {
                   "key": "publicId",
-                  "value": "u123456789"
+                  "value": "usr_123456789012"
                 }
               ]
             }
@@ -335,7 +335,7 @@
               "variable": [
                 {
                   "key": "publicId",
-                  "value": "g_123456789012"
+                  "value": "gam_123456789012"
                 }
               ]
             }
@@ -415,7 +415,7 @@
               "variable": [
                 {
                   "key": "achievementId",
-                  "value": "a123456789012"
+                  "value": "ach_123456789012"
                 }
               ]
             }
@@ -476,7 +476,7 @@
               "variable": [
                 {
                   "key": "gameId",
-                  "value": "g123456789012"
+                  "value": "gam_123456789012"
                 }
               ],
               "query": [
@@ -495,6 +495,101 @@
                 {
                   "key": "size",
                   "value": "20"
+                }
+              ]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Guides",
+      "item": [
+        {
+          "name": "Get Guide by Achievement",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/guides/achievements/:achievementPublicId",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "guides",
+                "achievements",
+                ":achievementPublicId"
+              ],
+              "variable": [
+                {
+                  "key": "achievementPublicId",
+                  "value": "ach_123456789012"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "name": "Get Guide Details",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/guides/:publicId",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "guides",
+                ":publicId"
+              ],
+              "variable": [
+                {
+                  "key": "publicId",
+                  "value": "gui_123456789012"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "name": "Create Initial Guide",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"content\": \"Guia detalhado com o passo a passo para desbloquear esta conquista.\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/guides/achievements/:achievementPublicId",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "guides",
+                "achievements",
+                ":achievementPublicId"
+              ],
+              "variable": [
+                {
+                  "key": "achievementPublicId",
+                  "value": "ach_123456789012"
                 }
               ]
             }
@@ -541,7 +636,7 @@
               "variable": [
                 {
                   "key": "publicId",
-                  "value": "c123456789012"
+                  "value": "cat_123456789012"
                 }
               ],
               "query": [
@@ -598,7 +693,7 @@
               "variable": [
                 {
                   "key": "publicId",
-                  "value": "r123456789012"
+                  "value": "gen_123456789012"
                 }
               ],
               "query": [
@@ -639,7 +734,7 @@
               "variable": [
                 {
                   "key": "gameId",
-                  "value": "g123456789012"
+                  "value": "gam_123456789012"
                 },
                 {
                   "key": "imageType",
@@ -668,7 +763,7 @@
               "variable": [
                 {
                   "key": "achievementId",
-                  "value": "a123456789012"
+                  "value": "ach_123456789012"
                 }
               ]
             }
@@ -693,7 +788,7 @@
               "variable": [
                 {
                   "key": "publicId",
-                  "value": "u123456789"
+                  "value": "usr_123456789012"
                 }
               ]
             }

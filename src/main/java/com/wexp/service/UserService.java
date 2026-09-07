@@ -8,11 +8,8 @@ import com.wexp.dto.UserResponseDto;
 import com.wexp.exception.ApiException;
 import com.wexp.exception.ExceptionResponse;
 import lombok.RequiredArgsConstructor;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
-
-import java.util.Objects;
 
 @Service
 @RequiredArgsConstructor
@@ -21,21 +18,11 @@ public class UserService {
     private final IUserRepository userRepository;
     private final ImageService imageService;
 
-    public UserResponseDto getCurrentUser() {
-        String login = Objects.requireNonNull(SecurityContextHolder.getContext().getAuthentication()).getName();
-
-        UserEntity user = userRepository.findByLogin(login)
-                .orElseThrow(() -> new ApiException(ExceptionResponse.UserNotFound));
-
+    public UserResponseDto getCurrentUser(UserEntity user) {
         return new UserResponseDto(user);
     }
 
-    public UserResponseDto updateCurrentUser(UpdateUserRequestDto dto, MultipartFile avatar) {
-        String login = Objects.requireNonNull(SecurityContextHolder.getContext().getAuthentication()).getName();
-
-        UserEntity user = userRepository.findByLogin(login)
-                .orElseThrow(() -> new ApiException(ExceptionResponse.UserNotFound));
-
+    public UserResponseDto updateCurrentUser(UserEntity user, UpdateUserRequestDto dto, MultipartFile avatar) {
         if (dto != null) {
             if (dto.getUsername() != null ) user.setUsername(dto.getUsername());
             if (dto.getBio() != null) user.setBio(dto.getBio());

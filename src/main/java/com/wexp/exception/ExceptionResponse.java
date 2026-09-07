@@ -24,7 +24,9 @@ public enum ExceptionResponse {
     UsernameAlreadyInUse(9, "O nome de usuário já está sendo utilizado", HttpStatus.CONFLICT),
     InvalidCredentials(10, "Usuário ou senha inválidos", HttpStatus.UNAUTHORIZED),
     Unauthorized(11, "Acesso não autorizado. Faça login para continuar", HttpStatus.UNAUTHORIZED),
-    InvalidInput(12, "Dados de entrada inválidos", HttpStatus.BAD_REQUEST);
+    InvalidInput(12, "Dados de entrada inválidos", HttpStatus.BAD_REQUEST),
+    GuideNotFound(13, "Guia não encontrado", HttpStatus.NOT_FOUND),
+    GuideAlreadyExists(14, "Esta conquista já possui um guia oficial", HttpStatus.CONFLICT);
 
     private final Integer code;
     private final String message;

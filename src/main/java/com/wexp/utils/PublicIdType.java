@@ -6,11 +6,12 @@ import lombok.RequiredArgsConstructor;
 @Getter
 @RequiredArgsConstructor
 public enum PublicIdType {
-    GAME("g"),
-    ACHIEVEMENT("a"),
-    CATEGORY("c"),
-    GENRE("r"),
-    USER("u");
+    USER("usr"),
+    GAME("gam"),
+    GENRE("gen"),
+    CATEGORY("cat"),
+    ACHIEVEMENT("ach"),
+    GUIDE("gui");
 
     private final String prefix;
 }

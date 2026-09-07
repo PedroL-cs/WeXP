@@ -40,6 +40,7 @@ public class SecurityConfig {
                         .requestMatchers(HttpMethod.GET, "/api/v1/users/*").permitAll()
                         // Rotas protegidas
                         .requestMatchers("/api/v1/users/me").authenticated()
+                        .requestMatchers("/api/v1/guides/**").authenticated()
                         // Todas as outras rotas
                         .anyRequest().authenticated()
                 )

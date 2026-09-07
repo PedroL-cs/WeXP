@@ -24,7 +24,7 @@ public class GameEntity {
     private Long id;
 
     @JsonProperty("id")
-    @Column(name = "public_id", nullable = false, unique = true, updatable = false, length = 13)
+    @Column(name = "public_id", nullable = false, unique = true, updatable = false, length = 16)
     private String publicId;
 
     @Column(name = "steam_app_id", unique = true)

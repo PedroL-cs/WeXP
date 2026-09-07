@@ -6,7 +6,6 @@ import com.wexp.utils.PublicIdGenerator;
 import com.wexp.utils.PublicIdType;
 import jakarta.persistence.*;
 import lombok.*;
-import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
 import java.time.LocalDateTime;
 
@@ -16,9 +15,8 @@ import java.time.LocalDateTime;
 @NoArgsConstructor
 @AllArgsConstructor
 @Entity
-@Table(name = "achievements")
-public class AchievementEntity {
-    @JsonIgnore
+@Table(name = "guides")
+public class GuideEntity {
     @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
@@ -26,23 +24,22 @@ public class AchievementEntity {
     @Column(name = "public_id", nullable = false, unique = true, updatable = false, length = 16)
     private String publicId;
 
-    @Column(nullable = false, length = 500)
-    private String name;
+    @Column(columnDefinition = "TEXT", nullable = false)
+    private String content;
 
-    @Column(columnDefinition = "TEXT")
-    private String description;
+    @Column(nullable = false)
+    @Builder.Default
+    private Integer version = 1;
 
-    @Column(name = "is_hidden", nullable = false)
-    private Boolean isHidden;
+    @JsonIgnore
+    @OneToOne
+    @JoinColumn(name = "achivement_id", nullable = false, unique = true)
+    private AchievementEntity achievement;
 
     @JsonIgnore
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "game_id", nullable = false, updatable = false)
-    private GameEntity game;
-
-    @JsonIgnore
-    @OneToOne(mappedBy = "achievement", cascade = CascadeType.ALL)
-    private GuideEntity guide;
+    @JoinColumn(name = "author_id", nullable = false)
+    private UserEntity author;
 
     @Column(name = "created_at", nullable = false, updatable = false)
     private LocalDateTime createdAt;
@@ -52,7 +49,7 @@ public class AchievementEntity {
 
     @PrePersist
     protected void onCreate() {
-        if (this.publicId == null) this.publicId = PublicIdGenerator.generate(PublicIdType.ACHIEVEMENT);
+        if (this.publicId == null) this.publicId = PublicIdGenerator.generate(PublicIdType.GUIDE);
         this.createdAt = LocalDateTime.now();
         this.updatedAt = LocalDateTime.now();
     }
@@ -62,12 +59,13 @@ public class AchievementEntity {
         this.updatedAt = LocalDateTime.now();
     }
 
-    @JsonProperty("icon")
-    public String getIconUrl() {
-        String baseUrl;
-        try { baseUrl = ServletUriComponentsBuilder.fromCurrentContextPath().build().toUriString(); }
-        catch (Exception e) { baseUrl = "http://localhost:8080"; }
+    @JsonProperty("achievementId")
+    public String getAchievementPublicId() {
+        return this.achievement != null ? this.achievement.getPublicId() : null;
+    }
 
-        return baseUrl + "/api/v1/images/achievements/" + this.publicId;
+    @JsonProperty("author")
+    public String getAuthorUsername() {
+        return this.author != null ? this.author.getUsername() : null;
     }
 }
