@@ -29,6 +29,7 @@ public class SortValidationInterceptor implements HandlerInterceptor {
         }
 
         Set<String> allowedProperties = Set.of(annotation.value());
+        validatePagination(request);
         String[] sortParameters = request.getParameterValues("sort");
         if (sortParameters == null) {
             return true;
@@ -40,6 +41,21 @@ public class SortValidationInterceptor implements HandlerInterceptor {
                 .ifPresent(sort -> validateSortParameters(sortParameters, allowedProperties));
 
         return true;
+    }
+
+    private void validatePagination(HttpServletRequest request) {
+        String page = request.getParameter("page");
+        String size = request.getParameter("size");
+        try {
+            if (page != null && Integer.parseInt(page) < 0) {
+                throw new IllegalArgumentException("Página inválida");
+            }
+            if (size != null && Integer.parseInt(size) <= 0) {
+                throw new IllegalArgumentException("Tamanho inválido");
+            }
+        } catch (NumberFormatException exception) {
+            throw new IllegalArgumentException("Paginação inválida", exception);
+        }
     }
 
     private void validateSortParameters(String[] sortParameters, Set<String> allowedProperties) {

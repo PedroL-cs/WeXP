@@ -81,6 +81,13 @@ public class GlobalExceptionHandler {
         return response(ExceptionResponse.InvalidInput, request, clientMessage(exception));
     }
 
+    @ExceptionHandler(IllegalArgumentException.class)
+    public ResponseEntity<ApiErrorResponse> handleInvalidArgument(
+            HttpServletRequest request
+    ) {
+        return response(ExceptionResponse.InvalidInput, request, "Um parâmetro da requisição possui um valor inválido");
+    }
+
     @ExceptionHandler(InvalidSortException.class)
     public ResponseEntity<ApiErrorResponse> handleInvalidSort(
             InvalidSortException exception,
