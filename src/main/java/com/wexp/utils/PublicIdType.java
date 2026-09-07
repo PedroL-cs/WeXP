@@ -11,7 +11,8 @@ public enum PublicIdType {
     GENRE("gen"),
     CATEGORY("cat"),
     ACHIEVEMENT("ach"),
-    GUIDE("gui");
+    GUIDE("gui"),
+    REVISION("rev");
 
     private final String prefix;
 }
