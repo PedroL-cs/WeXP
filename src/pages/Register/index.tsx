@@ -6,7 +6,7 @@ import Logo from '../../components/Logo';
 function RegisterPage() {
   const [username, setUsername] = useState('');
   const [email, setEmail] = useState('');
-  const [fullName, setFullName] = useState('');
+  const [login, setLogin] = useState('');
   const [password, setPassword] = useState('');
   const [birthDate, setBirthDate] = useState('');
 
@@ -21,7 +21,7 @@ function RegisterPage() {
       body: JSON.stringify({
         username,
         email,
-        fullName,
+        login,
         password,
         birthDate,
       }),
@@ -70,7 +70,7 @@ function RegisterPage() {
                 id='username'
                 type='text'
                 value={username}
-                placeholder='Digite seu usuário'
+                placeholder='Digite o nome que será exibido no site'
                 onChange={event => setUsername(event.target.value)}
               />
             </div>
@@ -91,11 +91,11 @@ function RegisterPage() {
               <label htmlFor='fullName'>Nome completo</label>
 
               <input
-                id='fullName'
+                id='login'
                 type='text'
-                value={fullName}
-                placeholder='Digite seu nome completo'
-                onChange={event => setFullName(event.target.value)}
+                value={login}
+                placeholder='Digite um nome de usuário'
+                onChange={event => setLogin(event.target.value)}
               />
             </div>
 
