@@ -8,7 +8,7 @@ export async function instantSearchGames(query: string): Promise<SteamGame[]> {
   });
 
   const response = await fetch(
-    `/api/v1/games/search/instant?${params.toString()}`,
+    `/api/v1/games/steam-games?${params.toString()}`,
   );
 
   if (!response.ok) {
@@ -20,13 +20,23 @@ export async function instantSearchGames(query: string): Promise<SteamGame[]> {
   return data.content;
 }
 
+export async function getGameIdBySteamAppId(steamAppId: number) {
+  const response = await fetch(`/api/v1/games/steam/${steamAppId}/id`);
+
+  if (!response.ok) {
+    throw new Error('Erro ao buscar ID do jogo');
+  }
+
+  return response.json();
+}
+
 export async function searchGames(query: string, page = 0) {
   const params = new URLSearchParams({
     q: query,
     page: page.toString(),
   });
 
-  const response = await fetch(`/api/v1/games/search?${params.toString()}`);
+  const response = await fetch(`/api/v1/games?${params.toString()}`);
 
   if (!response.ok) {
     throw new Error('Erro ao buscar jogos');

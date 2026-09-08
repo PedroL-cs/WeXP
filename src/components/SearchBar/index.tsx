@@ -2,7 +2,7 @@ import { useEffect, useRef, useState } from 'react';
 import styles from './styles.module.css';
 import type { SteamGame } from '../../types/SteamGame';
 import { MagnifyingGlassIcon, XCircleIcon } from '@phosphor-icons/react';
-import { instantSearchGames } from '../../api/games';
+import { getGameIdBySteamAppId, instantSearchGames } from '../../api/games';
 import { useNavigate } from 'react-router';
 
 type SearchBarProps = {
@@ -80,10 +80,17 @@ function SearchBar({
     setIsSearchOpen(value.trim().length > 0);
   }
 
-  function handleSelectGame(gameId: number | string) {
-    setIsSearchOpen(false);
-    setSearch('');
-    navigate(`/games/${gameId}`);
+  async function handleSelectGame(steamAppId: number) {
+    try {
+      const data = await getGameIdBySteamAppId(steamAppId);
+
+      setIsSearchOpen(false);
+      setSearch('');
+
+      navigate(`/games/${data.gameId}`);
+    } catch (error) {
+      console.error('Erro ao buscar jogo:', error);
+    }
   }
 
   return (
