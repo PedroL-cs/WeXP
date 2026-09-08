@@ -19,18 +19,23 @@ import {
 import '@mdxeditor/editor/style.css';
 import styles from './styles.module.css';
 
-function GuideEditor() {
-  const initialMarkdown = `# Comece a digitar
+type GuideEditorProps = {
+  initialMarkdown?: string;
+  onChange?: (markdown: string) => void;
+};
+
+function GuideEditor({
+  initialMarkdown = `# Comece a digitar
 
 Experimente usar **negrito**, *itálico*, # ou > para formatar na hora.
-`;
+`,
+  onChange,
+}: GuideEditorProps) {
   return (
     <div className={styles.editor}>
       <MDXEditor
         markdown={initialMarkdown}
-        onChange={markdown => {
-          console.log(markdown);
-        }}
+        onChange={onChange}
         plugins={[
           headingsPlugin(),
           listsPlugin(),

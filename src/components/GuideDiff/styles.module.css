@@ -1,0 +1,26 @@
+.diff {
+  overflow-x: auto;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  background: var(--input-bg);
+  font-family: Consolas, 'Courier New', monospace;
+  font-size: 1.25rem;
+  line-height: 1.7;
+}
+
+.line {
+  display: grid;
+  grid-template-columns: 2.8rem minmax(max-content, 1fr);
+  min-width: max-content;
+  padding: 0.2rem 1.2rem 0.2rem 0;
+  white-space: pre-wrap;
+}
+
+.marker {
+  text-align: center;
+  user-select: none;
+}
+
+.added { background: rgba(0, 230, 118, 0.12); color: #b6f4d0; }
+.removed { background: rgba(255, 42, 95, 0.12); color: #ffc0cf; }
+.unchanged { color: var(--muted); }

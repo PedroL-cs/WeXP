@@ -1,7 +1,24 @@
 import { BellIcon } from '@phosphor-icons/react';
 import styles from './styles.module.css';
 
+<<<<<<< Updated upstream
 function Header() {
+=======
+  async function testaAuth() {
+    const token = localStorage.getItem('token');
+
+    const response = await fetch('/api/v1/users/me', {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    });
+
+    const data = await response.json();
+
+    console.log(data);
+  }
+
+>>>>>>> Stashed changes
   return (
     <header className={styles.header}>
       <div className={`${styles.container} ${styles['header-content']}`}>
@@ -16,6 +33,12 @@ function Header() {
           <h1 className={styles.logo}>WeXP</h1>
         </div>
 
+<<<<<<< Updated upstream
+=======
+        <button onClick={testaAuth}>Testar auth</button>
+
+        {/* Ações de Perfil / Notificação */}
+>>>>>>> Stashed changes
         <div className={styles['header-actions']}>
           <button className={styles['header-button']} aria-label='Notificações'>
             <BellIcon size={22} />
