@@ -40,7 +40,7 @@ function GamePage() {
     return <div>Carregando...</div>;
   }
 
-  const filteredAchievements = game.achievements.items
+  const filteredAchievements = game.achievements
     .filter(achievement =>
       achievement.name.toLowerCase().includes(search.toLowerCase()),
     )
@@ -74,7 +74,7 @@ function GamePage() {
 
       {/* Conteúdo */}
       <div className={styles.gameContent}>
-        {game.achievements.total > 0 ? (
+        {game.achievements.length > 0 ? (
           <>
             <section className={styles.achievementsSection}>
               <div className={styles.sectionHeader}>
@@ -129,7 +129,7 @@ function GamePage() {
         )}
       </div>
 
-      {game.achievements.total > 0 && (
+      {game.achievements.length > 0 && (
         <button
           className={styles.secretToggle}
           title='Alternar visibilidade de conquistas secretas'
