@@ -10,6 +10,7 @@ export type Guide = {
 export type GuideRevision = {
   publicId: string;
   guidePublicId: string;
+  authorPublicId?: string;
   content: string;
   changeSummary?: string;
   status?: 'PENDING' | 'APPROVED' | 'REJECTED' | string;
