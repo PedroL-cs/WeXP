@@ -1,0 +1,40 @@
+.diff {
+  overflow-x: auto;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  background: var(--input-bg);
+  font-family: Consolas, monospace;
+  font-size: 1rem;
+  line-height: 1.7;
+}
+
+.line {
+  display: grid;
+  grid-template-columns: 2.8rem minmax(max-content, 1fr);
+  min-width: max-content;
+  padding: 0 1rem 0 0;
+  white-space: pre;
+}
+
+.line > span:first-child {
+  text-align: center;
+}
+
+.added {
+  background: rgba(0, 230, 118, 0.12);
+  color: #b6f4d0;
+}
+
+.changed {
+  background: rgba(77, 163, 255, 0.15);
+  color: #c2e1ff;
+}
+
+.removed {
+  background: rgba(255, 42, 95, 0.12);
+  color: #ffc0cf;
+}
+
+.unchanged {
+  color: var(--muted);
+}

@@ -5,6 +5,7 @@ import {
 } from '@phosphor-icons/react';
 import { useEffect, useState } from 'react';
 import { useNavigate, useParams, useSearchParams } from 'react-router';
+import { getAchievement } from '../../api/achievements';
 import { getAchievementGuide, getGuideRevisions } from '../../api/guides';
 import GuideContent from '../../components/GuideContent';
 import GuideDiff from '../../components/GuideDiff';
@@ -17,6 +18,7 @@ function GuidePage() {
   const { achievementId } = useParams();
   const [params, setParams] = useSearchParams();
   const [guide, setGuide] = useState<Guide | null>(null);
+  const [achievementName, setAchievementName] = useState('');
   const [revisions, setRevisions] = useState<GuideRevision[]>([]);
   const [selected, setSelected] = useState<GuideRevision | null>(null);
   const [loading, setLoading] = useState(true);
@@ -32,7 +34,12 @@ function GuidePage() {
         return;
       }
       try {
-        setGuide(await getAchievementGuide(achievementId));
+        const [achievement, currentGuide] = await Promise.all([
+          getAchievement(achievementId),
+          getAchievementGuide(achievementId),
+        ]);
+        setAchievementName(achievement.name);
+        setGuide(currentGuide);
       } catch {
         setError('Não foi possível carregar o guia.');
       } finally {
@@ -71,7 +78,7 @@ function GuidePage() {
       </button>
       <header className={styles.header}>
         <div>
-          <p>Conquista {achievementId}</p>
+          <p>{achievementName || 'Conquista'}</p>
           <h1>Guia da conquista</h1>
         </div>
         {guide?.id && (

@@ -1,0 +1,78 @@
+.page {
+  width: min(1100px, 100%);
+  padding: 3.2rem 2.4rem 5rem;
+}
+.back {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.8rem;
+  border: 0;
+  background: transparent;
+  color: var(--muted);
+  cursor: pointer;
+}
+.page header {
+  margin-top: 2.4rem;
+}
+.page header p {
+  color: var(--accent);
+  font-size: 1.1rem;
+  font-weight: 700;
+  text-transform: uppercase;
+}
+.page h1 {
+  margin-top: 0.8rem;
+  font-size: 2.8rem;
+}
+.page header span {
+  display: block;
+  margin-top: 0.8rem;
+  color: var(--muted);
+}
+form {
+  margin-top: 2.4rem;
+}
+label {
+  display: block;
+  margin-bottom: 0.7rem;
+  font-weight: 700;
+}
+input {
+  width: 100%;
+  margin-bottom: 1.6rem;
+  padding: 1.1rem 1.2rem;
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  background: var(--input-bg);
+  color: var(--text);
+}
+footer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 2rem;
+}
+footer button {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.8rem;
+  padding: 1.1rem 1.6rem;
+  border: 0;
+  border-radius: 6px;
+  background: var(--accent);
+  color: var(--bg-dark);
+  font-weight: 700;
+  cursor: pointer;
+}
+.error {
+  color: var(--danger);
+}
+.status {
+  margin-top: 2.4rem;
+  padding: 2.4rem;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  background: var(--card);
+  color: var(--muted);
+  text-align: center;
+}
