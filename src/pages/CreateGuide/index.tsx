@@ -1,12 +1,13 @@
 import { useEffect, useRef, useState } from 'react';
 import { ArrowLeftIcon, CheckIcon } from '@phosphor-icons/react';
-import { useNavigate, useParams } from 'react-router';
+import { Navigate, useNavigate, useParams } from 'react-router';
 
 import { createAchievementGuide } from '../../api/guides';
 import GuideEditor from '../../components/GuideEditor';
 import styles from './styles.module.css';
 import { getAchievement } from '../../api/achievements';
 import type { Achievement } from '../../types/Achievement';
+import { useAuth } from '../../contexts/AuthContext';
 
 const initialMarkdown = `# Como desbloquear
 
@@ -15,6 +16,7 @@ Escreva aqui o passo a passo para desbloquear esta conquista.
 
 function CreateGuidePage() {
   const navigate = useNavigate();
+  const { isAuthenticated } = useAuth();
   const { achievementId } = useParams();
 
   const markdownRef = useRef(initialMarkdown);
@@ -46,6 +48,10 @@ function CreateGuidePage() {
 
     loadAchievement();
   }, [achievementId]);
+
+  if (!isAuthenticated) {
+    return <Navigate to='/login' replace />;
+  }
 
   async function handleSubmit(event: React.FormEvent<HTMLFormElement>) {
     event.preventDefault();

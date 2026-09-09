@@ -9,11 +9,13 @@ import { getAchievement } from '../../api/achievements';
 import { getAchievementGuide, getGuideRevisions } from '../../api/guides';
 import GuideContent from '../../components/GuideContent';
 import GuideDiff from '../../components/GuideDiff';
+import { useAuth } from '../../contexts/AuthContext';
 import type { Guide, GuideRevision } from '../../types/Guide';
 import styles from './styles.module.css';
 
 function GuidePage() {
   const navigate = useNavigate();
+  const { isAuthenticated } = useAuth();
 
   const { achievementId } = useParams();
   const [params, setParams] = useSearchParams();
@@ -81,7 +83,7 @@ function GuidePage() {
           <p>{achievementName || 'Conquista'}</p>
           <h1>Guia da conquista</h1>
         </div>
-        {guide?.id && (
+        {isAuthenticated && guide?.id && (
           <button
             type='button'
             className={styles.outline}
@@ -105,15 +107,17 @@ function GuidePage() {
             jogadores.
           </p>
 
-          <button
-            type='button'
-            className={styles.primaryButton}
-            onClick={() =>
-              navigate(`/achievements/${achievementId}/guide/create`)
-            }
-          >
-            Criar primeiro guia
-          </button>
+          {isAuthenticated && (
+            <button
+              type='button'
+              className={styles.primaryButton}
+              onClick={() =>
+                navigate(`/achievements/${achievementId}/guide/create`)
+              }
+            >
+              Criar primeiro guia
+            </button>
+          )}
         </section>
       )}
       {!loading && !error && guide?.content && (

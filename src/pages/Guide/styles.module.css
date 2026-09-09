@@ -1,5 +1,5 @@
 .page {
-  width: min(1100px, 100%);
+  width: min(1280px, 100%);
   padding: 3.2rem 2.4rem 5rem;
   color: var(--text);
 }
@@ -173,7 +173,7 @@
 
 .grid {
   display: grid;
-  grid-template-columns: minmax(210px, 0.7fr) minmax(0, 2fr);
+  grid-template-columns: minmax(210px, 0.6fr) minmax(0, 2.5fr);
   gap: 2rem;
 }
 

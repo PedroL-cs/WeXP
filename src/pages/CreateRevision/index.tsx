@@ -1,13 +1,15 @@
 import { ArrowLeftIcon, CheckIcon } from '@phosphor-icons/react';
 import { useEffect, useRef, useState } from 'react';
-import { useNavigate, useParams } from 'react-router';
+import { Navigate, useNavigate, useParams } from 'react-router';
 import { createGuideRevision, getAchievementGuide } from '../../api/guides';
 import GuideEditor from '../../components/GuideEditor';
 import type { Guide } from '../../types/Guide';
+import { useAuth } from '../../contexts/AuthContext';
 import styles from './styles.module.css';
 
 function CreateRevisionPage() {
   const navigate = useNavigate();
+  const { isAuthenticated } = useAuth();
   const { achievementId } = useParams();
   const content = useRef('');
   const [guide, setGuide] = useState<Guide | null>(null);
@@ -41,6 +43,10 @@ function CreateRevisionPage() {
     }
     load();
   }, [achievementId]);
+
+  if (!isAuthenticated) {
+    return <Navigate to='/login' replace />;
+  }
 
   async function submit(event: React.FormEvent<HTMLFormElement>) {
     event.preventDefault();
