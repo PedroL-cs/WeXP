@@ -1,3 +1,4 @@
+import { useNavigate } from 'react-router';
 import type { Achievement } from '../../types/Achievement';
 import styles from './styles.module.css';
 
@@ -7,12 +8,18 @@ type AchievementCardProps = {
 };
 
 function AchievementCard({ achievement, showSecret }: AchievementCardProps) {
+  const navigate = useNavigate();
+
   const isHidden = achievement.hidden && !showSecret;
+
+  function handleClick() {
+    navigate(`/achievements/${achievement.id}/guide`);
+  }
 
   // Se a conquista NÃO for secreta desde o início, usamos a renderização padrão
   if (!achievement.hidden) {
     return (
-      <div className={styles.achievementCard}>
+      <div className={styles.achievementCard} onClick={handleClick}>
         <div className={styles.iconContainer}>
           <img
             className={styles.achievementIcon}

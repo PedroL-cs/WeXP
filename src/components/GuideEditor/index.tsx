@@ -15,22 +15,23 @@ import {
   linkDialogPlugin,
   CodeToggle,
 } from '@mdxeditor/editor';
-
 import '@mdxeditor/editor/style.css';
 import styles from './styles.module.css';
 
-function GuideEditor() {
-  const initialMarkdown = `# Comece a digitar
+type GuideEditorProps = {
+  initialMarkdown?: string;
+  onChange?: (markdown: string) => void;
+};
 
-Experimente usar **negrito**, *itálico*, # ou > para formatar na hora.
-`;
+function GuideEditor({
+  initialMarkdown = '# Comece a digitar',
+  onChange,
+}: GuideEditorProps) {
   return (
     <div className={styles.editor}>
       <MDXEditor
         markdown={initialMarkdown}
-        onChange={markdown => {
-          console.log(markdown);
-        }}
+        onChange={onChange}
         plugins={[
           headingsPlugin(),
           listsPlugin(),
@@ -39,7 +40,6 @@ Experimente usar **negrito**, *itálico*, # ou > para formatar na hora.
           linkPlugin(),
           linkDialogPlugin(),
           markdownShortcutPlugin(),
-
           toolbarPlugin({
             toolbarClassName: styles.toolbar,
             toolbarContents: () => (

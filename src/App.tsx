@@ -8,6 +8,9 @@ import Layout from './components/Layout';
 import RegisterPage from './pages/Register';
 import LoginPage from './pages/Login';
 import { AuthProvider } from './contexts/AuthContext';
+import GuidePage from './pages/Guide';
+import CreateRevisionPage from './pages/CreateRevision';
+import CreateGuidePage from './pages/CreateGuide';
 
 function App() {
   return (
@@ -18,6 +21,18 @@ function App() {
             <Route path='/' element={<HomePage />} />
             <Route path='/search' element={<SearchPage />} />
             <Route path='/games/:id' element={<GamePage />} />
+            <Route
+              path='/achievements/:achievementId/guide'
+              element={<GuidePage />}
+            />
+            <Route
+              path='/achievements/:achievementId/guide/revise'
+              element={<CreateRevisionPage />}
+            />
+            <Route
+              path='/achievements/:achievementId/guide/create'
+              element={<CreateGuidePage />}
+            />
             <Route path='*' element={<NotFound />} />
           </Route>
 
