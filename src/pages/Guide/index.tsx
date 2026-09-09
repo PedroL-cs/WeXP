@@ -17,7 +17,7 @@ function GuidePage() {
   const navigate = useNavigate();
   const { isAuthenticated } = useAuth();
 
-  const { achievementId } = useParams();
+  const { gameId, achievementId } = useParams();
   const [params, setParams] = useSearchParams();
   const [guide, setGuide] = useState<Guide | null>(null);
   const [achievementName, setAchievementName] = useState('');
@@ -112,7 +112,9 @@ function GuidePage() {
               type='button'
               className={styles.primaryButton}
               onClick={() =>
-                navigate(`/achievements/${achievementId}/guide/create`)
+                navigate(
+                  `/games/${gameId}/achievements/${achievementId}/guide/create`,
+                )
               }
             >
               Criar primeiro guia

@@ -2,6 +2,7 @@ import { Outlet } from 'react-router';
 import { useState } from 'react';
 import Header from '../Header';
 import Sidebar from '../Sidebar';
+import Breadcrumbs from '../Breadcrumbs';
 
 function Layout() {
   const [search, setSearch] = useState('');
@@ -18,6 +19,7 @@ function Layout() {
       <Sidebar />
 
       <div className='layout'>
+        <Breadcrumbs />
         <Outlet />
       </div>
     </>

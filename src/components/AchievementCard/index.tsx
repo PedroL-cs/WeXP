@@ -5,15 +5,20 @@ import styles from './styles.module.css';
 type AchievementCardProps = {
   achievement: Achievement;
   showSecret: boolean;
+  gameId: string;
 };
 
-function AchievementCard({ achievement, showSecret }: AchievementCardProps) {
+function AchievementCard({
+  achievement,
+  showSecret,
+  gameId,
+}: AchievementCardProps) {
   const navigate = useNavigate();
 
   const isHidden = achievement.hidden && !showSecret;
 
   function handleClick() {
-    navigate(`/achievements/${achievement.id}/guide`);
+    navigate(`/games/${gameId}/achievements/${achievement.id}/guide`);
   }
 
   // Se a conquista NÃO for secreta desde o início, usamos a renderização padrão

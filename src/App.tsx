@@ -22,20 +22,20 @@ function App() {
             <Route path='/' element={<HomePage />} />
             <Route path='/search' element={<SearchPage />} />
             <Route path='/games/:id' element={<GamePage />} />
-            <Route path='/profile' element={<UserProfilePage />} />
-            <Route path='/users/:userId' element={<UserProfilePage />} />
             <Route
-              path='/achievements/:achievementId/guide'
+              path='/games/:gameId/achievements/:achievementId/guide'
               element={<GuidePage />}
             />
             <Route
-              path='/achievements/:achievementId/guide/revise'
+              path='/games/:gameId/achievements/:achievementId/revise'
               element={<CreateRevisionPage />}
             />
             <Route
-              path='/achievements/:achievementId/guide/create'
+              path='/games/:gameId/achievements/:achievementId/guide/create'
               element={<CreateGuidePage />}
             />
+            <Route path='/profile' element={<UserProfilePage />} />
+            <Route path='/users/:userId' element={<UserProfilePage />} />
             <Route path='*' element={<NotFound />} />
           </Route>
 

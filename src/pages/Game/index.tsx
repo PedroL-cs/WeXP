@@ -104,6 +104,7 @@ function GamePage() {
                     key={achievement.id}
                     achievement={achievement}
                     showSecret={showSecretAchievements}
+                    gameId={game.id}
                   />
                 ))}
               </div>
