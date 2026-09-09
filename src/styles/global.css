@@ -52,8 +52,9 @@ html {
 
 .layout {
   display: flex;
+  flex-direction: column;
+  align-items: center;
   margin-top: 60px;
   margin-left: 179px;
   min-height: calc(100vh - 64px);
-  justify-content: center;
 }
