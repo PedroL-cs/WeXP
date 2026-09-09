@@ -11,6 +11,7 @@ import { AuthProvider } from './contexts/AuthContext';
 import GuidePage from './pages/Guide';
 import CreateRevisionPage from './pages/CreateRevision';
 import CreateGuidePage from './pages/CreateGuide';
+import UserProfilePage from './pages/UserProfile';
 
 function App() {
   return (
@@ -21,6 +22,8 @@ function App() {
             <Route path='/' element={<HomePage />} />
             <Route path='/search' element={<SearchPage />} />
             <Route path='/games/:id' element={<GamePage />} />
+            <Route path='/profile' element={<UserProfilePage />} />
+            <Route path='/users/:userId' element={<UserProfilePage />} />
             <Route
               path='/achievements/:achievementId/guide'
               element={<GuidePage />}
