@@ -3,6 +3,7 @@ import styles from './styles.module.css';
 import { Link, useNavigate } from 'react-router';
 import Logo from '../../components/Logo';
 import { useAuth } from '../../contexts/AuthContext';
+import { login as loginRequest } from '../../api/auth';
 
 function LoginPage() {
   const navigate = useNavigate();
@@ -16,28 +17,13 @@ function LoginPage() {
   async function handleSubmit(event: FormEvent) {
     event.preventDefault();
 
-    const response = await fetch('/api/v1/auth/login', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({
-        username,
-        password,
-      }),
-    });
+    try {
+      const data = await loginRequest(username, password);
 
-    const data = await response.json();
-
-    console.log('Status:', response.status);
-    console.log('Resposta:', data);
-
-    if (response.ok) {
       login(data.token, rememberMe);
-
       navigate('/');
-    } else {
-      alert('Usuário ou senha inválidos.');
+    } catch (error) {
+      alert(error instanceof Error ? error.message : 'Erro ao fazer login.');
     }
   }
 

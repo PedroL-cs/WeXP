@@ -1,9 +1,13 @@
 import { type FormEvent, useState } from 'react';
-import { Link } from 'react-router';
+import { Link, useNavigate } from 'react-router';
 import styles from './styles.module.css';
 import Logo from '../../components/Logo';
+import { register as registerRequest } from '../../api/auth';
+import { useAuth } from '../../contexts/AuthContext';
 
 function RegisterPage() {
+  const navigate = useNavigate();
+  const { login: authenticate } = useAuth();
   const [username, setUsername] = useState('');
   const [email, setEmail] = useState('');
   const [login, setLogin] = useState('');
@@ -13,30 +17,19 @@ function RegisterPage() {
   async function handleSubmit(event: FormEvent) {
     event.preventDefault();
 
-    const response = await fetch('/api/v1/auth/register', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({
+    try {
+      const data = await registerRequest(
         username,
         email,
         login,
         password,
         birthDate,
-      }),
-    });
+      );
 
-    const data = await response.json();
-
-    console.log('Status:', response.status);
-    console.log('Resposta:', data);
-
-    if (response.ok) {
-      localStorage.setItem('token', data.token);
-      alert('Usuário criado com sucesso!');
-    } else {
-      alert('Erro ao criar usuário.');
+      authenticate(data.token, true);
+      navigate('/');
+    } catch (error) {
+      alert(error instanceof Error ? error.message : 'Erro ao criar usuário.');
     }
   }
 
