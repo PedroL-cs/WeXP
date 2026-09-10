@@ -70,17 +70,22 @@ function CreateRevisionPage() {
 
   return (
     <main className={styles.page}>
-      <header>
-        <p>Conquista {achievementId}</p>
-        <h1>Sugerir revisão</h1>
-        <span>Edite o guia e descreva brevemente o que foi alterado.</span>
+      <header className={styles.header}>
+        <p className={styles.eyebrow}>Conquista {achievementId}</p>
+        <h1 className={styles.title}>Sugerir revisão</h1>
+        <span className={styles.description}>
+          Edite o guia e descreva brevemente o que foi alterado.
+        </span>
       </header>
       {loading && <div className={styles.status}>Carregando guia...</div>}
       {!loading && !guide && <div className={styles.status}>{error}</div>}
       {!loading && guide && (
-        <form onSubmit={submit}>
-          <label htmlFor='summary'>Resumo da alteração</label>
+        <form className={styles.form} onSubmit={submit}>
+          <label className={styles.summaryLabel} htmlFor='summary'>
+            Resumo da alteração
+          </label>
           <input
+            className={styles.summaryInput}
             id='summary'
             value={summary}
             onChange={event => setSummary(event.target.value)}
@@ -94,9 +99,13 @@ function CreateRevisionPage() {
               content.current = value;
             }}
           />
-          <footer>
+          <footer className={styles.footer}>
             {error && <span className={styles.error}>{error}</span>}
-            <button type='submit' disabled={submitting}>
+            <button
+              className={styles.submitButton}
+              type='submit'
+              disabled={submitting}
+            >
               <CheckIcon size={20} />
               {submitting ? 'Enviando...' : 'Enviar revisão'}
             </button>

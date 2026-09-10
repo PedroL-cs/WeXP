@@ -3,33 +3,33 @@
   padding: 3.2rem 2.4rem 5rem;
 }
 
-.page header {
+.header {
   margin-top: 2.4rem;
 }
-.page header p {
+.eyebrow {
   color: var(--accent);
   font-size: 1.1rem;
   font-weight: 700;
   text-transform: uppercase;
 }
-.page h1 {
+.title {
   margin-top: 0.8rem;
   font-size: 2.8rem;
 }
-.page header span {
+.description {
   display: block;
   margin-top: 0.8rem;
   color: var(--muted);
 }
-form {
+.form {
   margin-top: 2.4rem;
 }
-label {
+.summaryLabel {
   display: block;
   margin-bottom: 0.7rem;
   font-weight: 700;
 }
-input {
+.summaryInput {
   width: 100%;
   margin-bottom: 1.6rem;
   padding: 1.1rem 1.2rem;
@@ -38,13 +38,13 @@ input {
   background: var(--input-bg);
   color: var(--text);
 }
-footer {
+.footer {
   display: flex;
   align-items: center;
   justify-content: space-between;
   gap: 2rem;
 }
-footer button {
+.submitButton {
   display: inline-flex;
   align-items: center;
   gap: 0.8rem;
