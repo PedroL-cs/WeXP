@@ -21,6 +21,8 @@ export async function getPublicUser(userId: string): Promise<PublicUser> {
   return response.json();
 }
 
+export const findUserById = getPublicUser;
+
 export async function updateCurrentUser(
   data: UpdateUserData,
   avatar?: File,

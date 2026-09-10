@@ -36,6 +36,13 @@
   letter-spacing: -0.03em;
 }
 
+.author {
+  display: block;
+  margin-top: 0.55rem;
+  color: var(--muted);
+  font-size: 0.9rem;
+}
+
 .outline {
   display: inline-flex;
   align-items: center;
@@ -210,6 +217,13 @@
 
 .list span {
   margin-top: 0.4rem;
+  color: var(--muted);
+  font-size: 0.78rem;
+}
+
+.list small {
+  display: block;
+  margin-top: 0.35rem;
   color: var(--muted);
   font-size: 0.78rem;
 }

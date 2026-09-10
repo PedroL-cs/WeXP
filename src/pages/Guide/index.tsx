@@ -6,6 +6,7 @@ import { useEffect, useState } from 'react';
 import { useNavigate, useParams, useSearchParams } from 'react-router';
 import { getAchievement } from '../../api/achievements';
 import { getAchievementGuide, getGuideRevisions } from '../../api/guides';
+import { findUserById } from '../../api/users';
 import GuideContent from '../../components/GuideContent';
 import GuideDiff from '../../components/GuideDiff';
 import { useAuth } from '../../contexts/AuthContext';
@@ -21,7 +22,11 @@ function GuidePage() {
   const [guide, setGuide] = useState<Guide | null>(null);
   const [achievementName, setAchievementName] = useState('');
   const [achievementIcon, setAchievementIcon] = useState('');
+  const [guideAuthorName, setGuideAuthorName] = useState('');
   const [revisions, setRevisions] = useState<GuideRevision[]>([]);
+  const [revisionAuthors, setRevisionAuthors] = useState<
+    Record<string, string>
+  >({});
   const [selected, setSelected] = useState<GuideRevision | null>(null);
   const [loading, setLoading] = useState(true);
   const [historyLoading, setHistoryLoading] = useState(false);
@@ -42,6 +47,16 @@ function GuidePage() {
         ]);
         setAchievementName(achievement.name);
         setAchievementIcon(achievement.icon_url ?? achievement.icon ?? '');
+        if (
+          currentGuide &&
+          'authorPublicId' in currentGuide &&
+          typeof currentGuide.authorPublicId === 'string'
+        ) {
+          const author = await findUserById(currentGuide.authorPublicId);
+          setGuideAuthorName(author.username);
+        } else {
+          setGuideAuthorName(currentGuide?.authorUsername ?? '');
+        }
         setGuide(currentGuide);
       } catch {
         setError('Não foi possível carregar o guia.');
@@ -60,6 +75,25 @@ function GuidePage() {
         const items = await getGuideRevisions(guide.id);
         setRevisions(items);
         setSelected(items[0] ?? null);
+
+        const authors = await Promise.all(
+          items.map(async revision => {
+            if (!revision.authorPublicId) return null;
+
+            try {
+              const author = await findUserById(revision.authorPublicId);
+              return [revision.publicId, author.username] as const;
+            } catch {
+              return null;
+            }
+          }),
+        );
+
+        const validAuthors = authors.filter(
+          (author): author is readonly [string, string] => author !== null,
+        );
+
+        setRevisionAuthors(Object.fromEntries(validAuthors));
       } catch {
         setError('Não foi possível carregar o histórico de revisões.');
       } finally {
@@ -82,6 +116,9 @@ function GuidePage() {
         <div>
           <p>{achievementName || 'Conquista'}</p>
           <h1>Guia da conquista</h1>
+          {guideAuthorName && (
+            <span className={styles.author}>Por {guideAuthorName}</span>
+          )}
         </div>
         {isAuthenticated && guide?.id && (
           <button
@@ -176,6 +213,11 @@ function GuidePage() {
                             ? 'Pendente'
                             : revision.status || 'Sem status'}
                         </span>
+                        {revisionAuthors[revision.publicId] && (
+                          <small>
+                            Por {revisionAuthors[revision.publicId]}
+                          </small>
+                        )}
                       </button>
                     ))}
                   </div>
