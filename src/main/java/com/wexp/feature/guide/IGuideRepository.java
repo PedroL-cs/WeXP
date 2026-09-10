@@ -6,6 +6,7 @@ import java.util.Optional;
 
 public interface IGuideRepository extends JpaRepository<GuideEntity, Long> {
     Optional<GuideEntity> findByPublicId(String publicId);
-    Optional<GuideEntity> findByAchievementPublicId(String achievementPublicId);
-    Boolean existsByAchievementPublicId(String achievementPublicId);
+    Boolean existsByPublicId(String publicId);
+    Optional<GuideEntity> findByAchievement_PublicId(String achievementPublicId);
+    Boolean existsByAchievement_PublicId(String achievementPublicId);
 }

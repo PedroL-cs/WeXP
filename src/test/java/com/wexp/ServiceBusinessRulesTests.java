@@ -98,7 +98,7 @@ class ServiceBusinessRulesTests {
     @Test
     void shouldRejectGuideCreationWhenGuideAlreadyExists() {
         GuideService guideService = new GuideService(guideRepository, achievementRepository);
-        when(guideRepository.existsByAchievementPublicId("achievement-1")).thenReturn(true);
+        when(guideRepository.existsByAchievement_PublicId("achievement-1")).thenReturn(true);
 
         ApiException exception = assertThrows(ApiException.class, () ->
                 guideService.createInitialGuide(

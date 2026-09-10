@@ -19,7 +19,7 @@ public class GuideService {
 
     @Transactional(readOnly = true)
     public GuideEntity getGuideByAchievementPublicId(String achievementPublicId) {
-        return guideRepository.findByAchievementPublicId(achievementPublicId)
+        return guideRepository.findByAchievement_PublicId(achievementPublicId)
                 .orElseThrow(() -> new ApiException(ExceptionResponse.GuideNotFound));
     }
 
@@ -31,7 +31,7 @@ public class GuideService {
 
     @Transactional
     public GuideEntity createInitialGuide(String achievementPublicId, CreateGuideRequestDto dto, UserEntity currentUser) {
-        if (guideRepository.existsByAchievementPublicId(achievementPublicId)) {
+        if (guideRepository.existsByAchievement_PublicId(achievementPublicId)) {
             throw new ApiException(ExceptionResponse.GuideAlreadyExists);
         }
 
