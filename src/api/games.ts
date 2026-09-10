@@ -1,3 +1,4 @@
+import { apiFetch } from './apiFetch';
 import type { Game } from '../types/Game';
 import type { SteamGame } from '../types/SteamGame';
 
@@ -7,7 +8,7 @@ export async function instantSearchGames(query: string): Promise<SteamGame[]> {
     page: '0',
   });
 
-  const response = await fetch(
+  const response = await apiFetch(
     `/api/v1/games/steam-games?${params.toString()}`,
   );
 
@@ -21,7 +22,7 @@ export async function instantSearchGames(query: string): Promise<SteamGame[]> {
 }
 
 export async function getGameIdBySteamAppId(steamAppId: number) {
-  const response = await fetch(`/api/v1/games/steam/${steamAppId}/id`);
+  const response = await apiFetch(`/api/v1/games/steam/${steamAppId}/id`);
 
   if (!response.ok) {
     throw new Error('Erro ao buscar ID do jogo');
@@ -36,7 +37,7 @@ export async function searchGames(query: string, page = 0) {
     page: page.toString(),
   });
 
-  const response = await fetch(`/api/v1/games?${params.toString()}`);
+  const response = await apiFetch(`/api/v1/games?${params.toString()}`);
 
   if (!response.ok) {
     throw new Error('Erro ao buscar jogos');
@@ -46,7 +47,7 @@ export async function searchGames(query: string, page = 0) {
 }
 
 export async function getGame(id: string): Promise<Game> {
-  const response = await fetch(`/api/v1/games/${id}`);
+  const response = await apiFetch(`/api/v1/games/${id}`);
 
   if (!response.ok) {
     throw new Error('Não foi possível carregar o jogo.');
@@ -56,7 +57,7 @@ export async function getGame(id: string): Promise<Game> {
 }
 
 export async function getFeaturedGames(): Promise<Game[]> {
-  const response = await fetch('/api/v1/games/featured');
+  const response = await apiFetch('/api/v1/games/featured');
 
   if (!response.ok) {
     throw new Error('Erro ao buscar jogos em destaque');
@@ -68,7 +69,7 @@ export async function getFeaturedGames(): Promise<Game[]> {
 }
 
 export async function getReleasedGames(): Promise<Game[]> {
-  const response = await fetch('/api/v1/games/released');
+  const response = await apiFetch('/api/v1/games/released');
 
   if (!response.ok) {
     throw new Error('Erro ao buscar jogos mais recentes');
