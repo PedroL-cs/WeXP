@@ -1,40 +1,43 @@
 .diff {
-  overflow-x: auto;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1px;
+  background: var(--border);
   border: 1px solid var(--border);
   border-radius: 8px;
-  background: var(--input-bg);
-  font-family: Consolas, monospace;
-  font-size: 1.3rem;
-  line-height: 1.7;
+  overflow: hidden;
 }
 
-.line {
-  display: grid;
-  grid-template-columns: 2.8rem minmax(max-content, 1fr);
-  min-width: max-content;
-  padding: 0 1rem 0 0;
-  white-space: pre;
+.panel {
+  min-width: 0;
+  background: var(--card);
 }
 
-.line > span:first-child {
-  text-align: center;
+.panelHeader {
+  padding: 12px 3rem;
+  border-bottom: 1px solid var(--border);
+  font-size: 1.5rem;
+  font-weight: 600;
 }
 
-.added {
-  background: rgba(0, 230, 118, 0.12);
-  color: #b6f4d0;
+.block {
+  border-left: 3px solid transparent;
 }
 
+/* Bloco alterado */
 .changed {
-  background: rgba(77, 163, 255, 0.15);
-  color: #c2e1ff;
+  border-left-color: #38bdf8;
+  background: rgba(56, 189, 248, 0.05);
 }
 
+/* Bloco removido */
 .removed {
-  background: rgba(255, 42, 95, 0.12);
-  color: #ffc0cf;
+  border-left-color: #ef4444;
+  background: rgba(239, 68, 68, 0.05);
 }
 
-.unchanged {
-  color: var(--muted);
+/* Bloco adicionado */
+.added {
+  border-left-color: #22c55e;
+  background: rgba(34, 197, 94, 0.05);
 }

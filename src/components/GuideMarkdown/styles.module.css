@@ -1,0 +1,152 @@
+.guideMarkdown {
+  width: 100%;
+  padding: 0 3rem;
+  color: var(--text);
+  font-size: 1.6rem;
+  line-height: 1.7;
+}
+
+/* HEADINGS */
+
+.guideMarkdown h1,
+.guideMarkdown h2,
+.guideMarkdown h3 {
+  color: var(--text);
+  line-height: 1.25;
+}
+
+.guideMarkdown h1 {
+  margin: 1.5rem 0 1rem;
+  font-size: 2.8rem;
+}
+
+.guideMarkdown h2 {
+  margin: 1.5rem 0 0.8rem;
+  font-size: 2.2rem;
+}
+
+.guideMarkdown h3 {
+  margin: 1.2rem 0 0.6rem;
+  font-size: 1.8rem;
+}
+
+/* PARÁGRAFOS, NEGRITO E ITÁLICO */
+
+.guideMarkdown p {
+  margin: 0 0 1.2rem;
+}
+
+.guideMarkdown strong {
+  color: var(--text);
+  font-weight: 700;
+}
+
+.guideMarkdown em {
+  color: var(--muted);
+}
+
+/* QUOTE */
+
+.guideMarkdown blockquote {
+  margin: 1.2rem 0;
+  padding: 0.8rem 1.2rem;
+  border-left: 3px solid var(--accent);
+  background: var(--bg-dark);
+  color: var(--muted);
+  border-radius: 0 6px 6px 0;
+}
+
+.guideMarkdown blockquote p {
+  margin: 0;
+}
+
+/* LISTAS E LINKS */
+
+.guideMarkdown ul,
+.guideMarkdown ol {
+  margin: 0.8rem 0 1.2rem;
+  padding-left: 2.5rem;
+}
+
+.guideMarkdown li {
+  margin: 0.3rem 0;
+}
+
+.guideMarkdown li::marker {
+  color: var(--accent);
+}
+
+.guideMarkdown a {
+  color: var(--accent);
+  text-decoration: none;
+}
+
+.guideMarkdown a:hover {
+  color: var(--accent-hover);
+  text-decoration: underline;
+}
+
+/* CÓDIGO */
+
+.guideMarkdown pre {
+  margin: 1.2rem 0;
+  padding: 1.4rem;
+  overflow-x: auto;
+  background: var(--bg-dark);
+  border: 1px solid rgba(255, 255, 255, 0.06);
+  border-radius: 8px;
+  color: var(--text);
+  font-family: 'Cascadia Code', 'Consolas', monospace;
+  font-size: 1.4rem;
+  line-height: 1.6;
+}
+
+.guideMarkdown :not(pre) > code {
+  padding: 0.2rem 0.5rem;
+  background: var(--card);
+  border-radius: 4px;
+  color: var(--accent);
+  font-family: 'Cascadia Code', 'Consolas', monospace;
+  font-size: 0.9em;
+}
+
+/* TABELAS */
+
+.guideMarkdown table {
+  width: 100%;
+  margin: 1.2rem 0;
+  border-collapse: collapse;
+  background: var(--card);
+  border-radius: 8px;
+  overflow: hidden;
+}
+
+.guideMarkdown th {
+  padding: 0.8rem 1rem;
+  background: var(--bg-dark);
+  color: var(--text);
+  font-weight: 600;
+  text-align: left;
+}
+
+.guideMarkdown td {
+  padding: 0.8rem 1rem;
+  color: var(--text);
+}
+
+.guideMarkdown th,
+.guideMarkdown td {
+  border: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.guideMarkdown tbody tr:hover {
+  background: rgba(255, 255, 255, 0.03);
+}
+
+/* LINHA HORIZONTAL */
+
+.guideMarkdown hr {
+  margin: 2rem 0;
+  border: 0;
+  border-top: 1px solid rgba(255, 255, 255, 0.1);
+}
