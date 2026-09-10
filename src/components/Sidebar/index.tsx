@@ -10,6 +10,7 @@ import {
 } from '@phosphor-icons/react';
 import styles from './styles.module.css';
 import { useAuth } from '../../contexts/AuthContext';
+import { Link } from 'react-router';
 
 function Sidebar() {
   const { isAuthenticated, logout } = useAuth();
@@ -17,54 +18,54 @@ function Sidebar() {
   return (
     <aside className={styles.sidebar}>
       <nav className={styles.navigation}>
-        <a href='#' className={styles['navigation-item']}>
+        <Link to='/' className={styles['navigation-item']}>
           <HouseIcon size={22} />
           <span>Home</span>
-        </a>
+        </Link>
 
-        <a href='#' className={styles['navigation-item']}>
+        <Link to='#' className={styles['navigation-item']}>
           <BookBookmarkIcon size={22} />
           <span>Biblioteca</span>
-        </a>
+        </Link>
 
         <div className={styles.divider}></div>
 
-        <a href='#' className={styles['navigation-item']}>
+        <Link to='#' className={styles['navigation-item']}>
           <GameControllerIcon size={22} />
           <span>Jogos</span>
-        </a>
+        </Link>
 
-        <a href='#' className={styles['navigation-item']}>
+        <Link to='#' className={styles['navigation-item']}>
           <TrophyIcon size={22} />
           <span>Conquistas</span>
-        </a>
+        </Link>
 
-        <a href='#' className={styles['navigation-item']}>
+        <Link to='#' className={styles['navigation-item']}>
           <BookOpenIcon size={22} />
           <span>Guias</span>
-        </a>
+        </Link>
 
         <div className={styles.divider}></div>
 
-        <a href='#' className={styles['navigation-item']}>
+        <Link to='#' className={styles['navigation-item']}>
           <GearSixIcon size={22} />
           <span>Opções</span>
-        </a>
+        </Link>
 
-        <a href='#' className={styles['navigation-item']}>
+        <Link to='#' className={styles['navigation-item']}>
           <InfoIcon size={22} />
           <span>Sobre</span>
-        </a>
+        </Link>
 
         {isAuthenticated && (
-          <a
-            href='#'
+          <Link
+            to='#'
             className={styles['navigation-item'] + ' ' + styles['logout-item']}
             onClick={logout}
           >
             <SignOutIcon size={22} />
             <span onClick={logout}>Sair</span>
-          </a>
+          </Link>
         )}
       </nav>
     </aside>
