@@ -1,4 +1,4 @@
-import { ArrowLeftIcon, CheckIcon } from '@phosphor-icons/react';
+import { CheckIcon } from '@phosphor-icons/react';
 import { useEffect, useRef, useState } from 'react';
 import { Navigate, useNavigate, useParams } from 'react-router';
 import { createGuideRevision, getAchievementGuide } from '../../api/guides';
@@ -70,14 +70,6 @@ function CreateRevisionPage() {
 
   return (
     <main className={styles.page}>
-      <button
-        type='button'
-        className={styles.back}
-        onClick={() => navigate(-1)}
-      >
-        <ArrowLeftIcon size={20} />
-        Voltar
-      </button>
       <header>
         <p>Conquista {achievementId}</p>
         <h1>Sugerir revisão</h1>

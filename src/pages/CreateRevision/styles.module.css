@@ -2,15 +2,7 @@
   width: min(1100px, 100%);
   padding: 3.2rem 2.4rem 5rem;
 }
-.back {
-  display: inline-flex;
-  align-items: center;
-  gap: 0.8rem;
-  border: 0;
-  background: transparent;
-  color: var(--muted);
-  cursor: pointer;
-}
+
 .page header {
   margin-top: 2.4rem;
 }

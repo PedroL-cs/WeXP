@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from 'react';
-import { ArrowLeftIcon, CheckIcon } from '@phosphor-icons/react';
+import { CheckIcon } from '@phosphor-icons/react';
 import { Navigate, useNavigate, useParams } from 'react-router';
 
 import { createAchievementGuide } from '../../api/guides';
@@ -85,15 +85,6 @@ function CreateGuidePage() {
   return (
     <main className={styles.page}>
       <div className={styles.header}>
-        <button
-          type='button'
-          className={styles.backButton}
-          onClick={() => navigate(-1)}
-        >
-          <ArrowLeftIcon size={20} />
-          Voltar
-        </button>
-
         <div>
           <p className={styles.eyebrow}>Criar guia</p>
 

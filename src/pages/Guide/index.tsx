@@ -1,5 +1,4 @@
 import {
-  ArrowLeftIcon,
   ClockCounterClockwiseIcon,
   NotePencilIcon,
 } from '@phosphor-icons/react';
@@ -70,14 +69,6 @@ function GuidePage() {
 
   return (
     <main className={styles.page}>
-      <button
-        type='button'
-        className={styles.back}
-        onClick={() => navigate(-1)}
-      >
-        <ArrowLeftIcon size={20} />
-        Voltar
-      </button>
       <header className={styles.header}>
         <div>
           <p>{achievementName || 'Conquista'}</p>
