@@ -17,7 +17,7 @@ Escreva aqui o passo a passo para desbloquear esta conquista.
 function CreateGuidePage() {
   const navigate = useNavigate();
   const { isAuthenticated } = useAuth();
-  const { achievementId } = useParams();
+  const { gameId, achievementId } = useParams();
 
   const markdownRef = useRef(initialMarkdown);
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -68,7 +68,7 @@ function CreateGuidePage() {
 
       await createAchievementGuide(achievementId, markdownRef.current);
       setSuccess(true);
-      navigate(`/achievements/${achievementId}/guide`);
+      navigate(`/games/${gameId}/achievements/${achievementId}/guide`);
     } catch (requestError) {
       console.error('Erro ao criar guia:', requestError);
       setError(

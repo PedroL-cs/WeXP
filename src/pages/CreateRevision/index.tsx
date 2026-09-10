@@ -10,7 +10,7 @@ import styles from './styles.module.css';
 function CreateRevisionPage() {
   const navigate = useNavigate();
   const { isAuthenticated } = useAuth();
-  const { achievementId } = useParams();
+  const { gameId, achievementId } = useParams();
   const content = useRef('');
   const [guide, setGuide] = useState<Guide | null>(null);
   const [summary, setSummary] = useState('');
@@ -58,7 +58,9 @@ function CreateRevisionPage() {
       setError('');
       setSubmitting(true);
       await createGuideRevision(guide.id, content.current, summary.trim());
-      navigate(`/achievements/${achievementId}/guide?tab=revisions`);
+      navigate(
+        `/games/${gameId}/achievements/${achievementId}/guide?tab=revisions`,
+      );
     } catch {
       setError('Não foi possível enviar a revisão. Tente novamente.');
     } finally {

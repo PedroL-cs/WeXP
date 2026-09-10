@@ -88,7 +88,9 @@ function GuidePage() {
             type='button'
             className={styles.outline}
             onClick={() =>
-              navigate(`/achievements/${achievementId}/guide/revise`)
+              navigate(
+                `/games/${gameId}/achievements/${achievementId}/guide/revise`,
+              )
             }
           >
             <NotePencilIcon size={20} />
