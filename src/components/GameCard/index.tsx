@@ -21,7 +21,7 @@ function GameCard({ game }: GameCardProps) {
         <h2>{game.name}</h2>
 
         <p className={styles.achievementsInfo}>
-          <span>{game.achievements.total}</span>
+          <span>{game.achievements.length}</span>
           <MedalIcon size={13} weight='fill' />
         </p>
       </div>

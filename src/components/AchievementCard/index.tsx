@@ -47,6 +47,7 @@ function AchievementCard({
       className={`${styles.achievementCard} ${
         isHidden ? styles.hidden : ''
       } ${showSecret ? styles.revealed : ''}`}
+      onClick={handleClick}
     >
       <div className={styles.iconContainer}>
         <span className={styles.hiddenIcon}>?</span>
