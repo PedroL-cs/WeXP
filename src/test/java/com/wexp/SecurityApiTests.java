@@ -7,6 +7,7 @@ import org.springframework.boot.webmvc.test.autoconfigure.AutoConfigureMockMvc;
 import org.springframework.test.web.servlet.MockMvc;
 
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @SpringBootTest
@@ -23,8 +24,16 @@ class SecurityApiTests {
     }
 
     @Test
-    void shouldRequireAuthenticationForGuideRoutes() throws Exception {
+    void shouldAllowReadingGuidesAndRequireAuthenticationForChanges() throws Exception {
         mockMvc.perform(get("/api/v1/guides/guide-1"))
+                .andExpect(status().isNotFound());
+        mockMvc.perform(get("/api/v1/achievements/ach-1/guide"))
+                .andExpect(status().isNotFound());
+        mockMvc.perform(get("/api/v1/guides/guide-1/revisions"))
+                .andExpect(status().isNotFound());
+        mockMvc.perform(post("/api/v1/guides/guide-1/revisions")
+                        .contentType("application/json")
+                        .content("{\"content\":\"conteudo\",\"changeSummary\":\"resumo\"}"))
                 .andExpect(status().isUnauthorized());
     }
 }

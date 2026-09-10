@@ -16,6 +16,7 @@ public class GuideRevisionResponse {
     private String guidePublicId;
     private String authorPublicId;
     private String content;
+    private String changeSummary;
     private RevisionStatus status;
     private LocalDateTime createdAt;
 
@@ -24,6 +25,7 @@ public class GuideRevisionResponse {
         this.guidePublicId = revision.getGuide().getPublicId();
         this.authorPublicId = revision.getAuthor().getPublicId();
         this.content = revision.getContent();
+        this.changeSummary = revision.getChangeSummary();
         this.status = revision.getStatus();
         this.createdAt = revision.getCreatedAt();
     }

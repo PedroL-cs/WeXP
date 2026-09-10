@@ -11,6 +11,8 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.List;
+
 @Service
 @RequiredArgsConstructor
 public class GuideRevisionService {
@@ -32,5 +34,17 @@ public class GuideRevisionService {
 
         revision = revisionRepository.save(revision);
         return new GuideRevisionResponse(revision);
+    }
+
+    @Transactional(readOnly = true)
+    public List<GuideRevisionResponse> getRevisions(String guidePublicId) {
+        if (!guideRepository.existsByPublicId(guidePublicId)) {
+            throw new ApiException(ExceptionResponse.GuideNotFound);
+        }
+
+        return revisionRepository.findAllByGuide_PublicIdOrderByCreatedAtDesc(guidePublicId)
+                .stream()
+                .map(GuideRevisionResponse::new)
+                .toList();
     }
 }

@@ -15,6 +15,8 @@ import org.springframework.http.HttpStatus;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
+
 @RestController
 @RequestMapping("/api/v1/guides")
 @Tag(name = "Guide Revision", description = "Revisões de guias")
@@ -29,6 +31,11 @@ import org.springframework.web.bind.annotation.*;
 @RequiredArgsConstructor
 public class GuideRevisionController {
     private final GuideRevisionService revisionService;
+
+    @GetMapping("/{guideId}/revisions")
+    public List<GuideRevisionResponse> getRevisions(@PathVariable String guideId) {
+        return revisionService.getRevisions(guideId);
+    }
 
     @PostMapping("/{guideId}/revisions")
     @SecurityRequirement(name = "bearerAuth")

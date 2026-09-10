@@ -37,14 +37,16 @@ public class SecurityConfig {
                         .requestMatchers(HttpMethod.GET, "/api/v1/games/**").permitAll()
                         .requestMatchers(HttpMethod.GET, "/api/v1/categories/**").permitAll()
                         .requestMatchers(HttpMethod.GET, "/api/v1/genres/**").permitAll()
-                        .requestMatchers("/api/v1/achievements/*/guide/**").authenticated()
+                        .requestMatchers(HttpMethod.GET, "/api/v1/achievements/*/guide").permitAll()
                         .requestMatchers(HttpMethod.GET, "/api/v1/achievements/**").permitAll()
                         .requestMatchers(HttpMethod.GET, "/api/v1/images/**").permitAll()
                         .requestMatchers("/swagger-ui/**", "/swagger-ui.html", "/v3/api-docs/**").permitAll()
                         // Rotas protegidas
                         .requestMatchers("/api/v1/users/me").authenticated()
                         .requestMatchers(HttpMethod.GET, "/api/v1/users/*").permitAll()
-                        .requestMatchers("/api/v1/guides/**").authenticated()
+                        .requestMatchers(HttpMethod.GET, "/api/v1/guides/**").permitAll()
+                        .requestMatchers(HttpMethod.POST, "/api/v1/achievements/*/guide").authenticated()
+                        .requestMatchers(HttpMethod.POST, "/api/v1/guides/**").authenticated()
                         // Todas as outras rotas
                         .anyRequest().authenticated()
                 )
