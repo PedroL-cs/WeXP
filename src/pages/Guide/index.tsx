@@ -20,6 +20,7 @@ function GuidePage() {
   const [params, setParams] = useSearchParams();
   const [guide, setGuide] = useState<Guide | null>(null);
   const [achievementName, setAchievementName] = useState('');
+  const [achievementIcon, setAchievementIcon] = useState('');
   const [revisions, setRevisions] = useState<GuideRevision[]>([]);
   const [selected, setSelected] = useState<GuideRevision | null>(null);
   const [loading, setLoading] = useState(true);
@@ -40,6 +41,7 @@ function GuidePage() {
           getAchievementGuide(achievementId),
         ]);
         setAchievementName(achievement.name);
+        setAchievementIcon(achievement.icon_url ?? achievement.icon ?? '');
         setGuide(currentGuide);
       } catch {
         setError('Não foi possível carregar o guia.');
@@ -70,6 +72,13 @@ function GuidePage() {
   return (
     <main className={styles.page}>
       <header className={styles.header}>
+        {achievementIcon && (
+          <img
+            className={styles.achievementIcon}
+            src={achievementIcon}
+            alt={`Ícone da conquista ${achievementName}`}
+          />
+        )}
         <div>
           <p>{achievementName || 'Conquista'}</p>
           <h1>Guia da conquista</h1>
