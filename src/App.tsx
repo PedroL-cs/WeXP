@@ -27,7 +27,7 @@ function App() {
               element={<GuidePage />}
             />
             <Route
-              path='/games/:gameId/achievements/:achievementId/revise'
+              path='/games/:gameId/achievements/:achievementId/guide/revise'
               element={<CreateRevisionPage />}
             />
             <Route
