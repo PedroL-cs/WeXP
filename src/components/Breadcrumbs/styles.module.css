@@ -3,15 +3,10 @@
   align-items: center;
   width: min(1280px, 100%);
   min-height: 4rem;
-  padding: 1.2rem 2.4rem;
+  padding: 1.2rem 0;
   color: var(--text);
   font-size: 1.2rem;
   overflow-x: auto;
-
-  /* position: absolute; */
-  /* top: 0;
-  left: 50%; */
-  /* transform: translateX(-50%); */
   z-index: 2;
 
   text-shadow: 0 2px 4px rgba(0, 0, 0, 0.8);
