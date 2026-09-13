@@ -32,6 +32,17 @@ public class SecurityConfig {
                         .accessDeniedHandler(customAccessDeniedHandler)
                 )
                 .authorizeHttpRequests(auth -> auth
+                        // Frontend React
+                        .requestMatchers(
+                                "/",
+                                "/index.html",
+                                "/assets/**",
+                                "/favicon.ico",
+                                "/search",
+                                "/games/**",
+                                "/profile",
+                                "/users/**"
+                        ).permitAll()
                         // Rotas públicas
                         .requestMatchers("/api/v1/auth/**").permitAll()
                         .requestMatchers(HttpMethod.GET, "/api/v1/games/**").permitAll()
