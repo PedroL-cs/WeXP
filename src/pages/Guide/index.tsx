@@ -23,9 +23,10 @@ function GuidePage() {
   const [achievementName, setAchievementName] = useState('');
   const [achievementIcon, setAchievementIcon] = useState('');
   const [guideAuthorName, setGuideAuthorName] = useState('');
+  const [guideAuthorAvatar, setGuideAuthorAvatar] = useState('');
   const [revisions, setRevisions] = useState<GuideRevision[]>([]);
   const [revisionAuthors, setRevisionAuthors] = useState<
-    Record<string, string>
+    Record<string, { username: string; avatar?: string }>
   >({});
   const [selected, setSelected] = useState<GuideRevision | null>(null);
   const [loading, setLoading] = useState(true);
@@ -47,16 +48,7 @@ function GuidePage() {
         ]);
         setAchievementName(achievement.name);
         setAchievementIcon(achievement.icon_url ?? achievement.icon ?? '');
-        if (
-          currentGuide &&
-          'authorPublicId' in currentGuide &&
-          typeof currentGuide.authorPublicId === 'string'
-        ) {
-          const author = await findUserById(currentGuide.authorPublicId);
-          setGuideAuthorName(author.username);
-        } else {
-          setGuideAuthorName(currentGuide?.authorUsername ?? '');
-        }
+
         setGuide(currentGuide);
       } catch {
         setError('Não foi possível carregar o guia.');
@@ -82,7 +74,14 @@ function GuidePage() {
 
             try {
               const author = await findUserById(revision.authorPublicId);
-              return [revision.publicId, author.username] as const;
+
+              return [
+                revision.publicId,
+                {
+                  username: author.username,
+                  avatar: author.avatar,
+                },
+              ] as [string, { username: string; avatar?: string }];
             } catch {
               return null;
             }
@@ -90,7 +89,8 @@ function GuidePage() {
         );
 
         const validAuthors = authors.filter(
-          (author): author is readonly [string, string] => author !== null,
+          (author): author is [string, { username: string; avatar?: string }] =>
+            author !== null,
         );
 
         setRevisionAuthors(Object.fromEntries(validAuthors));
@@ -163,24 +163,37 @@ function GuidePage() {
       )}
       {!loading && !error && guide?.content && (
         <>
-          <div className={styles.tabs}>
-            <button
-              type='button'
-              className={tab === 'guide' ? styles.active : ''}
-              onClick={() => setParams({})}
-            >
-              Guia atual
-            </button>
-            <button
-              type='button'
-              className={tab === 'revisions' ? styles.active : ''}
-              onClick={() => setParams({ tab: 'revisions' })}
-            >
-              <ClockCounterClockwiseIcon size={18} />
-              Revisões
-            </button>
-          </div>
-          {tab === 'guide' && <GuideContent markdown={guide.content} />}
+          {isAuthenticated && (
+            <div className={styles.tabs}>
+              <button
+                type='button'
+                className={tab === 'guide' ? styles.active : ''}
+                onClick={() => setParams({})}
+              >
+                Guia atual
+              </button>
+              <button
+                type='button'
+                className={tab === 'revisions' ? styles.active : ''}
+                onClick={() => setParams({ tab: 'revisions' })}
+              >
+                <ClockCounterClockwiseIcon size={18} />
+                Revisões
+              </button>
+            </div>
+          )}
+          {tab === 'guide' && (
+            <>
+              {guide.author && (
+                <div className={styles.guideAuthor}>
+                  <span>Criado por</span>
+                  <strong>{guide.author}</strong>
+                </div>
+              )}
+
+              <GuideContent markdown={guide.content} />
+            </>
+          )}
           {tab === 'revisions' && (
             <section className={styles.history}>
               {historyLoading && (
@@ -194,32 +207,44 @@ function GuidePage() {
               {revisions.length > 0 && (
                 <div className={styles.grid}>
                   <div className={styles.list}>
-                    {revisions.map(revision => (
-                      <button
-                        type='button'
-                        key={revision.publicId}
-                        className={
-                          selected?.publicId === revision.publicId
-                            ? styles.selected
-                            : ''
-                        }
-                        onClick={() => setSelected(revision)}
-                      >
-                        <strong>
-                          {revision.changeSummary || 'Alteração sugerida'}
-                        </strong>
-                        <span>
-                          {revision.status === 'PENDING'
-                            ? 'Pendente'
-                            : revision.status || 'Sem status'}
-                        </span>
-                        {revisionAuthors[revision.publicId] && (
-                          <small>
-                            Por {revisionAuthors[revision.publicId]}
-                          </small>
-                        )}
-                      </button>
-                    ))}
+                    {revisions.map(revision => {
+                      const revisionAuthor = revisionAuthors[revision.publicId];
+
+                      return (
+                        <button
+                          type='button'
+                          key={revision.publicId}
+                          className={
+                            selected?.publicId === revision.publicId
+                              ? styles.selected
+                              : ''
+                          }
+                          onClick={() => setSelected(revision)}
+                        >
+                          <strong>
+                            {revision.changeSummary || 'Alteração sugerida'}
+                          </strong>
+                          <span>
+                            {revision.status === 'PENDING'
+                              ? 'Pendente'
+                              : revision.status || 'Sem status'}
+                          </span>
+                          {revisionAuthor && (
+                            <div className={styles.authorRow}>
+                              <span>Por {revisionAuthor.username}</span>
+
+                              {revisionAuthor.avatar && (
+                                <img
+                                  src={revisionAuthor.avatar}
+                                  alt={`Foto de ${revisionAuthor.username}`}
+                                  className={styles.revisionAvatar}
+                                />
+                              )}
+                            </div>
+                          )}
+                        </button>
+                      );
+                    })}
                   </div>
                   {selected && (
                     <div>
@@ -230,6 +255,15 @@ function GuidePage() {
                       <GuideDiff
                         previous={guide.content}
                         current={selected.content}
+                        previousAuthor={{
+                          username: guide.author || 'Autor original',
+                          avatar: guideAuthorAvatar,
+                        }}
+                        currentAuthor={
+                          revisionAuthors[selected.publicId] ?? {
+                            username: 'Autor da revisão',
+                          }
+                        }
                       />
                     </div>
                   )}

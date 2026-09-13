@@ -3,7 +3,7 @@ export type Guide = {
   content: string;
   version?: number;
   achievementId?: string;
-  authorUsername?: string;
+  author?: string;
   createdAt?: string;
   updatedAt?: string;
 };

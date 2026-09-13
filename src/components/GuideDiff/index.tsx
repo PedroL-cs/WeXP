@@ -2,21 +2,41 @@ import React from 'react';
 import GuideMarkdown from '../GuideMarkdown';
 import styles from './styles.module.css';
 
+type AuthorInfo = {
+  username: string;
+  avatar?: string;
+};
+
 type GuideDiffProps = {
   previous: string;
   current: string;
+  previousAuthor: AuthorInfo;
+  currentAuthor: AuthorInfo;
 };
 
-function GuideDiff({ previous, current }: GuideDiffProps) {
+function GuideDiff({
+  previous,
+  current,
+  previousAuthor,
+  currentAuthor,
+}: GuideDiffProps) {
   const blocks = getBlockDiff(previous, current);
-
-  console.log('blocks', blocks);
 
   return (
     <div className={styles.diff}>
       <div className={styles.panel}>
         <header className={styles.panelHeader}>
-          <span>Versão anterior</span>
+          <div className={styles.panelTitle}>Versão anterior</div>
+          <div className={styles.panelAuthor}>
+            {previousAuthor.avatar && (
+              <img
+                src={previousAuthor.avatar}
+                alt={`Foto de ${previousAuthor.username}`}
+                className={styles.headerAvatar}
+              />
+            )}
+            <span>{previousAuthor.username}</span>
+          </div>
         </header>
 
         {blocks.map((block, index) => (
@@ -35,7 +55,17 @@ function GuideDiff({ previous, current }: GuideDiffProps) {
 
       <div className={styles.panel}>
         <header className={styles.panelHeader}>
-          <span>Versão atual</span>
+          <div className={styles.panelTitle}>Versão atual</div>
+          <div className={styles.panelAuthor}>
+            {currentAuthor.avatar && (
+              <img
+                src={currentAuthor.avatar}
+                alt={`Foto de ${currentAuthor.username}`}
+                className={styles.headerAvatar}
+              />
+            )}
+            <span>{currentAuthor.username}</span>
+          </div>
         </header>
 
         {blocks.map((block, index) => (

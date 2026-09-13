@@ -14,10 +14,36 @@
 }
 
 .panelHeader {
-  padding: 12px 3rem;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  padding: 12px 1.2rem;
   border-bottom: 1px solid var(--border);
+}
+
+.panelTitle {
   font-size: 1.5rem;
   font-weight: 600;
+}
+
+.panelAuthor {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.6rem;
+  color: var(--muted);
+  font-size: 1.2rem;
+  text-align: center;
+}
+
+.headerAvatar {
+  width: 2rem;
+  height: 2rem;
+  border: 1px solid var(--border);
+  border-radius: 50%;
+  object-fit: cover;
+  flex-shrink: 0;
 }
 
 .block {
