@@ -2,6 +2,7 @@ import { type FormEvent, useState } from 'react';
 import { Link, useNavigate } from 'react-router';
 import styles from './styles.module.css';
 import Logo from '../../components/Logo';
+import AuthShowcase from '../../components/AuthShowcase';
 import { register as registerRequest } from '../../api/auth';
 import { useAuth } from '../../contexts/AuthContext';
 
@@ -35,20 +36,15 @@ function RegisterPage() {
 
   return (
     <div className={styles.registerPage}>
-      <section className={styles.showcase}>
-        <div className={styles.showcaseOverlay}>
-          <h1>Comece sua jornada.</h1>
-
-          <p>
-            Crie sua conta e descubra jogos, conquistas e guias em um só lugar.
-          </p>
-        </div>
-      </section>
+      <AuthShowcase
+        title='Comece sua jornada.'
+        description='Crie sua conta e descubra jogos, conquistas e guias em um só lugar.'
+      />
 
       <section className={styles.registerSection}>
         <div className={styles.registerContainer}>
           <div className={styles.logoContainer}>
-            <Logo size='lg' />
+            <Logo size='lg' onClick={() => navigate('/')} />
           </div>
 
           <h2>Crie sua conta</h2>
@@ -57,13 +53,13 @@ function RegisterPage() {
 
           <form onSubmit={handleSubmit} className={styles.form}>
             <div className={styles.inputGroup}>
-              <label htmlFor='username'>Usuário</label>
+              <label htmlFor='username'>Nome de exibição</label>
 
               <input
                 id='username'
                 type='text'
                 value={username}
-                placeholder='Digite o nome que será exibido no site'
+                placeholder='Como você aparece no site'
                 onChange={event => setUsername(event.target.value)}
               />
             </div>
@@ -81,13 +77,13 @@ function RegisterPage() {
             </div>
 
             <div className={styles.inputGroup}>
-              <label htmlFor='fullName'>Nome completo</label>
+              <label htmlFor='login'>Usuário</label>
 
               <input
                 id='login'
                 type='text'
                 value={login}
-                placeholder='Digite um nome de usuário'
+                placeholder='Usado para entrar na sua conta'
                 onChange={event => setLogin(event.target.value)}
               />
             </div>
@@ -111,7 +107,8 @@ function RegisterPage() {
                 <input
                   id='birthDate'
                   type='text'
-                  placeholder='dd/MM/yyyy'
+                  placeholder='dd/mm/aaaa'
+                  inputMode='numeric'
                   value={birthDate}
                   onChange={event => setBirthDate(event.target.value)}
                 />

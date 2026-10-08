@@ -90,7 +90,7 @@ function Header({
                   {user?.avatar ? (
                     <img src={user.avatar} alt={`Foto de ${user.username}`} />
                   ) : (
-                    user?.username?.charAt(0).toUpperCase() ?? 'P'
+                    (user?.username?.charAt(0).toUpperCase() ?? 'P')
                   )}
                 </div>
               </button>
@@ -98,7 +98,7 @@ function Header({
           ) : (
             <div className={styles['auth-buttons']}>
               <Link to='/login' className={styles['login-link']}>
-                Logar
+                Entrar
               </Link>
 
               <Link to='/register' className={styles['register-link']}>

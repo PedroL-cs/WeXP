@@ -1,9 +1,18 @@
 import {
+  CameraIcon,
   CheckIcon,
+  EnvelopeSimpleIcon,
   PencilSimpleIcon,
+  QuotesIcon,
   UserCircleIcon,
 } from '@phosphor-icons/react';
-import { type ChangeEvent, type FormEvent, useEffect, useState } from 'react';
+import {
+  type ChangeEvent,
+  type FormEvent,
+  useEffect,
+  useMemo,
+  useState,
+} from 'react';
 import { useParams } from 'react-router';
 import {
   getCurrentUser,
@@ -75,6 +84,18 @@ function UserProfilePage() {
     load();
   }, [isOwnProfile, userId]);
 
+  // Prévia local da nova foto antes de salvar
+  const avatarPreview = useMemo(
+    () => (avatar ? URL.createObjectURL(avatar) : undefined),
+    [avatar],
+  );
+
+  useEffect(() => {
+    return () => {
+      if (avatarPreview) URL.revokeObjectURL(avatarPreview);
+    };
+  }, [avatarPreview]);
+
   function chooseAvatar(event: ChangeEvent<HTMLInputElement>) {
     setAvatar(event.target.files?.[0]);
   }
@@ -129,15 +150,17 @@ function UserProfilePage() {
   return (
     <main className={styles.page}>
       <section className={styles.card}>
+        <div className={styles.banner} aria-hidden='true' />
+
         <div className={styles.hero}>
           <div className={styles.avatar}>
-            {user.avatar ? (
-              <img src={user.avatar} alt='' />
+            {avatarPreview || user.avatar ? (
+              <img src={avatarPreview ?? user.avatar} alt='' />
             ) : (
-              <UserCircleIcon size={96} />
+              <UserCircleIcon size={96} weight='thin' />
             )}
           </div>
-          <div>
+          <div className={styles.identity}>
             <p className={styles.eyebrow}>
               {isOwnProfile ? 'Meu perfil' : 'Perfil de usuário'}
             </p>
@@ -165,13 +188,16 @@ function UserProfilePage() {
         {isOwnProfile && editing ? (
           <form className={styles.form} onSubmit={save}>
             <label className={styles.avatarPicker}>
-              <span>Foto de perfil</span>
+              <CameraIcon size={22} />
+              <span>
+                Foto de perfil
+                <small>
+                  {avatar
+                    ? avatar.name
+                    : 'Clique para enviar uma imagem e substituir o avatar.'}
+                </small>
+              </span>
               <input type='file' accept='image/*' onChange={chooseAvatar} />
-              <small>
-                {avatar
-                  ? avatar.name
-                  : 'Envie uma imagem para substituir o avatar.'}
-              </small>
             </label>
             <label>
               Nome de exibição
@@ -209,7 +235,10 @@ function UserProfilePage() {
               <button
                 type='button'
                 className={styles.cancel}
-                onClick={() => setEditing(false)}
+                onClick={() => {
+                  setEditing(false);
+                  setAvatar(undefined);
+                }}
               >
                 Cancelar
               </button>
@@ -221,15 +250,19 @@ function UserProfilePage() {
           </form>
         ) : (
           <div className={styles.details}>
-            <div>
-              <h2>Sobre</h2>
-              <p>
+            <div className={styles.detail}>
+              <h2>
+                <QuotesIcon size={16} weight='fill' /> Sobre
+              </h2>
+              <p className={user.bio ? '' : styles.placeholder}>
                 {user.bio || 'Este usuário ainda não escreveu uma biografia.'}
               </p>
             </div>
             {isOwnProfile && (
-              <div>
-                <h2>E-mail</h2>
+              <div className={styles.detail}>
+                <h2>
+                  <EnvelopeSimpleIcon size={16} weight='fill' /> E-mail
+                </h2>
                 <p>{(user as CurrentUser).email}</p>
               </div>
             )}

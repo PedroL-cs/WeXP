@@ -1,4 +1,5 @@
 import { useNavigate } from 'react-router';
+import { CaretRightIcon, LockSimpleIcon } from '@phosphor-icons/react';
 import type { Achievement } from '../../types/Achievement';
 import styles from './styles.module.css';
 
@@ -6,12 +7,14 @@ type AchievementCardProps = {
   achievement: Achievement;
   showSecret: boolean;
   gameId: string;
+  style?: React.CSSProperties;
 };
 
 function AchievementCard({
   achievement,
   showSecret,
   gameId,
+  style,
 }: AchievementCardProps) {
   const navigate = useNavigate();
 
@@ -21,15 +24,32 @@ function AchievementCard({
     navigate(`/games/${gameId}/achievements/${achievement.id}/guide`);
   }
 
+  const cardProps = {
+    onClick: handleClick,
+    role: 'link',
+    tabIndex: 0,
+    style,
+    onKeyDown: (event: React.KeyboardEvent) => {
+      if (event.key === 'Enter') handleClick();
+    },
+  };
+
+  const arrow = (
+    <span className={styles.arrow} aria-hidden='true'>
+      <CaretRightIcon size={18} weight='bold' />
+    </span>
+  );
+
   // Se a conquista NÃO for secreta desde o início, usamos a renderização padrão
   if (!achievement.hidden) {
     return (
-      <div className={styles.achievementCard} onClick={handleClick}>
+      <div className={styles.achievementCard} {...cardProps}>
         <div className={styles.iconContainer}>
           <img
             className={styles.achievementIcon}
             src={achievement.icon}
-            alt={achievement.name}
+            alt=''
+            loading='lazy'
           />
         </div>
 
@@ -37,6 +57,8 @@ function AchievementCard({
           <h3>{achievement.name}</h3>
           {achievement.description && <p>{achievement.description}</p>}
         </div>
+
+        {arrow}
       </div>
     );
   }
@@ -44,31 +66,40 @@ function AchievementCard({
   // Para conquistas secretas, mantemos AMBOS os elementos renderizados no DOM
   return (
     <div
-      className={`${styles.achievementCard} ${
+      className={`${styles.achievementCard} ${styles.secret} ${
         isHidden ? styles.hidden : ''
       } ${showSecret ? styles.revealed : ''}`}
-      onClick={handleClick}
+      aria-label={isHidden ? 'Conquista secreta' : achievement.name}
+      {...cardProps}
     >
       <div className={styles.iconContainer}>
-        <span className={styles.hiddenIcon}>?</span>
         <img
           className={styles.revealedIcon}
           src={achievement.icon}
-          alt={achievement.name}
+          alt=''
+          loading='lazy'
         />
+        <span className={styles.hiddenIcon}>
+          <LockSimpleIcon size={22} weight='fill' />
+        </span>
       </div>
 
       <div className={styles.achievementInfo}>
         <div className={styles.hiddenInfo}>
           <h3>Conquista secreta</h3>
-          <p>Passe o mouse em cima para revelar detalhes</p>
+          <p>Passe o mouse para revelar os detalhes</p>
         </div>
 
         <div className={styles.revealedInfo}>
-          <h3>{achievement.name}</h3>
+          <h3>
+            {achievement.name}
+            <span className={styles.secretBadge}>Secreta</span>
+          </h3>
           {achievement.description && <p>{achievement.description}</p>}
         </div>
       </div>
+
+      {arrow}
     </div>
   );
 }

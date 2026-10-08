@@ -1,8 +1,55 @@
 .editor {
-  margin: 30px 0;
+  margin: 1.6rem 0 2rem;
   width: 100%;
   max-width: 1100px;
   min-width: 0;
+}
+
+/* ESCALA
+   O MDXEditor dimensiona tudo em rem, mas o html usa 62.5% (1rem = 10px).
+   Reescalamos as variáveis da lib (x1.6) para o tamanho pretendido, e
+   trocamos a fonte, já que a lib também define uma --font-body própria. */
+
+.editor :global(.mdxeditor),
+:global(.mdxeditor-popup-container.mdxeditor-popup-container) {
+  --font-body: 'Manrope', system-ui, sans-serif;
+  --spacing-0_5: 0.2rem;
+  --spacing-1: 0.4rem;
+  --spacing-10: 4rem;
+  --spacing-11: 4.4rem;
+  --spacing-12: 4.8rem;
+  --spacing-14: 5.6rem;
+  --spacing-16: 6.4rem;
+  --spacing-1_5: 0.6rem;
+  --spacing-2: 0.8rem;
+  --spacing-20: 8rem;
+  --spacing-24: 9.6rem;
+  --spacing-28: 11.2rem;
+  --spacing-2_5: 1rem;
+  --spacing-3: 1.2rem;
+  --spacing-32: 12.8rem;
+  --spacing-36: 14.4rem;
+  --spacing-3_5: 1.4rem;
+  --spacing-4: 1.6rem;
+  --spacing-40: 16rem;
+  --spacing-44: 17.6rem;
+  --spacing-48: 19.2rem;
+  --spacing-5: 2rem;
+  --spacing-52: 20.8rem;
+  --spacing-56: 22.4rem;
+  --spacing-6: 2.4rem;
+  --spacing-60: 24rem;
+  --spacing-64: 25.6rem;
+  --spacing-7: 2.8rem;
+  --spacing-72: 28.8rem;
+  --spacing-8: 3.2rem;
+  --spacing-80: 32rem;
+  --spacing-9: 3.6rem;
+  --spacing-96: 38.4rem;
+  --text-base: 1.6rem;
+  --text-sm: 1.4rem;
+  --text-xs: 1.2rem;
+  --text-xxs: 0.96rem;
 }
 
 /* EDITOR */
@@ -10,14 +57,22 @@
 .editor :global(.mdxeditor) {
   --basePageBg: var(--card);
   --baseBg: var(--bg-dark);
-  --baseBgHover: #1a1a1a;
-  --baseBgActive: #222222;
+  --baseBgHover: var(--card-hover);
+  --baseBgActive: var(--elevated);
   --baseText: var(--text);
   --baseTextContrast: var(--text);
 
   color: var(--text);
-  border: 1px solid rgba(255, 255, 255, 0.06);
-  border-radius: 8px;
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  transition:
+    border-color 0.2s ease,
+    box-shadow 0.2s ease;
+}
+
+.editor :global(.mdxeditor:focus-within) {
+  border-color: rgba(34, 228, 255, 0.45);
+  box-shadow: 0 0 0 4px var(--accent-soft);
 }
 
 /* CONTEÚDO */
@@ -25,9 +80,12 @@
 .editor :global(.mdxeditor-root-contenteditable) {
   background: var(--card);
   color: var(--text);
-  min-height: 400px;
-  padding: 20px;
-  font-size: 1.4rem;
+  min-height: 440px;
+  padding: 2.8rem 3.2rem;
+  border-radius: 0 0 var(--radius) var(--radius);
+  font-family: var(--font-body);
+  font-size: 1.6rem;
+  line-height: 1.7;
 }
 
 /* TEXTOS */
@@ -41,10 +99,31 @@
 .editor :global(.mdxeditor-root-contenteditable h2),
 .editor :global(.mdxeditor-root-contenteditable h3) {
   color: var(--text);
+  font-family: var(--font-display);
 }
 
 .editor :global(.mdxeditor-root-contenteditable a) {
   color: var(--accent);
+}
+
+/* RITMO VERTICAL — o reset global zera as margens */
+
+.editor :global(.mdxeditor-root-contenteditable p),
+.editor :global(.mdxeditor-root-contenteditable ul),
+.editor :global(.mdxeditor-root-contenteditable ol),
+.editor :global(.mdxeditor-root-contenteditable blockquote) {
+  margin: 0 0 1.2rem;
+}
+
+.editor :global(.mdxeditor-root-contenteditable h1),
+.editor :global(.mdxeditor-root-contenteditable h2),
+.editor :global(.mdxeditor-root-contenteditable h3) {
+  margin: 2.4rem 0 1rem;
+}
+
+.editor :global(.mdxeditor-root-contenteditable h1:first-child),
+.editor :global(.mdxeditor-root-contenteditable h2:first-child) {
+  margin-top: 0;
 }
 
 /* LISTAS */
@@ -60,20 +139,39 @@
 /* QUOTE */
 
 .editor :global(.mdxeditor-root-contenteditable blockquote) {
-  color: var(--muted);
-  border-left-color: var(--muted);
+  color: var(--text);
+  border-left: 3px solid var(--xp);
+  background: var(--xp-soft);
+  padding: 0.8rem 1.6rem;
 }
 
 /* TOOLBAR */
 
 .editor :global(.mdxeditor-toolbar) {
+  position: sticky;
+  top: var(--header-h);
+  z-index: 10;
   background: var(--bg-dark);
-  border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+  border-bottom: 1px solid var(--border);
+  border-radius: var(--radius) var(--radius) 0 0;
 }
 
 .toolbar {
+  padding: 0.6rem;
   background: var(--bg-dark);
-  border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+  border-bottom: 1px solid var(--border);
+}
+
+@media (max-width: 720px) {
+  .editor :global(.mdxeditor-toolbar) {
+    flex-wrap: wrap;
+    overflow: visible;
+  }
+
+  .editor :global(.mdxeditor-root-contenteditable) {
+    min-height: 320px;
+    padding: 2rem 1.8rem;
+  }
 }
 
 /* BOTÕES */
@@ -107,7 +205,7 @@
 
 .editor :global(.mdxeditor-toolbar button[data-state='on']) {
   color: var(--accent);
-  background-color: rgba(0, 229, 255, 0.15);
+  background-color: rgba(34, 228, 255, 0.15);
 }
 
 .editor :global(.mdxeditor-toolbar button[data-state='on'] svg) {
@@ -128,9 +226,9 @@
 :global(.mdxeditor-select-content) {
   --basePageBg: var(--bg-dark);
 
-  --baseBg: rgba(0, 229, 255, 0.12);
+  --baseBg: rgba(34, 228, 255, 0.12);
   --baseBgHover: var(--card);
-  --baseBgActive: rgba(0, 229, 255, 0.12);
+  --baseBgActive: rgba(34, 228, 255, 0.12);
 
   --baseText: var(--text);
   --baseTextContrast: var(--accent);
@@ -145,8 +243,8 @@
 :global([class*='linkDialogPopoverContent']) {
   --basePageBg: var(--bg-dark);
   --baseBg: var(--card);
-  --baseBgHover: #222;
-  --baseBgActive: rgba(0, 229, 255, 0.12);
+  --baseBgHover: var(--card-hover);
+  --baseBgActive: rgba(34, 228, 255, 0.12);
   --baseText: var(--text);
   --baseTextContrast: var(--text);
 

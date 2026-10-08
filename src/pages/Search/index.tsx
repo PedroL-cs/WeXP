@@ -4,6 +4,7 @@ import { searchGames } from '../../api/games';
 import type { Game } from '../../types/Game';
 
 import { useSearchParams } from 'react-router';
+import { MagnifyingGlassIcon } from '@phosphor-icons/react';
 
 import styles from './styles.module.css';
 import SearchGameCard from '../../components/SearchGameCard';
@@ -48,10 +49,15 @@ function SearchPage() {
     <main className={styles.searchPage}>
       <div className={styles.container}>
         <div className={styles.header}>
-          <h2>Resultados para "{query}"</h2>
+          <p className={styles.eyebrow}>Resultados da busca</p>
+          <h2>
+            <span>“</span>
+            {query}
+            <span>”</span>
+          </h2>
 
           {!isLoading && totalElements > 0 && (
-            <span>
+            <span className={styles.count}>
               {totalElements}{' '}
               {totalElements === 1 ? 'jogo encontrado' : 'jogos encontrados'}
             </span>
@@ -59,16 +65,28 @@ function SearchPage() {
         </div>
 
         {isLoading ? (
-          <div className={styles.status}>Carregando...</div>
+          <div className={styles.results} aria-busy='true'>
+            {Array.from({ length: 4 }, (_, index) => (
+              <div key={index} className={styles.skeleton} />
+            ))}
+          </div>
         ) : games.length === 0 ? (
           <div className={styles.status}>
+            <MagnifyingGlassIcon size={36} weight='duotone' />
             <h3>Nenhum jogo encontrado</h3>
-            <p>Não encontramos jogos para "{query}".</p>
+            <p>
+              Não encontramos jogos para "{query}". Confira a ortografia ou
+              tente um termo mais curto.
+            </p>
           </div>
         ) : (
           <div className={styles.results}>
-            {games.map(game => (
-              <SearchGameCard key={game.id} game={game} />
+            {games.map((game, index) => (
+              <SearchGameCard
+                key={game.id}
+                game={game}
+                style={{ animationDelay: `${Math.min(index, 10) * 40}ms` }}
+              />
             ))}
           </div>
         )}

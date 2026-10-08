@@ -4,7 +4,14 @@ import { useParams } from 'react-router';
 import styles from './styles.module.css';
 
 import AchievementCard from '../../components/AchievementCard';
-import { EyeIcon, EyeSlashIcon } from '@phosphor-icons/react';
+import {
+  CalendarBlankIcon,
+  EyeIcon,
+  EyeSlashIcon,
+  LockSimpleIcon,
+  MagnifyingGlassIcon,
+  TrophyIcon,
+} from '@phosphor-icons/react';
 
 import { getGame } from '../../api/games';
 
@@ -14,30 +21,43 @@ function GamePage() {
   const { id } = useParams();
 
   const [game, setGame] = useState<Game | null>(null);
+  const [error, setError] = useState('');
+  const [posterFailed, setPosterFailed] = useState(false);
 
   const [search, setSearch] = useState('');
   const [showSecretAchievements, setShowSecretAchievements] = useState(false);
 
   useEffect(() => {
-    if (!id) {
-      console.log('GamePage - sem ID');
-      return;
-    }
+    if (!id) return;
 
-    console.log('Buscando jogo:', id);
+    setGame(null);
+    setError('');
+    setPosterFailed(false);
 
     getGame(id)
       .then(data => {
-        console.log('Jogo recebido:', data);
         setGame(data);
       })
       .catch(error => {
         console.error('Erro ao buscar jogo:', error);
+        setError('Não foi possível carregar este jogo.');
       });
   }, [id]);
 
+  if (error) {
+    return (
+      <main className={styles.gamePage}>
+        <p className={styles.status}>{error}</p>
+      </main>
+    );
+  }
+
   if (!game) {
-    return <div>Carregando...</div>;
+    return (
+      <main className={styles.gamePage} aria-busy='true'>
+        <div className={styles.heroSkeleton} />
+      </main>
+    );
   }
 
   const filteredAchievements = game.achievements
@@ -46,6 +66,10 @@ function GamePage() {
     )
     .sort((a, b) => Number(a.hidden) - Number(b.hidden));
 
+  const secretCount = game.achievements.filter(
+    achievement => achievement.hidden,
+  ).length;
+
   return (
     <main className={styles.gamePage}>
       {/* Hero */}
@@ -53,21 +77,61 @@ function GamePage() {
         <img
           className={styles.heroImage}
           src={game.images.hero}
-          alt={game.name}
+          alt=''
+          aria-hidden='true'
         />
 
         <div className={styles.heroOverlay} />
 
         <div className={styles.heroContent}>
+          {!posterFailed && game.images.cover && (
+            <img
+              className={styles.poster}
+              src={game.images.cover}
+              alt={`Capa de ${game.name}`}
+              onError={() => setPosterFailed(true)}
+            />
+          )}
+
           <div className={styles.gameInfo}>
+            {game.genres?.length > 0 && (
+              <ul className={styles.genres}>
+                {game.genres.slice(0, 4).map(genre => (
+                  <li key={genre.id}>{genre.name}</li>
+                ))}
+              </ul>
+            )}
+
             <h1>{game.name}</h1>
 
             <p>{game.shortDescription}</p>
 
-            <span>
-              Lançamento:{' '}
-              {new Date(game.releaseDate).toLocaleDateString('pt-BR')}
-            </span>
+            <dl className={styles.stats}>
+              <div className={styles.statXp}>
+                <dt>
+                  <TrophyIcon size={16} weight='fill' /> Conquistas
+                </dt>
+                <dd>{game.achievements.length}</dd>
+              </div>
+
+              {secretCount > 0 && (
+                <div>
+                  <dt>
+                    <LockSimpleIcon size={16} weight='fill' /> Secretas
+                  </dt>
+                  <dd>{secretCount}</dd>
+                </div>
+              )}
+
+              <div>
+                <dt>
+                  <CalendarBlankIcon size={16} weight='fill' /> Lançamento
+                </dt>
+                <dd>
+                  {new Date(game.releaseDate).toLocaleDateString('pt-BR')}
+                </dd>
+              </div>
+            </dl>
           </div>
         </div>
       </section>
@@ -75,74 +139,79 @@ function GamePage() {
       {/* Conteúdo */}
       <div className={styles.gameContent}>
         {game.achievements.length > 0 ? (
-          <>
-            <section className={styles.achievementsSection}>
-              <div className={styles.sectionHeader}>
-                <div>
-                  <h2>Conquistas</h2>
-                  <p>Explore as conquistas e descubra como desbloqueá-las.</p>
-                </div>
-
-                <span className={styles.achievementCount}>
-                  {filteredAchievements.length} conquistas
-                </span>
+          <section className={styles.achievementsSection}>
+            <div className={styles.sectionHeader}>
+              <div>
+                <h2>Conquistas</h2>
+                <p>Escolha uma conquista para ver o guia da comunidade.</p>
               </div>
 
-              <div className={styles.searchContainer}>
+              <span className={styles.achievementCount}>
+                {filteredAchievements.length}
+                <span>/{game.achievements.length}</span>
+              </span>
+            </div>
+
+            <div className={styles.toolbar}>
+              <label className={styles.searchContainer}>
+                <MagnifyingGlassIcon size={18} />
                 <input
-                  type='text'
+                  type='search'
                   placeholder='Buscar conquista...'
+                  aria-label='Buscar conquista'
                   value={search}
                   onChange={event => setSearch(event.target.value)}
                   className={styles.searchInput}
                 />
-              </div>
+              </label>
 
+              {secretCount > 0 && (
+                <button
+                  type='button'
+                  className={`${styles.secretToggle} ${
+                    showSecretAchievements ? styles.on : ''
+                  }`}
+                  aria-pressed={showSecretAchievements}
+                  onClick={() => setShowSecretAchievements(prev => !prev)}
+                >
+                  {showSecretAchievements ? (
+                    <EyeIcon size={18} />
+                  ) : (
+                    <EyeSlashIcon size={18} />
+                  )}
+                  {showSecretAchievements
+                    ? 'Ocultar secretas'
+                    : 'Revelar secretas'}
+                </button>
+              )}
+            </div>
+
+            {filteredAchievements.length > 0 ? (
               <div className={styles.achievementsList}>
-                {filteredAchievements.map(achievement => (
+                {filteredAchievements.map((achievement, index) => (
                   <AchievementCard
                     key={achievement.id}
                     achievement={achievement}
                     showSecret={showSecretAchievements}
                     gameId={game.id}
+                    style={{ animationDelay: `${Math.min(index, 12) * 30}ms` }}
                   />
                 ))}
               </div>
-            </section>
-
-            <button
-              className={styles.secretToggle}
-              title='Alternar visibilidade de conquistas secretas'
-              onClick={() => setShowSecretAchievements(prev => !prev)}
-            >
-              {showSecretAchievements ? (
-                <EyeIcon size={24} />
-              ) : (
-                <EyeSlashIcon size={24} />
-              )}
-            </button>
-          </>
+            ) : (
+              <p className={styles.status}>
+                Nenhuma conquista encontrada para "{search}".
+              </p>
+            )}
+          </section>
         ) : (
           <section className={styles.noAchievements}>
+            <TrophyIcon size={40} weight='duotone' />
             <h3>Este jogo não possui conquistas</h3>
             <p>Não encontramos conquistas disponíveis para este jogo.</p>
           </section>
         )}
       </div>
-
-      {game.achievements.length > 0 && (
-        <button
-          className={styles.secretToggle}
-          title='Alternar visibilidade de conquistas secretas'
-          onClick={() => setShowSecretAchievements(prev => !prev)}
-        >
-          {showSecretAchievements ? (
-            <EyeIcon size={24} />
-          ) : (
-            <EyeSlashIcon size={24} />
-          )}
-        </button>
-      )}
     </main>
   );
 }

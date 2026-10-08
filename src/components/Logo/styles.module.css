@@ -1,84 +1,120 @@
 /* Valores padrão (tamanho médio) */
 .logo-container {
-  --logo-font-size: 2.7rem;
-  --wasd-width: 32px;
-  --wasd-height: 20px;
+  --logo-font-size: 2.6rem;
+  --key: 9px;
   --wasd-gap: 2px;
   --wasd-radius: 2px;
 
-  display: flex;
+  display: inline-flex;
   align-items: center;
-  gap: 8px;
+  gap: 10px;
   cursor: pointer;
   user-select: none;
 }
 
 /* Variações de Tamanho */
 .size-sm {
-  --logo-font-size: 1.5rem;
-  --wasd-width: 20px;
-  --wasd-height: 12px;
+  --logo-font-size: 1.6rem;
+  --key: 6px;
   --wasd-gap: 1px;
   --wasd-radius: 1px;
 }
 
 .size-lg {
   --logo-font-size: 4rem;
-  --wasd-width: 48px;
-  --wasd-height: 30px;
+  --key: 14px;
   --wasd-gap: 3px;
   --wasd-radius: 3px;
 }
 
-/* Aplicação das variáveis nos elementos */
 .logo {
-  color: white;
+  margin: 0;
+  color: var(--text);
+  font-family: var(--font-display);
   font-size: var(--logo-font-size);
   font-weight: 700;
-  margin: 0;
+  letter-spacing: -0.02em;
   line-height: 1;
-  transform: translateY(-1px);
-  transition: color 0.1s ease-in-out;
+}
+
+.logo span {
+  color: var(--accent);
+  transition: text-shadow 0.3s ease;
 }
 
 .wasd-icon {
   display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  grid-template-rows: repeat(2, 1fr);
+  grid-template-columns: repeat(3, var(--key));
+  grid-template-rows: repeat(2, var(--key));
   gap: var(--wasd-gap);
-  width: var(--wasd-width);
-  height: var(--wasd-height);
 }
 
+/* Cada tecla tem uma "base" para parecer um keycap */
 .key {
-  background-color: #fff;
   border-radius: var(--wasd-radius);
-  transition: background-color 0.1s ease-in-out;
+  background: var(--text);
+  box-shadow: 0 2px 0 #7d8697;
+  transition:
+    background-color 0.2s ease,
+    box-shadow 0.2s ease;
 }
 
-/* Hover effects */
-.logo-container:hover .logo {
-  color: var(--accent-hover);
-}
-
-.logo-container:hover .key {
-  background-color: var(--accent-hover);
-}
-
-/* Posições das teclas no Grid */
 .key-w {
   grid-column: 2;
   grid-row: 1;
+  background: var(--accent);
+  box-shadow: 0 2px 0 #0a8fa3;
 }
+
 .key-a {
   grid-column: 1;
   grid-row: 2;
 }
+
 .key-s {
   grid-column: 2;
   grid-row: 2;
 }
+
 .key-d {
   grid-column: 3;
   grid-row: 2;
+}
+
+/* Hover: as teclas são "pressionadas" em sequência — W, A, S, D */
+.logo-container:hover .key {
+  animation: press 0.9s var(--ease-out) both;
+}
+
+.logo-container:hover .key-a {
+  animation-delay: 0.08s;
+}
+
+.logo-container:hover .key-s {
+  animation-delay: 0.16s;
+}
+
+.logo-container:hover .key-d {
+  animation-delay: 0.24s;
+}
+
+.logo-container:hover .logo span {
+  text-shadow: 0 0 18px var(--accent-glow);
+}
+
+@keyframes press {
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+
+  25% {
+    transform: translateY(2px);
+    box-shadow: 0 0 0 transparent;
+    background: var(--accent);
+  }
+
+  60% {
+    background: var(--accent);
+  }
 }

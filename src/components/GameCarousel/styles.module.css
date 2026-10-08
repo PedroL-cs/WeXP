@@ -1,56 +1,115 @@
 .carousel {
-  display: grid;
-  grid-template-columns: 40px minmax(0, 1fr) 40px;
-  align-items: center;
-  gap: 0.75rem;
+  position: relative;
 }
 
 .viewport {
-  width: 100%;
-  overflow: hidden;
+  --fade-left: 0px;
+  --fade-right: 0px;
+
+  margin: 0 -1.2rem;
+  mask-image: linear-gradient(
+    90deg,
+    transparent,
+    #000 var(--fade-left),
+    #000 calc(100% - var(--fade-right)),
+    transparent
+  );
+}
+
+.fadeLeft {
+  --fade-left: 48px;
+}
+
+.fadeRight {
+  --fade-right: 48px;
 }
 
 .track {
-  --gap: 1rem;
+  --gap: 1.6rem;
+  --columns: 4;
 
   display: flex;
   gap: var(--gap);
+  padding: 1.2rem;
+  overflow-x: auto;
+  scroll-snap-type: x mandatory;
+  scroll-padding: 0 1.2rem;
+  scrollbar-width: none;
+  overscroll-behavior-x: contain;
+}
 
-  transition: transform 0.45s ease;
+.track::-webkit-scrollbar {
+  display: none;
 }
 
 .slide {
-  flex: 0 0 calc((100% - (3 * var(--gap))) / 4);
+  flex: 0 0 calc((100% - (var(--columns) - 1) * var(--gap)) / var(--columns));
   min-width: 0;
+  scroll-snap-align: start;
+}
+
+/* As setas ficam no cabeçalho da seção (alinhadas à direita do título) */
+.controls {
+  position: absolute;
+  right: 0;
+  top: -4.8rem;
+  display: flex;
+  gap: 0.6rem;
 }
 
 .control {
-  width: 40px;
-  height: 64px;
-
-  border: none;
-  border-radius: 6px;
-
-  background: transparent;
+  display: grid;
+  place-items: center;
+  width: 36px;
+  height: 36px;
+  border: 1px solid var(--border-hover);
+  border-radius: 50%;
+  background: var(--card);
   color: var(--text);
-
-  font-size: 2.5rem;
-  line-height: 1;
-
   cursor: pointer;
-
   transition:
     background 0.2s ease,
+    border-color 0.2s ease,
     color 0.2s ease,
     opacity 0.2s ease;
 }
 
 .control:hover:not(:disabled) {
-  background: var(--card);
+  border-color: var(--accent);
+  background: var(--accent-soft);
   color: var(--accent);
 }
 
 .control:disabled {
-  opacity: 0.25;
+  opacity: 0.3;
   cursor: default;
+}
+
+@media (max-width: 1280px) {
+  .track {
+    --columns: 3;
+  }
+}
+
+@media (max-width: 900px) {
+  .track {
+    --columns: 2.3;
+  }
+}
+
+@media (max-width: 720px) {
+  .viewport {
+    margin: 0 -1.6rem;
+  }
+
+  .track {
+    --columns: 1.35;
+    --gap: 1.2rem;
+    padding: 1.2rem 1.6rem;
+    scroll-padding: 0 1.6rem;
+  }
+
+  .controls {
+    display: none;
+  }
 }

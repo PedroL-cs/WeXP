@@ -1,6 +1,6 @@
 import styles from './styles.module.css';
 import type { Game } from '../../types/Game';
-import { MedalIcon } from '@phosphor-icons/react';
+import { TrophyIcon } from '@phosphor-icons/react';
 import { useNavigate } from 'react-router';
 
 export type GameCardProps = {
@@ -14,16 +14,33 @@ function GameCard({ game }: GameCardProps) {
     navigate(`/games/${game.id}`);
   }
 
+  const genre = game.genres?.[0]?.name;
+
   return (
-    <div className={styles.gameCard} onClick={handleClick}>
-      <img src={game.images.header} alt={game.name} />
+    <div
+      className={styles.gameCard}
+      onClick={handleClick}
+      role='link'
+      tabIndex={0}
+      onKeyDown={event => {
+        if (event.key === 'Enter') handleClick();
+      }}
+    >
+      <div className={styles.imageContainer}>
+        <img src={game.images.header} alt={game.name} loading='lazy' />
+      </div>
+
       <div className={styles.gameCardContent}>
         <h2>{game.name}</h2>
 
-        <p className={styles.achievementsInfo}>
-          <span>{game.achievements.length}</span>
-          <MedalIcon size={13} weight='fill' />
-        </p>
+        <div className={styles.meta}>
+          <p className={styles.achievementsInfo}>
+            <TrophyIcon size={14} weight='fill' />
+            <span>{game.achievements.length}</span>
+          </p>
+
+          {genre && <span className={styles.genre}>{genre}</span>}
+        </div>
       </div>
     </div>
   );

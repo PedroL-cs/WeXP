@@ -8,85 +8,165 @@
 
 .gameHero {
   position: relative;
+  isolation: isolate;
   width: 100%;
-  min-height: 360px;
-
+  /* Sobe por trás dos breadcrumbs para a arte ocupar o topo */
+  margin-top: -5rem;
   overflow: hidden;
-
-  background: var(--bg-dark);
 }
 
 .heroImage {
   position: absolute;
   inset: 0;
-
+  z-index: -2;
   width: 100%;
   height: 100%;
-
   object-fit: cover;
-  object-position: center;
+  object-position: center 25%;
+  opacity: 0.55;
+  animation: heroIn 1.2s var(--ease-out) both;
+}
 
-  opacity: 0.65;
+@keyframes heroIn {
+  from {
+    opacity: 0;
+    transform: scale(1.06);
+  }
 }
 
 .heroOverlay {
   position: absolute;
   inset: 0;
-
-  background: linear-gradient(to bottom, rgba(2, 6, 23, 0.2), var(--bg));
+  z-index: -1;
+  background:
+    linear-gradient(90deg, rgba(10, 12, 17, 0.85), transparent 70%),
+    linear-gradient(to bottom, rgba(10, 12, 17, 0.4), var(--bg) 96%);
 }
 
 .heroContent {
-  position: relative;
-  z-index: 1;
-
   display: flex;
   align-items: flex-end;
-
-  max-width: 1100px;
-  min-height: 360px;
-
+  gap: 3.2rem;
+  max-width: 1280px;
   margin: 0 auto;
-  padding: 40px 24px;
-
-  box-sizing: border-box;
+  padding: 11.2rem 3.2rem 4rem;
 }
 
-.gameCapsule {
-  width: 231px;
-  height: auto;
-
+.poster {
+  width: 200px;
+  aspect-ratio: 2 / 3;
   flex-shrink: 0;
-
-  border-radius: 8px;
-
-  box-shadow: 0 8px 30px rgba(0, 0, 0, 0.4);
+  object-fit: cover;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: var(--radius);
+  box-shadow:
+    0 30px 60px -20px rgba(0, 0, 0, 0.9),
+    0 0 0 6px rgba(255, 255, 255, 0.03);
+  animation: rise 0.8s var(--ease-out) 0.1s both;
 }
 
 .gameInfo {
-  margin-left: 24px;
-  max-width: 650px;
+  max-width: 680px;
+  animation: rise 0.8s var(--ease-out) 0.2s both;
+}
+
+@keyframes rise {
+  from {
+    opacity: 0;
+    transform: translateY(16px);
+  }
+}
+
+.genres {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.6rem;
+  margin-bottom: 1.4rem;
+  list-style: none;
+}
+
+.genres li {
+  padding: 0.3rem 1rem;
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  border-radius: 999px;
+  background: rgba(7, 8, 12, 0.5);
+  color: var(--text-soft);
+  font-size: 1.2rem;
+  font-weight: 600;
+  backdrop-filter: blur(8px);
 }
 
 .gameInfo h1 {
-  margin: 0 0 10px;
-
-  color: var(--text);
-  font-size: 3rem;
-  font-weight: 700;
+  margin-bottom: 1.2rem;
+  color: #fff;
+  font-size: clamp(3.2rem, 5vw, 5.6rem);
+  text-shadow: 0 4px 30px rgba(0, 0, 0, 0.6);
 }
 
 .gameInfo p {
-  margin: 0 0 14px;
-
-  color: var(--text);
-  font-size: 1.25rem;
-  line-height: 1.5;
+  margin-bottom: 2.4rem;
+  color: var(--text-soft);
+  font-size: 1.6rem;
+  line-height: 1.6;
 }
 
-.gameInfo span {
+/* Estatísticas em formato de painel HUD */
+.stats {
+  display: inline-flex;
+  flex-wrap: wrap;
+  border: 1px solid var(--border-hover);
+  border-radius: var(--radius);
+  background: rgba(7, 8, 12, 0.55);
+  backdrop-filter: blur(10px);
+}
+
+.stats > div {
+  padding: 1.2rem 2rem;
+}
+
+.stats > div + div {
+  border-left: 1px solid var(--border-hover);
+}
+
+.stats dt {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
   color: var(--muted);
-  font-size: 1.2rem;
+  font-size: 1.15rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.stats dd {
+  margin-top: 0.2rem;
+  color: var(--text);
+  font-family: var(--font-display);
+  font-size: 2.2rem;
+  font-weight: 700;
+}
+
+.statXp dt {
+  color: var(--xp);
+}
+
+.statXp dd {
+  color: var(--xp);
+  text-shadow: 0 0 20px var(--xp-glow);
+}
+
+.heroSkeleton {
+  height: 420px;
+  margin-top: -5rem;
+  background: linear-gradient(to bottom, var(--card), var(--bg));
+  animation: pulse 1.4s ease-in-out infinite;
+}
+
+@keyframes pulse {
+  50% {
+    opacity: 0.6;
+  }
 }
 
 /* =========================
@@ -94,10 +174,9 @@
 ========================= */
 
 .gameContent {
-  max-width: 1100px;
-
+  max-width: 1280px;
   margin: 0 auto;
-  padding: 32px 24px;
+  padding: 1.6rem 3.2rem 6.4rem;
 }
 
 .achievementsSection {
@@ -108,27 +187,32 @@
   display: flex;
   align-items: flex-end;
   justify-content: space-between;
-
-  margin-bottom: 20px;
+  gap: 2rem;
+  margin-bottom: 2rem;
 }
 
 .sectionHeader h2 {
-  margin: 0 0 5px;
-
+  margin-bottom: 0.4rem;
   color: var(--text);
-  font-size: 1.5rem;
+  font-size: 2.6rem;
 }
 
 .sectionHeader p {
-  margin: 0;
-
   color: var(--muted);
-  font-size: 1.2rem;
+  font-size: 1.4rem;
 }
 
 .achievementCount {
-  color: var(--muted);
-  font-size: 1.2rem;
+  color: var(--xp);
+  font-family: var(--font-display);
+  font-size: 2.6rem;
+  font-weight: 700;
+  line-height: 1;
+}
+
+.achievementCount span {
+  color: var(--faint);
+  font-size: 1.6rem;
 }
 
 /* =========================
@@ -136,109 +220,209 @@
 ========================= */
 
 .achievementsList {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 1.2rem;
+}
+
+/* =========================
+   Barra de ferramentas
+========================= */
+
+.toolbar {
   display: flex;
-  flex-direction: column;
-
-  gap: 12px;
+  gap: 1.2rem;
+  margin-bottom: 2rem;
 }
-
-/* =========================
-   TOGGLE
-========================= */
-
-.secretToggle {
-  position: fixed;
-  right: 24px;
-  bottom: 24px;
-
-  padding: 11px 16px;
-
-  background: var(--card);
-  color: var(--text);
-
-  border: 1px solid rgba(255, 255, 255, 0.1);
-  border-radius: 8px;
-
-  font-size: 0.85rem;
-  font-weight: 600;
-
-  cursor: pointer;
-
-  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.3);
-
-  transition:
-    background 0.2s,
-    transform 0.2s;
-}
-
-.secretToggle:hover {
-  background: var(--accent);
-  color: var(--bg-dark);
-  transform: translateY(-2px);
-}
-
-/* =========================
-   Pesquisa
-========================= */
 
 .searchContainer {
-  margin-bottom: 16px;
+  position: relative;
+  display: flex;
+  align-items: center;
+  flex: 1;
+  color: var(--muted);
+}
+
+.searchContainer svg {
+  position: absolute;
+  left: 1.6rem;
+  pointer-events: none;
+}
+
+.searchContainer:focus-within svg {
+  color: var(--accent);
 }
 
 .searchInput {
   width: 100%;
-  height: 50px;
-  padding: 12px 14px;
-
-  box-sizing: border-box;
-
+  height: 48px;
+  padding: 0 1.6rem 0 4.4rem;
   background: var(--card);
-  border: 1px solid rgba(255, 255, 255, 0.08);
-  border-radius: 8px;
-
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
   color: var(--text);
-  font-size: 1.2rem;
-
+  font-size: 1.5rem;
   outline: none;
-
-  transition: border-color 0.2s;
+  transition:
+    border-color 0.2s ease,
+    box-shadow 0.2s ease;
 }
 
 .searchInput::placeholder {
   color: var(--muted);
 }
 
+.searchInput:hover {
+  border-color: var(--border-hover);
+}
+
 .searchInput:focus {
   border-color: var(--accent);
+  box-shadow: 0 0 0 4px var(--accent-soft);
+}
+
+.secretToggle {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.8rem;
+  height: 48px;
+  padding: 0 1.8rem;
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  background: var(--card);
+  color: var(--text-soft);
+  font-size: 1.4rem;
+  font-weight: 700;
+  white-space: nowrap;
+  cursor: pointer;
+  transition:
+    background 0.2s ease,
+    border-color 0.2s ease,
+    color 0.2s ease;
+}
+
+.secretToggle:hover {
+  border-color: var(--border-hover);
+  color: var(--text);
+}
+
+.secretToggle.on {
+  border-color: rgba(255, 201, 74, 0.5);
+  background: var(--xp-soft);
+  color: var(--xp);
 }
 
 /* =========================
-   Sem conquista
+   Estados
 ========================= */
+
+.status {
+  padding: 4rem 2rem;
+  border: 1px dashed var(--border-hover);
+  border-radius: var(--radius);
+  color: var(--muted);
+  font-size: 1.5rem;
+  text-align: center;
+}
+
+.gamePage > .status {
+  max-width: 720px;
+  margin: 4rem auto;
+}
 
 .noAchievements {
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
-
-  min-height: 180px;
-  padding: 2rem;
-
+  gap: 0.8rem;
+  min-height: 220px;
+  padding: 3.2rem;
   text-align: center;
-
   background: var(--card);
-  border: 1px solid rgba(255, 255, 255, 0.06);
-  border-radius: 10px;
+  border: 1px dashed var(--border-hover);
+  border-radius: var(--radius-lg);
+  color: var(--faint);
 }
 
 .noAchievements h3 {
-  margin: 0 0 0.5rem;
-  font-size: 1.5rem;
+  margin-top: 0.8rem;
+  color: var(--text);
+  font-size: 2rem;
 }
 
 .noAchievements p {
-  font-size: 1.2rem;
-  margin: 0;
   color: var(--muted);
+  font-size: 1.5rem;
+}
+
+@media (max-width: 960px) {
+  .achievementsList {
+    grid-template-columns: 1fr;
+  }
+
+  .poster {
+    width: 150px;
+  }
+}
+
+@media (max-width: 720px) {
+  .gameHero {
+    margin-top: -4.4rem;
+  }
+
+  .heroContent {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 2rem;
+    padding: 8.8rem 1.6rem 2.4rem;
+  }
+
+  .poster {
+    width: 110px;
+  }
+
+  .gameInfo p {
+    font-size: 1.45rem;
+  }
+
+  .stats {
+    display: grid;
+    grid-auto-columns: 1fr;
+    grid-auto-flow: column;
+    width: 100%;
+  }
+
+  .stats > div {
+    min-width: 0;
+    padding: 1rem 1.2rem;
+  }
+
+  .stats dt {
+    font-size: 1rem;
+  }
+
+  .stats dt svg {
+    display: none;
+  }
+
+  .stats dd {
+    font-size: 1.6rem;
+  }
+
+  .gameContent {
+    padding: 1.6rem 1.6rem 4rem;
+  }
+
+  .sectionHeader h2 {
+    font-size: 2.2rem;
+  }
+
+  .toolbar {
+    flex-direction: column;
+  }
+
+  .secretToggle {
+    justify-content: center;
+  }
 }

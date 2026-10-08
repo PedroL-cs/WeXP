@@ -20,7 +20,9 @@ function Logo({ onClick, size = 'md', className = '' }: LogoProps) {
         <div className={`${styles.key} ${styles['key-s']}`}></div>
         <div className={`${styles.key} ${styles['key-d']}`}></div>
       </div>
-      <h1 className={styles.logo}>WeXP</h1>
+      <span className={styles.logo}>
+        We<span>XP</span>
+      </span>
     </div>
   );
 }

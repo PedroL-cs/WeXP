@@ -1,6 +1,7 @@
-import { CheckIcon } from '@phosphor-icons/react';
+import { PaperPlaneTiltIcon, NotePencilIcon } from '@phosphor-icons/react';
 import { useEffect, useRef, useState } from 'react';
 import { Navigate, useNavigate, useParams } from 'react-router';
+import { getAchievement } from '../../api/achievements';
 import { createGuideRevision, getAchievementGuide } from '../../api/guides';
 import GuideEditor from '../../components/GuideEditor';
 import type { Guide } from '../../types/Guide';
@@ -13,6 +14,7 @@ function CreateRevisionPage() {
   const { gameId, achievementId } = useParams();
   const content = useRef('');
   const [guide, setGuide] = useState<Guide | null>(null);
+  const [achievementName, setAchievementName] = useState('');
   const [summary, setSummary] = useState('');
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(true);
@@ -26,7 +28,12 @@ function CreateRevisionPage() {
         return;
       }
       try {
-        const item = await getAchievementGuide(achievementId);
+        const [item, achievement] = await Promise.all([
+          getAchievementGuide(achievementId),
+          getAchievement(achievementId).catch(() => null),
+        ]);
+
+        setAchievementName(achievement?.name ?? '');
 
         if (!item) {
           setError('Essa conquista ainda não possui um guia.');
@@ -71,11 +78,16 @@ function CreateRevisionPage() {
   return (
     <main className={styles.page}>
       <header className={styles.header}>
-        <p className={styles.eyebrow}>Conquista {achievementId}</p>
-        <h1 className={styles.title}>Sugerir revisão</h1>
-        <span className={styles.description}>
-          Edite o guia e descreva brevemente o que foi alterado.
-        </span>
+        <div className={styles.iconFrame}>
+          <NotePencilIcon size={28} weight='duotone' />
+        </div>
+        <div>
+          <p className={styles.eyebrow}>{achievementName || 'Conquista'}</p>
+          <h1 className={styles.title}>Sugerir revisão</h1>
+          <span className={styles.description}>
+            Edite o guia e descreva brevemente o que foi alterado.
+          </span>
+        </div>
       </header>
       {loading && <div className={styles.status}>Carregando guia...</div>}
       {!loading && !guide && <div className={styles.status}>{error}</div>}
@@ -100,13 +112,15 @@ function CreateRevisionPage() {
             }}
           />
           <footer className={styles.footer}>
-            {error && <span className={styles.error}>{error}</span>}
+            <div aria-live='polite'>
+              {error && <span className={styles.error}>{error}</span>}
+            </div>
             <button
               className={styles.submitButton}
               type='submit'
               disabled={submitting}
             >
-              <CheckIcon size={20} />
+              <PaperPlaneTiltIcon size={18} weight='fill' />
               {submitting ? 'Enviando...' : 'Enviar revisão'}
             </button>
           </footer>

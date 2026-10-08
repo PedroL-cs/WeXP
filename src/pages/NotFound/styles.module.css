@@ -1,33 +1,211 @@
 .notFound {
-  width: 100%;
-  min-height: calc(100vh - 60px);
-
+  position: relative;
+  isolation: isolate;
   display: flex;
   flex-direction: column;
-  justify-content: center;
   align-items: center;
-  gap: 4rem;
-
-  font-size: 1.8rem;
-  letter-spacing: 1px;
-
-  background-image: url('/src/assets/images/background/3.png');
-  background-size: cover;
-  background-position: center;
-  background-repeat: no-repeat;
+  justify-content: center;
+  gap: 2.8rem;
+  width: 100%;
+  min-height: calc(100vh - var(--header-h) - 6rem);
+  padding: 4rem 2rem;
+  text-align: center;
 }
 
-.notFound h1 {
-  font-size: 10rem;
-  letter-spacing: 1rem;
+.notFound::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  background: url('/src/assets/images/background/3.png') center / 700px auto;
+  mask-image: radial-gradient(
+    ellipse 50% 50% at 50% 45%,
+    #000 10%,
+    transparent 75%
+  );
 }
 
-.notFound a {
-  text-decoration: none;
+/* 404 enorme com contorno e brilho, levemente "glitchado" */
+.code {
+  position: relative;
+  font-size: clamp(10rem, 22vw, 20rem);
+  font-weight: 700;
+  line-height: 0.9;
+  letter-spacing: 0.04em;
+  color: transparent;
+  -webkit-text-stroke: 2px rgba(34, 228, 255, 0.7);
+  text-shadow: 0 0 60px rgba(34, 228, 255, 0.25);
+}
+
+.code::before,
+.code::after {
+  content: attr(data-text);
+  position: absolute;
+  inset: 0;
+  -webkit-text-stroke: 0;
+  pointer-events: none;
+}
+
+.code::before {
   color: var(--accent);
-  transition: color 0.2s ease;
+  opacity: 0.12;
 }
 
-.notFound a:hover {
+.code::after {
+  color: transparent;
+  -webkit-text-stroke: 2px rgba(255, 201, 74, 0.6);
+  animation: glitch 4s steps(1) infinite;
+}
+
+@keyframes glitch {
+  0%,
+  88%,
+  100% {
+    transform: none;
+    opacity: 0;
+  }
+
+  90% {
+    transform: translate(4px, -2px);
+    opacity: 1;
+    clip-path: inset(10% 0 55% 0);
+  }
+
+  93% {
+    transform: translate(-5px, 2px);
+    opacity: 1;
+    clip-path: inset(60% 0 8% 0);
+  }
+
+  96% {
+    transform: translate(2px, 0);
+    opacity: 1;
+    clip-path: inset(35% 0 35% 0);
+  }
+}
+
+.toast {
+  display: flex;
+  align-items: center;
+  gap: 1.6rem;
+  width: min(460px, 100%);
+  padding: 1.4rem 2rem 1.4rem 1.4rem;
+  border: 1px solid rgba(255, 201, 74, 0.45);
+  border-radius: 14px;
+  background: rgba(17, 20, 27, 0.9);
+  box-shadow:
+    0 24px 50px -20px rgba(0, 0, 0, 0.9),
+    0 0 50px -12px var(--xp-glow);
+  text-align: left;
+  backdrop-filter: blur(10px);
+  animation: unlock 0.8s var(--ease-out) 0.3s both;
+}
+
+@keyframes unlock {
+  from {
+    opacity: 0;
+    transform: translateY(24px) scale(0.9);
+  }
+}
+
+.toastIcon {
+  display: grid;
+  place-items: center;
+  width: 56px;
+  height: 56px;
+  flex-shrink: 0;
+  border-radius: 12px;
+  background: linear-gradient(135deg, #3a2c08, #1c1504);
+  color: var(--xp);
+  box-shadow: 0 0 0 1px rgba(255, 201, 74, 0.5);
+}
+
+.toastText {
+  display: grid;
+  flex: 1;
+  gap: 0.1rem;
+  min-width: 0;
+}
+
+.toastText small {
+  color: var(--xp);
+  font-family: var(--font-mono);
+  font-size: 1.05rem;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+}
+
+.toastText strong {
   color: var(--text);
+  font-family: var(--font-display);
+  font-size: 1.8rem;
+}
+
+.toastText span {
+  color: var(--muted);
+  font-size: 1.35rem;
+}
+
+.toastXp {
+  align-self: flex-start;
+  color: var(--accent);
+  font-family: var(--font-mono);
+  font-size: 1.3rem;
+  font-weight: 700;
+  white-space: nowrap;
+}
+
+.message {
+  max-width: 420px;
+  color: var(--muted);
+  font-size: 1.6rem;
+}
+
+.home {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.8rem;
+  padding: 1.3rem 2.2rem;
+  background: var(--accent);
+  color: var(--accent-ink);
+  font-size: 1.5rem;
+  font-weight: 800;
+  text-decoration: none;
+  clip-path: polygon(
+    var(--cut) 0,
+    100% 0,
+    100% calc(100% - var(--cut)),
+    calc(100% - var(--cut)) 100%,
+    0 100%,
+    0 var(--cut)
+  );
+  transition:
+    background 0.2s ease,
+    filter 0.2s ease;
+}
+
+.home:hover {
+  background: var(--accent-hover);
+  filter: drop-shadow(0 0 16px var(--accent-glow));
+}
+
+@media (max-width: 500px) {
+  .toast {
+    gap: 1.2rem;
+    padding: 1.2rem;
+  }
+
+  .toastIcon {
+    width: 48px;
+    height: 48px;
+  }
+
+  .toastText small {
+    font-size: 0.95rem;
+  }
+
+  .toastXp {
+    display: none;
+  }
 }

@@ -64,13 +64,14 @@ function getBreadcrumbs(pathname: string): BreadcrumbItem[] {
     ];
   }
 
-  // /games/:gameId/achievements/:achievementId/revise
+  // /games/:gameId/achievements/:achievementId/guide/revise
   if (
     segments[0] === 'games' &&
     segments[1] &&
     segments[2] === 'achievements' &&
     segments[3] &&
-    segments[4] === 'revise'
+    segments[4] === 'guide' &&
+    segments[5] === 'revise'
   ) {
     return [
       {

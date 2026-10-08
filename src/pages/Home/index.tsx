@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react';
+import { RocketLaunchIcon, SparkleIcon } from '@phosphor-icons/react';
 
 import FeaturedGame from '../../components/FeaturedGame';
 import GameCarousel from '../../components/GameCarousel';
@@ -12,6 +13,7 @@ import styles from './styles.module.css';
 export function HomePage() {
   const [featuredGames, setFeaturedGames] = useState<Game[]>([]);
   const [releasedGames, setReleasedGames] = useState<Game[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
     async function loadHome() {
@@ -25,6 +27,8 @@ export function HomePage() {
         setReleasedGames(released);
       } catch (error) {
         console.error('Erro ao carregar Home:', error);
+      } finally {
+        setIsLoading(false);
       }
     }
 
@@ -34,27 +38,41 @@ export function HomePage() {
   const sliderGames = featuredGames.slice(0, 5);
   const remainingFeaturedGames = featuredGames.slice(5);
 
+  if (isLoading) {
+    return (
+      <section className={styles.homePage} aria-busy='true'>
+        <div className={`${styles.skeleton} ${styles.skeletonHero}`} />
+        <div className={styles.skeletonRow}>
+          {Array.from({ length: 4 }, (_, index) => (
+            <div key={index} className={styles.skeleton} />
+          ))}
+        </div>
+      </section>
+    );
+  }
+
   return (
     <section className={styles.homePage}>
-      {sliderGames.length > 0 && (
-        <>
-          <h2>Destaques</h2>
-          <FeaturedGame games={sliderGames} />
-        </>
-      )}
+      {sliderGames.length > 0 && <FeaturedGame games={sliderGames} />}
 
       {remainingFeaturedGames.length > 0 && (
-        <>
-          <h2 className={styles.section}>Mais destaques</h2>
+        <div className={styles.section}>
+          <header className={styles.sectionHeader}>
+            <SparkleIcon size={20} weight='fill' />
+            <h2>Mais destaques</h2>
+          </header>
           <GameCarousel games={remainingFeaturedGames} />
-        </>
+        </div>
       )}
 
       {releasedGames.length > 0 && (
-        <>
-          <h2 className={styles.section}>Novos lançamentos</h2>
+        <div className={styles.section}>
+          <header className={styles.sectionHeader}>
+            <RocketLaunchIcon size={20} weight='fill' />
+            <h2>Novos lançamentos</h2>
+          </header>
           <GameCarousel games={releasedGames} />
-        </>
+        </div>
       )}
     </section>
   );

@@ -1,36 +1,67 @@
 .page {
-  width: min(900px, 100%);
-  padding: 3.2rem 2.4rem 5rem;
+  width: min(960px, 100%);
+  padding: 2.4rem 3.2rem 6.4rem;
 }
 
 .card {
-  margin-top: 2.4rem;
+  position: relative;
   overflow: hidden;
   border: 1px solid var(--border);
-  border-radius: 10px;
+  border-radius: var(--radius-lg);
   background: var(--card);
+  animation: rise 0.6s var(--ease-out) both;
+}
+
+@keyframes rise {
+  from {
+    opacity: 0;
+    transform: translateY(12px);
+  }
+}
+
+/* Banner com o padrão de troféus da marca */
+.banner {
+  height: 160px;
+  background:
+    linear-gradient(to bottom, transparent 30%, var(--card)),
+    radial-gradient(
+      600px 220px at 20% 0%,
+      rgba(34, 228, 255, 0.28),
+      transparent 70%
+    ),
+    radial-gradient(
+      500px 200px at 90% 10%,
+      rgba(255, 201, 74, 0.2),
+      transparent 70%
+    ),
+    url('../../assets/images/background/4.png') center / 600px auto,
+    var(--bg-dark);
 }
 
 .hero {
   display: flex;
-  align-items: center;
-  gap: 1.6rem;
-  padding: 2.4rem;
+  align-items: flex-end;
+  gap: 2.4rem;
+  margin-top: -64px;
+  padding: 0 3.2rem 2.8rem;
   border-bottom: 1px solid var(--border);
-  background: linear-gradient(120deg, rgba(0, 229, 255, 0.1), transparent 48%);
 }
 
 .avatar {
+  position: relative;
   display: grid;
-  width: 9.6rem;
-  height: 9.6rem;
+  width: 128px;
+  height: 128px;
   flex: 0 0 auto;
   place-items: center;
   overflow: hidden;
-  border: 2px solid var(--accent);
+  border: 4px solid var(--card);
   border-radius: 50%;
-  color: var(--accent);
-  background: var(--input-bg);
+  color: var(--muted);
+  background: var(--elevated);
+  box-shadow:
+    0 0 0 2px var(--accent),
+    0 0 40px -6px var(--accent-glow);
 }
 
 .avatar img {
@@ -39,24 +70,32 @@
   object-fit: cover;
 }
 
+.identity {
+  min-width: 0;
+  padding-bottom: 0.4rem;
+}
+
 .eyebrow {
-  margin: 0;
   color: var(--accent);
-  font-size: 0.8rem;
+  font-family: var(--font-mono);
+  font-size: 1.15rem;
   font-weight: 700;
-  letter-spacing: 0.08em;
+  letter-spacing: 0.14em;
   text-transform: uppercase;
 }
 
 .hero h1 {
-  margin: 0.4rem 0 0;
-  font-size: 2.4rem;
+  margin-top: 0.4rem;
+  overflow-wrap: anywhere;
+  font-size: clamp(2.6rem, 4vw, 3.6rem);
 }
 
 .login {
   display: block;
-  margin-top: 0.4rem;
+  margin-top: 0.2rem;
   color: var(--muted);
+  font-family: var(--font-mono);
+  font-size: 1.35rem;
 }
 
 .edit,
@@ -65,75 +104,174 @@
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  gap: 0.6rem;
-  padding: 0.85rem 1.1rem;
-  border-radius: 6px;
+  gap: 0.8rem;
+  padding: 1rem 1.6rem;
+  border-radius: var(--radius-sm);
+  font-size: 1.4rem;
   font-weight: 700;
   cursor: pointer;
+  transition:
+    background 0.2s ease,
+    border-color 0.2s ease,
+    color 0.2s ease,
+    box-shadow 0.2s ease;
 }
 
 .edit {
   margin-left: auto;
-  border: 1px solid var(--accent);
-  background: transparent;
+  margin-bottom: 0.4rem;
+  border: 1px solid var(--border-hover);
+  background: var(--elevated);
+  color: var(--text);
+}
+
+.edit:hover {
+  border-color: var(--accent);
   color: var(--accent);
 }
 
 .form,
 .details {
   display: grid;
-  gap: 1.6rem;
-  padding: 2.4rem;
+  gap: 2rem;
+  padding: 2.8rem 3.2rem 3.2rem;
 }
+
+.details {
+  grid-template-columns: 2fr 1fr;
+}
+
+.detail h2 {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  margin-bottom: 0.8rem;
+  color: var(--muted);
+  font-family: var(--font-mono);
+  font-size: 1.15rem;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+}
+
+.detail h2 svg {
+  color: var(--accent);
+}
+
+.detail p {
+  overflow-wrap: anywhere;
+  color: var(--text-soft);
+  font-size: 1.55rem;
+  line-height: 1.65;
+  white-space: pre-wrap;
+}
+
+.detail p.placeholder {
+  color: var(--faint);
+  font-style: italic;
+}
+
+/* Formulário */
 
 .form label {
   display: grid;
-  gap: 0.65rem;
-  font-weight: 600;
+  gap: 0.8rem;
+  color: var(--text);
+  font-size: 1.4rem;
+  font-weight: 700;
 }
 
 .form input,
 .form textarea {
   width: 100%;
-  padding: 0.9rem 1rem;
+  padding: 1.2rem 1.4rem;
   border: 1px solid var(--border);
-  border-radius: 6px;
+  border-radius: var(--radius-sm);
   outline: none;
   background: var(--input-bg);
   color: var(--text);
-  font: inherit;
+  font-size: 1.5rem;
+  font-weight: 500;
+  transition:
+    border-color 0.2s ease,
+    box-shadow 0.2s ease;
 }
 
 .form input:focus,
 .form textarea:focus {
   border-color: var(--accent);
+  box-shadow: 0 0 0 4px var(--accent-soft);
 }
 
 .form textarea {
   resize: vertical;
 }
 
+.form label.avatarPicker {
+  display: flex;
+  align-items: center;
+  gap: 1.6rem;
+  padding: 1.6rem 2rem;
+  border: 1px dashed var(--border-hover);
+  border-radius: var(--radius);
+  color: var(--accent);
+  cursor: pointer;
+  transition:
+    border-color 0.2s ease,
+    background 0.2s ease;
+}
+
+.form label.avatarPicker:hover {
+  border-color: var(--accent);
+  background: var(--accent-soft);
+}
+
+.avatarPicker span {
+  display: grid;
+  gap: 0.2rem;
+  color: var(--text);
+}
+
 .avatarPicker small {
   color: var(--muted);
-  font-weight: 400;
+  font-size: 1.3rem;
+  font-weight: 500;
+}
+
+/* O input fica invisível; o label inteiro é a área de clique */
+.avatarPicker input {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  opacity: 0;
 }
 
 .actions {
   display: flex;
   justify-content: flex-end;
-  gap: 0.8rem;
+  gap: 1rem;
 }
 
 .cancel {
-  border: 1px solid var(--border);
+  border: 1px solid var(--border-hover);
   background: transparent;
+  color: var(--text-soft);
+}
+
+.cancel:hover {
   color: var(--text);
+  border-color: var(--muted);
 }
 
 .save {
   border: 0;
   background: var(--accent);
-  color: var(--bg-dark);
+  color: var(--accent-ink);
+}
+
+.save:hover {
+  background: var(--accent-hover);
+  box-shadow: 0 0 20px -4px var(--accent-glow);
 }
 
 .save:disabled {
@@ -141,58 +279,78 @@
   opacity: 0.65;
 }
 
-.details h2 {
-  margin: 0 0 0.7rem;
-  font-size: 1rem;
-}
-
-.details p {
-  color: var(--muted);
-  line-height: 1.6;
-  white-space: pre-wrap;
-}
-
 .status,
 .error,
 .success {
-  padding: 1rem 2.4rem;
+  padding: 1.2rem 3.2rem;
+  font-size: 1.4rem;
+  font-weight: 600;
 }
 
 .status {
   margin-top: 2.4rem;
-  border: 1px solid var(--border);
-  border-radius: 8px;
+  padding: 4rem 2rem;
+  border: 1px dashed var(--border-hover);
+  border-radius: var(--radius);
   color: var(--muted);
   text-align: center;
 }
 
 .error {
+  border-bottom: 1px solid var(--border);
+  background: var(--danger-bg);
   color: var(--danger);
 }
 
 .success {
+  border-bottom: 1px solid var(--border);
+  background: var(--success-bg);
   color: var(--success);
 }
 
-@media (max-width: 600px) {
+@media (max-width: 720px) {
   .page {
-    padding: 2rem 1.2rem 4rem;
+    padding: 1.6rem 1.6rem 4rem;
   }
+
+  .banner {
+    height: 120px;
+  }
+
   .hero {
-    align-items: flex-start;
     flex-wrap: wrap;
-    padding: 1.6rem;
+    align-items: flex-end;
+    gap: 1.6rem;
+    margin-top: -48px;
+    padding: 0 2rem 2rem;
   }
+
+  .avatar {
+    width: 96px;
+    height: 96px;
+  }
+
+  .identity {
+    flex-basis: 100%;
+  }
+
   .edit {
     width: 100%;
     margin-left: 0;
   }
+
   .form,
   .details {
-    padding: 1.6rem;
+    padding: 2rem;
   }
-  .avatar {
-    width: 7.2rem;
-    height: 7.2rem;
+
+  .details {
+    grid-template-columns: 1fr;
+  }
+
+  .status,
+  .error,
+  .success {
+    padding-inline: 2rem;
   }
 }

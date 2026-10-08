@@ -21,6 +21,7 @@ function SearchBar({
   const navigate = useNavigate();
 
   const searchContainerRef = useRef<HTMLFormElement>(null);
+  const inputRef = useRef<HTMLInputElement>(null);
 
   const [searchResults, setSearchResults] = useState<SteamGame[]>([]);
   const [isSearching, setIsSearching] = useState(false);
@@ -65,6 +66,24 @@ function SearchBar({
     return () => document.removeEventListener('mousedown', handleClickOutside);
   }, [setIsSearchOpen]);
 
+  // Atalho "/" foca a busca, como em GitHub e YouTube
+  useEffect(() => {
+    function handleShortcut(event: KeyboardEvent) {
+      const target = event.target as HTMLElement;
+      const isTyping =
+        target.isContentEditable ||
+        ['INPUT', 'TEXTAREA', 'SELECT'].includes(target.tagName);
+
+      if (event.key === '/' && !isTyping) {
+        event.preventDefault();
+        inputRef.current?.focus();
+      }
+    }
+
+    document.addEventListener('keydown', handleShortcut);
+    return () => document.removeEventListener('keydown', handleShortcut);
+  }, []);
+
   function handleSearchSubmit(event: React.FormEvent<HTMLFormElement>) {
     event.preventDefault();
     const query = search.trim();
@@ -99,7 +118,10 @@ function SearchBar({
       className={styles['search-container']}
       onSubmit={handleSearchSubmit}
     >
+      <MagnifyingGlassIcon className={styles['search-icon']} size={18} />
+
       <input
+        ref={inputRef}
         type='search'
         value={search}
         onChange={e => handleSearchChange(e.target.value)}
@@ -110,6 +132,12 @@ function SearchBar({
         aria-label='Pesquisar jogos'
         className={styles['search-input']}
       />
+
+      {!search && (
+        <kbd className={styles['search-kbd']} aria-hidden='true'>
+          /
+        </kbd>
+      )}
 
       {search && (
         <button
@@ -125,19 +153,14 @@ function SearchBar({
         </button>
       )}
 
-      <button
-        type='submit'
-        className={styles['search-submit']}
-        aria-label='Pesquisar'
-      >
-        <MagnifyingGlassIcon size={19} />
-      </button>
-
       {/* Dropdown de Resultados Instantâneos */}
       {isSearchOpen && (
         <div className={styles['search-dropdown']}>
           {isSearching ? (
-            <div className={styles['search-status']}>Buscando...</div>
+            <div className={styles['search-status']}>
+              <span className={styles.spinner} />
+              Buscando...
+            </div>
           ) : searchResults.length === 0 ? (
             <div className={styles['search-status']}>
               Nenhum jogo encontrado

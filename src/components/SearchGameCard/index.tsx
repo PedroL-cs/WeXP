@@ -1,12 +1,18 @@
 import styles from './styles.module.css';
 import { useNavigate } from 'react-router';
+import {
+  ArrowRightIcon,
+  CalendarBlankIcon,
+  TrophyIcon,
+} from '@phosphor-icons/react';
 import type { Game } from '../../types/Game';
 
 interface SearchGameCardProps {
   game: Game;
+  style?: React.CSSProperties;
 }
 
-function SearchGameCard({ game }: SearchGameCardProps) {
+function SearchGameCard({ game, style }: SearchGameCardProps) {
   const navigate = useNavigate();
 
   function handleClick() {
@@ -16,6 +22,7 @@ function SearchGameCard({ game }: SearchGameCardProps) {
   return (
     <article
       className={styles.card}
+      style={style}
       onClick={handleClick}
       role='button'
       tabIndex={0}
@@ -30,6 +37,7 @@ function SearchGameCard({ game }: SearchGameCardProps) {
           src={game.images.header}
           alt={game.name}
           className={styles.image}
+          loading='lazy'
         />
       </div>
 
@@ -40,10 +48,32 @@ function SearchGameCard({ game }: SearchGameCardProps) {
           <p className={styles.description}>{game.shortDescription}</p>
         )}
 
-        <span className={styles.releaseDate}>
-          Lançamento: {new Date(game.releaseDate).toLocaleDateString('pt-BR')}
-        </span>
+        <div className={styles.meta}>
+          {game.achievements?.length > 0 && (
+            <span className={styles.achievements}>
+              <TrophyIcon size={14} weight='fill' />
+              {game.achievements.length}
+            </span>
+          )}
+
+          <span className={styles.releaseDate}>
+            <CalendarBlankIcon size={14} />
+            {new Date(game.releaseDate).toLocaleDateString('pt-BR')}
+          </span>
+
+          {game.genres?.length > 0 && (
+            <div className={styles.genres}>
+              {game.genres.slice(0, 3).map(genre => (
+                <span key={genre.id}>{genre.name}</span>
+              ))}
+            </div>
+          )}
+        </div>
       </div>
+
+      <span className={styles.arrow} aria-hidden='true'>
+        <ArrowRightIcon size={20} weight='bold' />
+      </span>
     </article>
   );
 }

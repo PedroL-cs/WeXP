@@ -1,9 +1,12 @@
 import {
+  BookOpenTextIcon,
   ClockCounterClockwiseIcon,
   NotePencilIcon,
+  PlusIcon,
+  TrophyIcon,
 } from '@phosphor-icons/react';
 import { useEffect, useState } from 'react';
-import { useNavigate, useParams, useSearchParams } from 'react-router';
+import { Link, useNavigate, useParams, useSearchParams } from 'react-router';
 import { getAchievement } from '../../api/achievements';
 import { getAchievementGuide, getGuideRevisions } from '../../api/guides';
 import { findUserById } from '../../api/users';
@@ -13,6 +16,12 @@ import { useAuth } from '../../contexts/AuthContext';
 import type { Guide, GuideRevision } from '../../types/Guide';
 import styles from './styles.module.css';
 
+const statusLabels: Record<string, string> = {
+  PENDING: 'Pendente',
+  APPROVED: 'Aprovada',
+  REJECTED: 'Rejeitada',
+};
+
 function GuidePage() {
   const navigate = useNavigate();
   const { isAuthenticated } = useAuth();
@@ -21,9 +30,8 @@ function GuidePage() {
   const [params, setParams] = useSearchParams();
   const [guide, setGuide] = useState<Guide | null>(null);
   const [achievementName, setAchievementName] = useState('');
+  const [achievementDescription, setAchievementDescription] = useState('');
   const [achievementIcon, setAchievementIcon] = useState('');
-  const [guideAuthorName, setGuideAuthorName] = useState('');
-  const [guideAuthorAvatar, setGuideAuthorAvatar] = useState('');
   const [revisions, setRevisions] = useState<GuideRevision[]>([]);
   const [revisionAuthors, setRevisionAuthors] = useState<
     Record<string, { username: string; avatar?: string }>
@@ -47,6 +55,7 @@ function GuidePage() {
           getAchievementGuide(achievementId),
         ]);
         setAchievementName(achievement.name);
+        setAchievementDescription(achievement.description ?? '');
         setAchievementIcon(achievement.icon_url ?? achievement.icon ?? '');
 
         setGuide(currentGuide);
@@ -106,20 +115,45 @@ function GuidePage() {
   return (
     <main className={styles.page}>
       <header className={styles.header}>
+        {/* O próprio ícone da conquista, borrado, vira a luz ambiente */}
         {achievementIcon && (
-          <img
-            className={styles.achievementIcon}
-            src={achievementIcon}
-            alt={`Ícone da conquista ${achievementName}`}
+          <div
+            className={styles.ambient}
+            style={{ backgroundImage: `url(${achievementIcon})` }}
+            aria-hidden='true'
           />
         )}
-        <div>
-          <p>{achievementName || 'Conquista'}</p>
-          <h1>Guia da conquista</h1>
-          {guideAuthorName && (
-            <span className={styles.author}>Por {guideAuthorName}</span>
+
+        <div className={styles.iconFrame}>
+          {achievementIcon ? (
+            <img
+              className={styles.achievementIcon}
+              src={achievementIcon}
+              alt={`Ícone da conquista ${achievementName}`}
+            />
+          ) : (
+            <TrophyIcon size={36} weight='duotone' />
           )}
         </div>
+
+        <div className={styles.headerInfo}>
+          <p className={styles.eyebrow}>
+            <TrophyIcon size={14} weight='fill' />
+            Guia da conquista
+          </p>
+          <h1>{achievementName || (loading ? '\u00a0' : 'Conquista')}</h1>
+          {achievementDescription && (
+            <p className={styles.achievementDescription}>
+              {achievementDescription}
+            </p>
+          )}
+          {guide?.author && (
+            <span className={styles.author}>
+              Escrito por <strong>{guide.author}</strong>
+            </span>
+          )}
+        </div>
+
         {isAuthenticated && guide?.id && (
           <button
             type='button'
@@ -130,7 +164,7 @@ function GuidePage() {
               )
             }
           >
-            <NotePencilIcon size={20} />
+            <NotePencilIcon size={18} />
             Sugerir revisão
           </button>
         )}
@@ -139,6 +173,10 @@ function GuidePage() {
       {!loading && error && <p className={styles.status}>{error}</p>}
       {!loading && !error && !guide?.content && (
         <section className={styles.emptyState}>
+          <div className={styles.emptyIcon}>
+            <BookOpenTextIcon size={36} weight='duotone' />
+          </div>
+
           <h2>Esta conquista ainda não possui um guia</h2>
 
           <p>
@@ -146,7 +184,7 @@ function GuidePage() {
             jogadores.
           </p>
 
-          {isAuthenticated && (
+          {isAuthenticated ? (
             <button
               type='button'
               className={styles.primaryButton}
@@ -156,8 +194,13 @@ function GuidePage() {
                 )
               }
             >
+              <PlusIcon size={18} weight='bold' />
               Criar primeiro guia
             </button>
+          ) : (
+            <Link to='/login' className={styles.primaryButton}>
+              Entre para escrever o primeiro guia
+            </Link>
           )}
         </section>
       )}
@@ -170,6 +213,7 @@ function GuidePage() {
                 className={tab === 'guide' ? styles.active : ''}
                 onClick={() => setParams({})}
               >
+                <BookOpenTextIcon size={16} />
                 Guia atual
               </button>
               <button
@@ -177,23 +221,12 @@ function GuidePage() {
                 className={tab === 'revisions' ? styles.active : ''}
                 onClick={() => setParams({ tab: 'revisions' })}
               >
-                <ClockCounterClockwiseIcon size={18} />
+                <ClockCounterClockwiseIcon size={16} />
                 Revisões
               </button>
             </div>
           )}
-          {tab === 'guide' && (
-            <>
-              {guide.author && (
-                <div className={styles.guideAuthor}>
-                  <span>Criado por</span>
-                  <strong>{guide.author}</strong>
-                </div>
-              )}
-
-              <GuideContent markdown={guide.content} />
-            </>
-          )}
+          {tab === 'guide' && <GuideContent markdown={guide.content} />}
           {tab === 'revisions' && (
             <section className={styles.history}>
               {historyLoading && (
@@ -224,10 +257,14 @@ function GuidePage() {
                           <strong>
                             {revision.changeSummary || 'Alteração sugerida'}
                           </strong>
-                          <span>
-                            {revision.status === 'PENDING'
-                              ? 'Pendente'
-                              : revision.status || 'Sem status'}
+                          <span
+                            className={`${styles.badge} ${
+                              styles[`badge${revision.status ?? ''}`] ?? ''
+                            }`}
+                          >
+                            {statusLabels[revision.status ?? ''] ??
+                              revision.status ??
+                              'Sem status'}
                           </span>
                           {revisionAuthor && (
                             <div className={styles.authorRow}>
@@ -247,17 +284,18 @@ function GuidePage() {
                     })}
                   </div>
                   {selected && (
-                    <div>
+                    <div className={styles.diffPanel}>
                       <h2>Diferenças propostas</h2>
                       <p className={styles.note}>
-                        Vermelho indica remoção; verde indica adição.
+                        <span className={styles.legendRemoved}>Removido</span>
+                        <span className={styles.legendChanged}>Alterado</span>
+                        <span className={styles.legendAdded}>Adicionado</span>
                       </p>
                       <GuideDiff
                         previous={guide.content}
                         current={selected.content}
                         previousAuthor={{
                           username: guide.author || 'Autor original',
-                          avatar: guideAuthorAvatar,
                         }}
                         currentAuthor={
                           revisionAuthors[selected.publicId] ?? {

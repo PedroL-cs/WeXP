@@ -1,0 +1,167 @@
+.showcase {
+  position: relative;
+  isolation: isolate;
+  width: 55%;
+  height: 100%;
+  overflow: hidden;
+  border-right: 1px solid var(--border);
+  background:
+    radial-gradient(
+      600px 400px at 30% 35%,
+      rgba(34, 228, 255, 0.16),
+      transparent 70%
+    ),
+    radial-gradient(
+      500px 400px at 75% 60%,
+      rgba(255, 201, 74, 0.12),
+      transparent 70%
+    ),
+    var(--bg-dark);
+}
+
+/* Padrão de troféus, sumindo nas bordas */
+.showcase::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  background: url('../../assets/images/background/3.png') center / 700px auto;
+  opacity: 0.9;
+  mask-image: radial-gradient(
+    ellipse 70% 60% at 45% 40%,
+    #000 20%,
+    transparent 80%
+  );
+}
+
+.showcase::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  background: linear-gradient(to top, var(--bg-dark) 8%, transparent 50%);
+}
+
+/* Pilha de notificações flutuando em perspectiva */
+.stack {
+  position: absolute;
+  top: 14%;
+  left: 50%;
+  display: flex;
+  flex-direction: column;
+  gap: 1.4rem;
+  width: min(400px, 80%);
+  transform: translateX(-50%) perspective(1200px) rotateX(8deg) rotateY(-14deg)
+    rotateZ(2deg);
+}
+
+.toast {
+  --i: 0;
+
+  display: flex;
+  align-items: center;
+  gap: 1.4rem;
+  padding: 1.2rem 1.6rem 1.2rem 1.2rem;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 12px;
+  background: rgba(17, 20, 27, 0.82);
+  box-shadow:
+    0 24px 50px -20px rgba(0, 0, 0, 0.9),
+    inset 0 1px 0 rgba(255, 255, 255, 0.05);
+  backdrop-filter: blur(10px);
+  translate: calc(var(--i) * 18px) 0;
+  animation:
+    pop 0.7s var(--ease-out) calc(0.25s + var(--i) * 0.18s) both,
+    bob 6s ease-in-out calc(var(--i) * -1.5s) infinite;
+}
+
+/* A notificação mais recente brilha */
+.toast:nth-child(3) {
+  border-color: rgba(255, 201, 74, 0.45);
+  box-shadow:
+    0 24px 50px -20px rgba(0, 0, 0, 0.9),
+    0 0 40px -10px var(--xp-glow);
+}
+
+@keyframes pop {
+  from {
+    opacity: 0;
+    scale: 0.9;
+  }
+}
+
+@keyframes bob {
+  50% {
+    transform: translateY(-8px);
+  }
+}
+
+.toastIcon {
+  display: grid;
+  place-items: center;
+  width: 46px;
+  height: 46px;
+  flex-shrink: 0;
+  border-radius: 10px;
+  background: linear-gradient(135deg, #3a2c08, #1c1504);
+  color: var(--xp);
+  box-shadow: 0 0 0 1px rgba(255, 201, 74, 0.45);
+}
+
+.toastText {
+  display: grid;
+  flex: 1;
+  min-width: 0;
+}
+
+.toastText small {
+  color: var(--muted);
+  font-family: var(--font-mono);
+  font-size: 1rem;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+}
+
+.toastText strong {
+  overflow: hidden;
+  color: var(--text);
+  font-size: 1.5rem;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.toastXp {
+  color: var(--accent);
+  font-family: var(--font-mono);
+  font-size: 1.3rem;
+  font-weight: 700;
+  white-space: nowrap;
+}
+
+.overlay {
+  position: absolute;
+  left: clamp(3.2rem, 5vw, 6.4rem);
+  right: 3.2rem;
+  bottom: clamp(4rem, 8vh, 7.2rem);
+  max-width: 520px;
+  color: var(--text);
+}
+
+.overlay h1 {
+  margin-bottom: 1.2rem;
+  font-size: clamp(3.6rem, 4vw, 5.2rem);
+  line-height: 1.05;
+}
+
+.overlay p {
+  color: var(--text-soft);
+  font-size: 1.7rem;
+  line-height: 1.6;
+}
+
+@media (max-width: 900px) {
+  .showcase {
+    display: none;
+  }
+}

@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from 'react';
-import { CheckIcon } from '@phosphor-icons/react';
+import { PaperPlaneTiltIcon, TrophyIcon } from '@phosphor-icons/react';
 import { Navigate, useNavigate, useParams } from 'react-router';
 
 import { createAchievementGuide } from '../../api/guides';
@@ -84,18 +84,28 @@ function CreateGuidePage() {
 
   return (
     <main className={styles.page}>
-      <div className={styles.header}>
+      <header className={styles.header}>
+        <div className={styles.iconFrame}>
+          {achievement?.icon ? (
+            <img src={achievement.icon} alt='' />
+          ) : (
+            <TrophyIcon size={28} weight='duotone' />
+          )}
+        </div>
+
         <div>
           <p className={styles.eyebrow}>Criar guia</p>
 
-          <h1>{achievement?.name ?? 'Conquista'}</h1>
+          <h1>
+            {achievement?.name ?? (loading ? 'Carregando...' : 'Conquista')}
+          </h1>
 
           <p className={styles.description}>
             Compartilhe um passo a passo claro para ajudar outros jogadores a
             desbloquear esta conquista.
           </p>
         </div>
-      </div>
+      </header>
 
       <form className={styles.form} onSubmit={handleSubmit}>
         <GuideEditor
@@ -111,6 +121,11 @@ function CreateGuidePage() {
             {success && (
               <p className={styles.success}>Guia criado com sucesso.</p>
             )}
+            {!error && !success && (
+              <p className={styles.hint}>
+                Dica: listas numeradas viram um passo a passo no guia.
+              </p>
+            )}
           </div>
 
           <button
@@ -118,7 +133,7 @@ function CreateGuidePage() {
             className={styles.submitButton}
             disabled={isSubmitting}
           >
-            <CheckIcon size={20} />
+            <PaperPlaneTiltIcon size={18} weight='fill' />
             {isSubmitting ? 'Publicando...' : 'Publicar guia'}
           </button>
         </div>

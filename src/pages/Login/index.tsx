@@ -2,6 +2,7 @@ import { type FormEvent, useState } from 'react';
 import styles from './styles.module.css';
 import { Link, useNavigate } from 'react-router';
 import Logo from '../../components/Logo';
+import AuthShowcase from '../../components/AuthShowcase';
 import { useAuth } from '../../contexts/AuthContext';
 import { login as loginRequest } from '../../api/auth';
 
@@ -29,18 +30,15 @@ function LoginPage() {
 
   return (
     <div className={styles.loginPage}>
-      <section className={styles.showcase}>
-        <div className={styles.showcaseOverlay}>
-          <h1>Explore novos mundos.</h1>
-
-          <p>Descubra jogos, conquistas e guias em um só lugar.</p>
-        </div>
-      </section>
+      <AuthShowcase
+        title='Explore novos mundos.'
+        description='Descubra jogos, conquistas e guias em um só lugar.'
+      />
 
       <section className={styles.loginSection}>
         <div className={styles.loginContainer}>
           <div className={styles.logoContainer}>
-            <Logo size='lg' />
+            <Logo size='lg' onClick={() => navigate('/')} />
           </div>
 
           <h2>Bem-vindo de volta!</h2>

@@ -1,4 +1,5 @@
-import { useState } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
+import { CaretLeftIcon, CaretRightIcon } from '@phosphor-icons/react';
 import GameCard from '../GameCard';
 import type { Game } from '../../types/Game';
 import styles from './styles.module.css';
@@ -7,23 +8,35 @@ type GameCarouselProps = {
   games: Game[];
 };
 
-const VISIBLE_GAMES = 4;
-const STEP = 2;
-
 function GameCarousel({ games }: GameCarouselProps) {
-  const [startIndex, setStartIndex] = useState(0);
+  const trackRef = useRef<HTMLDivElement>(null);
 
-  const maxIndex = Math.max(0, games.length - VISIBLE_GAMES);
+  const [canGoPrevious, setCanGoPrevious] = useState(false);
+  const [canGoNext, setCanGoNext] = useState(false);
 
-  const canGoPrevious = startIndex > 0;
-  const canGoNext = startIndex < maxIndex;
+  // Habilita/desabilita as setas conforme a posição do scroll
+  const updateControls = useCallback(() => {
+    const track = trackRef.current;
+    if (!track) return;
 
-  const goToPrevious = () => {
-    setStartIndex(current => Math.max(0, current - STEP));
-  };
+    setCanGoPrevious(track.scrollLeft > 4);
+    setCanGoNext(track.scrollLeft + track.clientWidth < track.scrollWidth - 4);
+  }, []);
 
-  const goToNext = () => {
-    setStartIndex(current => Math.min(maxIndex, current + STEP));
+  useEffect(() => {
+    updateControls();
+    window.addEventListener('resize', updateControls);
+    return () => window.removeEventListener('resize', updateControls);
+  }, [games.length, updateControls]);
+
+  const scrollByPage = (direction: 1 | -1) => {
+    const track = trackRef.current;
+    if (!track) return;
+
+    track.scrollBy({
+      left: direction * track.clientWidth * 0.8,
+      behavior: 'smooth',
+    });
   };
 
   if (games.length === 0) {
@@ -32,22 +45,12 @@ function GameCarousel({ games }: GameCarouselProps) {
 
   return (
     <div className={styles.carousel}>
-      <button
-        className={`${styles.control} ${styles.controlLeft}`}
-        onClick={goToPrevious}
-        disabled={!canGoPrevious}
-        aria-label='Jogos anteriores'
+      <div
+        className={`${styles.viewport} ${canGoPrevious ? styles.fadeLeft : ''} ${
+          canGoNext ? styles.fadeRight : ''
+        }`}
       >
-        ‹
-      </button>
-
-      <div className={styles.viewport}>
-        <div
-          className={styles.track}
-          style={{
-            transform: `translateX(calc(-${startIndex} * (25% + 0.75rem)))`,
-          }}
-        >
+        <div className={styles.track} ref={trackRef} onScroll={updateControls}>
           {games.map(game => (
             <div className={styles.slide} key={game.id}>
               <GameCard game={game} />
@@ -56,14 +59,25 @@ function GameCarousel({ games }: GameCarouselProps) {
         </div>
       </div>
 
-      <button
-        className={`${styles.control} ${styles.controlRight}`}
-        onClick={goToNext}
-        disabled={!canGoNext}
-        aria-label='Próximos jogos'
-      >
-        ›
-      </button>
+      <div className={styles.controls}>
+        <button
+          className={styles.control}
+          onClick={() => scrollByPage(-1)}
+          disabled={!canGoPrevious}
+          aria-label='Jogos anteriores'
+        >
+          <CaretLeftIcon size={18} weight='bold' />
+        </button>
+
+        <button
+          className={styles.control}
+          onClick={() => scrollByPage(1)}
+          disabled={!canGoNext}
+          aria-label='Próximos jogos'
+        >
+          <CaretRightIcon size={18} weight='bold' />
+        </button>
+      </div>
     </div>
   );
 }

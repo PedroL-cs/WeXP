@@ -1,19 +1,30 @@
 .guideContent {
   width: 100%;
-  max-width: 1100px;
-
-  margin: 2rem 0;
-  padding: 0 3rem;
-
-  box-sizing: border-box;
-
-  color: var(--text);
-  font-size: 1.6rem;
-  line-height: 1.7;
-
+  margin: 2.4rem 0 0;
+  padding: 4rem clamp(2rem, 5vw, 5.6rem) 4.8rem;
+  color: var(--text-soft);
+  font-size: 1.65rem;
+  line-height: 1.75;
   background: var(--card);
-  border: 1px solid rgba(255, 255, 255, 0.06);
-  border-radius: 8px;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  animation: rise 0.6s var(--ease-out) 0.15s both;
+}
+
+@keyframes rise {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+}
+
+/* Medida de leitura confortável */
+.guideContent > * {
+  max-width: 76ch;
+}
+
+.guideContent > :first-child {
+  margin-top: 0;
 }
 
 /* HEADINGS */
@@ -26,24 +37,37 @@
 }
 
 .guideContent h1 {
-  margin: 2.8rem 0 1.4rem;
-  font-size: 2.8rem;
+  margin: 3.6rem 0 1.6rem;
+  font-size: 3rem;
 }
 
 .guideContent h2 {
-  margin: 2.4rem 0 1.2rem;
+  display: flex;
+  align-items: center;
+  gap: 1.2rem;
+  margin: 3.6rem 0 1.4rem;
   font-size: 2.2rem;
 }
 
+.guideContent h2::before {
+  content: '';
+  width: 8px;
+  height: 8px;
+  flex-shrink: 0;
+  background: var(--accent);
+  box-shadow: 0 0 10px var(--accent);
+  transform: rotate(45deg);
+}
+
 .guideContent h3 {
-  margin: 2rem 0 1rem;
+  margin: 2.8rem 0 1rem;
   font-size: 1.8rem;
 }
 
 /* PARÁGRAFOS, NEGRITO E ITÁLICO */
 
 .guideContent p {
-  margin: 0 0 1.4rem;
+  margin: 0 0 1.6rem;
 }
 
 .guideContent strong {
@@ -52,125 +76,189 @@
 }
 
 .guideContent em {
-  color: var(--muted);
+  color: var(--text);
 }
 
-/* QUOTE */
+/* QUOTE — vira um callout de dica */
 
 .guideContent blockquote {
-  margin: 1.8rem 0;
-  padding: 1rem 1.6rem;
-
-  border-left: 3px solid var(--accent);
-  background: var(--card);
-  color: var(--muted);
-
-  border-radius: 0 6px 6px 0;
+  margin: 2.4rem 0;
+  padding: 1.6rem 2rem;
+  border: 1px solid rgba(255, 201, 74, 0.2);
+  border-left: 3px solid var(--xp);
+  border-radius: 0 var(--radius) var(--radius) 0;
+  background: linear-gradient(90deg, var(--xp-soft), transparent);
+  color: var(--text);
 }
 
 .guideContent blockquote p {
   margin: 0;
 }
 
-/* LISTAS E LINKS */
+/* LISTAS */
 
 .guideContent ul,
 .guideContent ol {
-  margin: 1rem 0 1.6rem;
+  margin: 1.2rem 0 2rem;
   padding-left: 2.8rem;
 }
 
 .guideContent li {
-  margin: 0.4rem 0;
+  margin: 0.6rem 0;
+  padding-left: 0.4rem;
 }
 
-.guideContent li::marker {
+.guideContent ul li::marker {
   color: var(--accent);
 }
+
+/* Lista numerada vira um passo a passo */
+.guideContent ol {
+  padding-left: 0;
+  list-style: none;
+  counter-reset: step;
+}
+
+.guideContent ol > li {
+  position: relative;
+  min-height: 3rem;
+  padding-left: 4.8rem;
+  margin: 1.2rem 0;
+  counter-increment: step;
+}
+
+.guideContent ol > li::before {
+  content: counter(step);
+  position: absolute;
+  left: 0;
+  top: 0;
+  display: grid;
+  place-items: center;
+  width: 3rem;
+  height: 3rem;
+  background: var(--accent-soft);
+  color: var(--accent);
+  font-family: var(--font-mono);
+  font-size: 1.3rem;
+  font-weight: 700;
+  line-height: 1;
+  clip-path: polygon(
+    6px 0,
+    100% 0,
+    100% calc(100% - 6px),
+    calc(100% - 6px) 100%,
+    0 100%,
+    0 6px
+  );
+  box-shadow: inset 0 0 0 1px rgba(34, 228, 255, 0.4);
+}
+
+/* LINKS */
 
 .guideContent a {
   color: var(--accent);
-  text-decoration: none;
+  text-decoration: underline;
+  text-decoration-color: rgba(34, 228, 255, 0.35);
+  text-underline-offset: 3px;
+  transition: text-decoration-color 0.2s ease;
 }
 
 .guideContent a:hover {
-  color: var(--accent-hover);
-  text-decoration: underline;
+  text-decoration-color: var(--accent);
 }
 
 /* CÓDIGO */
 
 .guideContent pre {
-  margin: 1.6rem 0;
-  padding: 1.6rem;
-
+  margin: 2rem 0;
+  padding: 1.6rem 2rem;
   overflow-x: auto;
-
   background: var(--bg-dark);
-  border: 1px solid rgba(255, 255, 255, 0.06);
-  border-radius: 8px;
-
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
   color: var(--text);
-
-  font-family: 'Cascadia Code', 'Consolas', monospace;
+  font-family: var(--font-mono);
   font-size: 1.4rem;
   line-height: 1.6;
 }
 
 .guideContent :not(pre) > code {
-  padding: 0.2rem 0.5rem;
-
-  background: var(--card);
-  border-radius: 4px;
-
+  padding: 0.2rem 0.6rem;
+  border: 1px solid rgba(34, 228, 255, 0.2);
+  border-radius: 5px;
+  background: var(--accent-soft);
   color: var(--accent);
-
-  font-family: 'Cascadia Code', 'Consolas', monospace;
-  font-size: 0.9em;
+  font-family: var(--font-mono);
+  font-size: 0.85em;
 }
 
 /* TABELAS */
 
 .guideContent table {
   width: 100%;
-  margin: 2rem 0;
-
-  border-collapse: collapse;
-
-  background: var(--card);
-  border-radius: 8px;
+  max-width: none;
+  margin: 2.4rem 0;
+  border-collapse: separate;
+  border-spacing: 0;
+  border: 1px solid var(--border-hover);
+  border-radius: var(--radius);
   overflow: hidden;
+  font-size: 1.5rem;
 }
 
 .guideContent th {
-  padding: 1rem 1.2rem;
-
+  padding: 1.2rem 1.6rem;
   background: var(--bg-dark);
-  color: var(--text);
-
-  font-weight: 600;
+  color: var(--muted);
+  font-family: var(--font-mono);
+  font-size: 1.15rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
   text-align: left;
+  text-transform: uppercase;
 }
 
 .guideContent td {
-  padding: 1rem 1.2rem;
-  color: var(--text);
+  padding: 1.2rem 1.6rem;
+  border-top: 1px solid var(--border);
+  color: var(--text-soft);
 }
 
-.guideContent th,
-.guideContent td {
-  border: 1px solid rgba(255, 255, 255, 0.08);
+.guideContent td + td,
+.guideContent th + th {
+  border-left: 1px solid var(--border);
 }
 
 .guideContent tbody tr:hover {
-  background: rgba(255, 255, 255, 0.03);
+  background: rgba(255, 255, 255, 0.02);
 }
 
 /* LINHA HORIZONTAL */
 
 .guideContent hr {
-  margin: 3rem 0;
-
+  max-width: none;
+  margin: 4rem 0;
   border: 0;
-  border-top: 1px solid rgba(255, 255, 255, 0.1);
+  height: 1px;
+  background: linear-gradient(90deg, var(--border-hover), transparent);
+}
+
+.guideContent img {
+  max-width: 100%;
+  margin: 2rem 0;
+  border-radius: var(--radius);
+}
+
+@media (max-width: 720px) {
+  .guideContent {
+    margin-top: 1.6rem;
+    padding: 2.4rem 1.8rem 3.2rem;
+    font-size: 1.55rem;
+    border-radius: var(--radius);
+  }
+
+  .guideContent table {
+    display: block;
+    overflow-x: auto;
+  }
 }

@@ -10,62 +10,78 @@ import {
 } from '@phosphor-icons/react';
 import styles from './styles.module.css';
 import { useAuth } from '../../contexts/AuthContext';
-import { Link } from 'react-router';
+import { Link, NavLink } from 'react-router';
 
 function Sidebar() {
   const { isAuthenticated, logout } = useAuth();
 
+  const itemClass = ({ isActive }: { isActive: boolean }) =>
+    `${styles['navigation-item']} ${isActive ? styles.active : ''}`;
+
   return (
     <aside className={styles.sidebar}>
-      <nav className={styles.navigation}>
-        <Link to='/' className={styles['navigation-item']}>
+      <nav className={styles.navigation} aria-label='Navegação principal'>
+        <NavLink to='/' end className={itemClass} title='Home'>
           <HouseIcon size={22} />
           <span>Home</span>
-        </Link>
+        </NavLink>
 
-        <Link to='#' className={styles['navigation-item']}>
+        <Link
+          to='#'
+          className={`${styles['navigation-item']} ${styles.secondary}`}
+          title='Biblioteca'
+        >
           <BookBookmarkIcon size={22} />
           <span>Biblioteca</span>
         </Link>
 
         <div className={styles.divider}></div>
 
-        <Link to='#' className={styles['navigation-item']}>
+        <Link to='#' className={styles['navigation-item']} title='Jogos'>
           <GameControllerIcon size={22} />
           <span>Jogos</span>
         </Link>
 
-        <Link to='#' className={styles['navigation-item']}>
+        <Link to='#' className={styles['navigation-item']} title='Conquistas'>
           <TrophyIcon size={22} />
           <span>Conquistas</span>
         </Link>
 
-        <Link to='#' className={styles['navigation-item']}>
+        <Link to='#' className={styles['navigation-item']} title='Guias'>
           <BookOpenIcon size={22} />
           <span>Guias</span>
         </Link>
 
         <div className={styles.divider}></div>
 
-        <Link to='#' className={styles['navigation-item']}>
+        <Link
+          to='#'
+          className={`${styles['navigation-item']} ${styles.secondary}`}
+          title='Opções'
+        >
           <GearSixIcon size={22} />
           <span>Opções</span>
         </Link>
 
-        <Link to='#' className={styles['navigation-item']}>
+        <Link
+          to='#'
+          className={`${styles['navigation-item']} ${styles.secondary}`}
+          title='Sobre'
+        >
           <InfoIcon size={22} />
           <span>Sobre</span>
         </Link>
 
         {isAuthenticated && (
-          <Link
-            to='#'
-            className={styles['navigation-item'] + ' ' + styles['logout-item']}
+          <button
+            type='button'
+            className={`${styles['navigation-item']} ${styles['logout-item']}`}
             onClick={logout}
+            title='Sair'
           >
             <SignOutIcon size={22} />
-            <span onClick={logout}>Sair</span>
-          </Link>
+            <span>Sair</span>
+          </button>
         )}
       </nav>
     </aside>

@@ -2,67 +2,111 @@
   position: fixed;
   top: 0;
   left: 0;
-  width: 100%;
   z-index: 1000;
-  background: var(--bg-dark);
-  border-bottom: 1px solid var(--card);
+  width: 100%;
+  height: var(--header-h);
+  background: rgba(7, 8, 12, 0.72);
+  border-bottom: 1px solid var(--border);
+  backdrop-filter: blur(16px) saturate(140%);
+  -webkit-backdrop-filter: blur(16px) saturate(140%);
+}
+
+/* Linha de luz na base do header */
+.header::after {
+  content: '';
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: -1px;
+  height: 1px;
+  background: linear-gradient(
+    90deg,
+    transparent,
+    var(--accent-glow) 30%,
+    transparent 60%
+  );
+  opacity: 0.6;
+  pointer-events: none;
 }
 
 .container {
+  height: 100%;
   margin: 0;
-  padding: 2rem 3.4rem;
+  padding: 0 2.4rem;
 }
 
 .header-content {
-  height: 60px;
-  display: flex;
-  justify-content: space-between;
+  display: grid;
+  grid-template-columns: calc(var(--sidebar-w) - 2.4rem) 1fr auto;
   align-items: center;
-  gap: 30px;
+  gap: 2.4rem;
 }
 
 /* Actions */
 .header-actions {
   display: flex;
   align-items: center;
-  gap: 0.75rem;
+  gap: 0.8rem;
 }
 
 .header-button {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  width: 38px;
-  height: 38px;
-  border: none;
+  position: relative;
+  display: grid;
+  place-items: center;
+  width: 40px;
+  height: 40px;
+  border: 1px solid transparent;
   border-radius: 50%;
   background: transparent;
-  color: white;
+  color: var(--text-soft);
   cursor: pointer;
-  transition: background-color 0.15s ease-in-out;
+  transition:
+    background-color 0.15s ease,
+    border-color 0.15s ease,
+    color 0.15s ease;
 }
 
 .header-button:hover {
-  background-color: rgba(255, 255, 255, 0.08);
+  border-color: var(--border-hover);
+  background-color: var(--card);
+  color: var(--text);
 }
 
 .profile-button {
-  border: none;
-  background: transparent;
+  display: grid;
+  padding: 2px;
+  border: 0;
+  border-radius: 50%;
+  background: conic-gradient(
+    from 210deg,
+    var(--accent),
+    var(--xp),
+    var(--accent)
+  );
   cursor: pointer;
+  transition:
+    transform 0.2s var(--ease-out),
+    box-shadow 0.2s ease;
+}
+
+.profile-button:hover {
+  transform: scale(1.06);
+  box-shadow: 0 0 0 4px var(--accent-soft);
 }
 
 .profile-avatar {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  width: 35px;
-  height: 35px;
-  border-radius: 50%;
-  background: var(--accent);
-  color: white;
-  font-weight: bold;
+  display: grid;
+  place-items: center;
+  width: 36px;
+  height: 36px;
   overflow: hidden;
+  border: 2px solid var(--bg-dark);
+  border-radius: 50%;
+  background: var(--elevated);
+  color: var(--accent);
+  font-family: var(--font-display);
+  font-size: 1.5rem;
+  font-weight: 700;
 }
 
 .profile-avatar img {
@@ -80,37 +124,73 @@
 .auth-buttons {
   display: flex;
   align-items: center;
-  gap: 18px;
+  gap: 0.6rem;
 }
 
 .login-link,
 .register-link {
+  padding: 0.9rem 1.4rem;
+  font-size: 1.4rem;
+  font-weight: 700;
   text-decoration: none;
-  font-size: 14px;
-  font-weight: 500;
-  transition: color 0.15s ease;
+  white-space: nowrap;
+  transition:
+    color 0.15s ease,
+    background 0.15s ease,
+    box-shadow 0.15s ease;
 }
 
 .login-link {
-  color: var(--text);
+  color: var(--text-soft);
 }
 
 .login-link:hover {
-  color: var(--accent);
+  color: var(--text);
 }
 
 .register-link {
-  padding: 8px 14px;
-  border-radius: 6px;
-
   background: var(--accent);
-  color: #fff;
-
-  transition:
-    background 0.15s ease,
-    color 0.15s ease;
+  color: var(--accent-ink);
+  clip-path: polygon(
+    8px 0,
+    100% 0,
+    100% calc(100% - 8px),
+    calc(100% - 8px) 100%,
+    0 100%,
+    0 8px
+  );
 }
 
 .register-link:hover {
   background: var(--accent-hover);
+  box-shadow: 0 0 24px var(--accent-glow);
+}
+
+@media (max-width: 1100px) {
+  .header-content {
+    grid-template-columns: auto 1fr auto;
+  }
+}
+
+@media (max-width: 720px) {
+  .container {
+    padding: 0 1.2rem;
+  }
+
+  .header-content {
+    gap: 1rem;
+  }
+
+  .header-button {
+    display: none;
+  }
+
+  .register-link {
+    display: none;
+  }
+
+  .login-link {
+    padding: 0.8rem 0.4rem;
+    color: var(--accent);
+  }
 }
