@@ -1,5 +1,6 @@
 package com.wexp.feature.image;
 
+import com.wexp.feature.user.UserEntity;
 import com.wexp.shared.exception.ApiException;
 import com.wexp.shared.exception.ExceptionResponse;
 import com.wexp.shared.util.PublicIdGenerator;
@@ -31,12 +32,14 @@ public class ImageService {
 
     private final ImageRepository imageRepository;
     private final ImageStorage imageStorage;
+    private final ImageAuthorizationService imageAuthorizationService;
 
     @Value("${images.max-size-bytes:10485760}")
     private long maxSizeBytes;
 
-    public ImageEntity replace(String ownerType, String ownerId, String variant, MultipartFile file) {
+    public ImageEntity replace(String ownerType, String ownerId, String variant, MultipartFile file, UserEntity currentUser) {
         validateOwner(ownerType, ownerId, variant);
+        imageAuthorizationService.authorizeModification(ownerType, ownerId, variant, currentUser);
         validate(file);
 
         String extension = extensionFor(file.getContentType(), file.getOriginalFilename());
@@ -114,9 +117,11 @@ public class ImageService {
         return response(image, loadResource(image));
     }
 
-    public void delete(String publicId) {
+    public void delete(String publicId, UserEntity currentUser) {
         ImageEntity image = imageRepository.findByPublicId(publicId)
                 .orElseThrow(() -> new ApiException(ExceptionResponse.ImageNotFound));
+        imageAuthorizationService.authorizeModification(
+                image.getOwnerType(), image.getOwnerId(), image.getVariant(), currentUser);
         deleteFile(image);
         imageRepository.delete(image);
     }

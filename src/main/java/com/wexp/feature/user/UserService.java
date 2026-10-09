@@ -29,7 +29,7 @@ public class UserService {
         }
 
         if (avatar != null && !avatar.isEmpty()) {
-            imageService.replace("user", user.getPublicId(), "profile", avatar);
+            imageService.replace("user", user.getPublicId(), "profile", avatar, user);
         }
 
         UserEntity updatedUser = userRepository.save(user);

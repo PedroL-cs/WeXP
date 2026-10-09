@@ -31,9 +31,13 @@ import com.wexp.feature.user.UserEntity;
 import com.wexp.feature.user.UserService;
 import com.wexp.feature.user.dto.UserPublicResponseDto;
 import com.wexp.feature.user.dto.UserResponseDto;
+import com.wexp.shared.config.security.SecurityConfig;
+import com.wexp.shared.config.security.CustomAuthenticationEntryPoint;
+import com.wexp.shared.config.security.CustomAccessDeniedHandler;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.webmvc.test.autoconfigure.AutoConfigureMockMvc;
 import org.springframework.boot.webmvc.test.autoconfigure.WebMvcTest;
+import org.springframework.context.annotation.Import;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
@@ -63,6 +67,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
         ImageController.class
 })
 @AutoConfigureMockMvc(addFilters = false)
+@Import({SecurityConfig.class, CustomAuthenticationEntryPoint.class, CustomAccessDeniedHandler.class})
 class ApiControllerTests {
 
     @Autowired
@@ -374,11 +379,11 @@ class ApiControllerTests {
         when(image.getOwnerType()).thenReturn("user");
         when(image.getOwnerId()).thenReturn("usr-1");
         when(image.getVariant()).thenReturn("profile");
-        when(imageService.replace(anyString(), anyString(), anyString(), any()))
+        when(imageService.replace(anyString(), anyString(), anyString(), any(), nullable(UserEntity.class)))
                 .thenReturn(image);
         when(imageService.get("img-1"))
                 .thenReturn(ResponseEntity.ok(new ByteArrayResource("imagem".getBytes())));
-        doNothing().when(imageService).delete("img-1");
+        doNothing().when(imageService).delete(eq("img-1"), nullable(UserEntity.class));
 
         mockMvc.perform(multipart("/api/v1/images")
                         .file("file", "imagem".getBytes())

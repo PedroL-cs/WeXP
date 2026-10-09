@@ -1,6 +1,7 @@
 package com.wexp.feature.image;
 
 import com.wexp.feature.image.dto.ImageResponseDto;
+import com.wexp.feature.user.UserEntity;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import io.swagger.v3.oas.annotations.media.Content;
@@ -12,6 +13,7 @@ import org.springframework.core.io.Resource;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -22,6 +24,8 @@ import org.springframework.web.multipart.MultipartFile;
         @ApiResponse(responseCode = "400", description = "Requisição inválida",
                 content = @Content(schema = @Schema(ref = "#/components/schemas/ApiErrorResponse"))),
         @ApiResponse(responseCode = "401", description = "Autenticação obrigatória",
+                 content = @Content(schema = @Schema(ref = "#/components/schemas/ApiErrorResponse"))),
+        @ApiResponse(responseCode = "403", description = "Sem permissão para alterar esta imagem",
                 content = @Content(schema = @Schema(ref = "#/components/schemas/ApiErrorResponse"))),
         @ApiResponse(responseCode = "404", description = "Recurso não encontrado",
                 content = @Content(schema = @Schema(ref = "#/components/schemas/ApiErrorResponse")))
@@ -38,9 +42,10 @@ public class ImageController {
             @RequestParam String ownerType,
             @RequestParam String ownerId,
             @RequestParam String variant,
-            @RequestPart MultipartFile file
+            @RequestPart MultipartFile file,
+            @AuthenticationPrincipal UserEntity currentUser
     ) {
-        return new ImageResponseDto(imageService.replace(ownerType, ownerId, variant, file));
+        return new ImageResponseDto(imageService.replace(ownerType, ownerId, variant, file, currentUser));
     }
 
     @GetMapping("/{id}")
@@ -60,7 +65,7 @@ public class ImageController {
     @DeleteMapping("/{id}")
     @SecurityRequirement(name = "bearerAuth")
     @ResponseStatus(HttpStatus.NO_CONTENT)
-    public void delete(@PathVariable String id) {
-        imageService.delete(id);
+    public void delete(@PathVariable String id, @AuthenticationPrincipal UserEntity currentUser) {
+        imageService.delete(id, currentUser);
     }
 }

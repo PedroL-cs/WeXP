@@ -4,6 +4,9 @@ target/
 !**/src/main/**/target/
 !**/src/test/**/target/
 uploads/
+.env
+.env.*
+!.env.example
 
 ### STS ###
 .apt_generated
