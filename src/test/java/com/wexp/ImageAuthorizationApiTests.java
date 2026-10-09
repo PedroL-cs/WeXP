@@ -8,6 +8,7 @@ import com.wexp.feature.image.ImageController;
 import com.wexp.feature.image.ImageEntity;
 import com.wexp.feature.image.ImageRepository;
 import com.wexp.feature.image.ImageService;
+import com.wexp.feature.image.ImagePersistenceService;
 import com.wexp.feature.image.ImageStorage;
 import com.wexp.feature.user.UserEntity;
 import com.wexp.shared.config.security.CustomAccessDeniedHandler;
@@ -22,6 +23,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.webmvc.test.autoconfigure.WebMvcTest;
 import org.springframework.context.annotation.Import;
 import org.springframework.core.io.ByteArrayResource;
+import org.springframework.dao.OptimisticLockingFailureException;
 import org.springframework.mock.web.MockMultipartFile;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.web.FilterChainProxy;
@@ -57,6 +59,8 @@ class ImageAuthorizationApiTests {
     @MockitoBean
     private ImageStorage imageStorage;
     @MockitoBean
+    private ImagePersistenceService imagePersistenceService;
+    @MockitoBean
     private IGuideRepository guideRepository;
     @MockitoBean
     private JwtService jwtService;
@@ -87,14 +91,14 @@ class ImageAuthorizationApiTests {
 
     @Test
     void shouldAllowUploadingOwnAvatar() throws Exception {
-        when(imageRepository.save(any(ImageEntity.class))).thenAnswer(invocation -> invocation.getArgument(0));
+        when(imagePersistenceService.replace(any(ImageEntity.class))).thenAnswer(invocation -> invocation.getArgument(0));
 
         mockMvc.perform(upload("user", "usr-1", "profile").header("Authorization", "Bearer token"))
                 .andExpect(status().isCreated())
                 .andExpect(jsonPath("$.ownerId").value("usr-1"));
 
         verify(imageStorage).store(anyString(), any());
-        verify(imageRepository).save(any(ImageEntity.class));
+        verify(imagePersistenceService).replace(any(ImageEntity.class));
     }
 
     @ParameterizedTest
@@ -105,14 +109,14 @@ class ImageAuthorizationApiTests {
                 .andExpect(status().isForbidden())
                 .andExpect(jsonPath("$.code").value(16));
 
-        verifyNoInteractions(imageRepository, imageStorage);
+        verifyNoInteractions(imageRepository, imageStorage, imagePersistenceService);
     }
 
     @Test
     void shouldAllowGuideAuthorToUploadImage() throws Exception {
         when(guideRepository.findByPublicId("guide-1"))
                 .thenReturn(Optional.of(GuideEntity.builder().author(currentUser).build()));
-        when(imageRepository.save(any(ImageEntity.class))).thenAnswer(invocation -> invocation.getArgument(0));
+        when(imagePersistenceService.replace(any(ImageEntity.class))).thenAnswer(invocation -> invocation.getArgument(0));
 
         mockMvc.perform(upload("guide", "guide-1", "illustration").header("Authorization", "Bearer token"))
                 .andExpect(status().isCreated());
@@ -129,7 +133,7 @@ class ImageAuthorizationApiTests {
         mockMvc.perform(upload("guide", "guide-1", "illustration").header("Authorization", "Bearer token"))
                 .andExpect(status().isForbidden());
 
-        verifyNoInteractions(imageRepository, imageStorage);
+        verifyNoInteractions(imageRepository, imageStorage, imagePersistenceService);
     }
 
     @Test
@@ -137,7 +141,7 @@ class ImageAuthorizationApiTests {
         mockMvc.perform(upload("guide", "missing", "illustration").header("Authorization", "Bearer token"))
                 .andExpect(status().isNotFound());
 
-        verifyNoInteractions(imageRepository, imageStorage);
+        verifyNoInteractions(imageRepository, imageStorage, imagePersistenceService);
     }
 
     @ParameterizedTest
@@ -151,7 +155,7 @@ class ImageAuthorizationApiTests {
                 .andExpect(status().isForbidden());
 
         verifyNoInteractions(imageStorage);
-        verify(imageRepository, never()).delete(any(ImageEntity.class));
+        verifyNoInteractions(imagePersistenceService);
     }
 
     @Test
@@ -166,7 +170,7 @@ class ImageAuthorizationApiTests {
                 .andExpect(status().isForbidden());
 
         verifyNoInteractions(imageStorage);
-        verify(imageRepository, never()).delete(any(ImageEntity.class));
+        verifyNoInteractions(imagePersistenceService);
     }
 
     @ParameterizedTest
@@ -182,8 +186,7 @@ class ImageAuthorizationApiTests {
         mockMvc.perform(delete("/api/v1/images/img-1").header("Authorization", "Bearer token"))
                 .andExpect(status().isNoContent());
 
-        verify(imageStorage).delete("image.jpg");
-        verify(imageRepository).delete(image);
+        verify(imagePersistenceService).delete(image);
     }
 
     @Test
@@ -195,6 +198,31 @@ class ImageAuthorizationApiTests {
         mockMvc.perform(get("/api/v1/images/img-1"))
                 .andExpect(status().isOk())
                 .andExpect(content().bytes(new byte[]{1, 2, 3}));
+    }
+
+    @Test
+    void shouldReturnConflictAndCleanNewFileOnConcurrentReplacement() throws Exception {
+        when(imagePersistenceService.replace(any(ImageEntity.class)))
+                .thenThrow(new OptimisticLockingFailureException("stale image"));
+
+        mockMvc.perform(upload("user", "usr-1", "profile").header("Authorization", "Bearer token"))
+                .andExpect(status().isConflict())
+                .andExpect(jsonPath("$.code").value(18));
+
+        verify(imageStorage).delete(anyString());
+    }
+
+    @Test
+    void shouldReturnConflictOnConcurrentDeletion() throws Exception {
+        ImageEntity image = image("user", "usr-1", "profile");
+        when(imageRepository.findByPublicId("img-1")).thenReturn(Optional.of(image));
+        doThrow(new OptimisticLockingFailureException("stale image")).when(imagePersistenceService).delete(image);
+
+        mockMvc.perform(delete("/api/v1/images/img-1").header("Authorization", "Bearer token"))
+                .andExpect(status().isConflict())
+                .andExpect(jsonPath("$.code").value(18));
+
+        verifyNoInteractions(imageStorage);
     }
 
     private MockMultipartHttpServletRequestBuilder upload(String ownerType, String ownerId, String variant) {

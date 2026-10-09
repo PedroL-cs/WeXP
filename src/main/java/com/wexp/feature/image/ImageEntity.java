@@ -13,7 +13,9 @@ import java.time.LocalDateTime;
 @NoArgsConstructor
 @AllArgsConstructor
 @Entity
-@Table(name = "images", indexes = {
+@Table(name = "images", uniqueConstraints = {
+        @UniqueConstraint(name = "uk_image_owner_variant", columnNames = {"owner_type", "owner_id", "variant"})
+}, indexes = {
         @Index(name = "idx_image_owner", columnList = "owner_type, owner_id, variant")
 })
 public class ImageEntity {
@@ -48,6 +50,10 @@ public class ImageEntity {
 
     @Column(name = "storage_key", nullable = false, unique = true)
     private String storageKey;
+
+    @Version
+    @Column(nullable = false, columnDefinition = "bigint default 0")
+    private Long version;
 
     @Column(name = "created_at", nullable = false, updatable = false)
     private LocalDateTime createdAt;

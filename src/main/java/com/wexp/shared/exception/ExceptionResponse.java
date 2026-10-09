@@ -31,7 +31,8 @@ public enum ExceptionResponse {
     GuideAlreadyExists(14, "Esta conquista já possui um guia oficial", HttpStatus.CONFLICT),
     RouteNotFound(15, "Recurso não encontrado", HttpStatus.NOT_FOUND),
     Forbidden(16, "Acesso negado", HttpStatus.FORBIDDEN),
-    MethodNotAllowed(17, "Método HTTP não permitido", HttpStatus.METHOD_NOT_ALLOWED);
+    MethodNotAllowed(17, "Método HTTP não permitido", HttpStatus.METHOD_NOT_ALLOWED),
+    ImageModificationConflict(18, "A imagem foi alterada por outra requisição. Tente novamente", HttpStatus.CONFLICT);
 
     private final Integer code;
     private final String message;

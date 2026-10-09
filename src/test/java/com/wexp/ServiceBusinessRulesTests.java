@@ -22,6 +22,8 @@ import com.wexp.feature.user.IUserRepository;
 import com.wexp.shared.client.steam.store.SteamStoreClient;
 import com.wexp.shared.exception.ApiException;
 import com.wexp.shared.exception.ExceptionResponse;
+import com.wexp.shared.persistence.PersistenceTransactions;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
@@ -30,6 +32,7 @@ import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
 import java.util.Optional;
+import java.util.function.Supplier;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
@@ -65,11 +68,19 @@ class ServiceBusinessRulesTests {
     private SteamStoreClient steamStoreClient;
     @Mock
     private SteamApiService steamApiService;
+    @Mock
+    private PersistenceTransactions persistenceTransactions;
+
+    @BeforeEach
+    void executePersistenceOperations() {
+        lenient().when(persistenceTransactions.insert(any())).thenAnswer(invocation ->
+                ((Supplier<?>) invocation.getArgument(0)).get());
+    }
 
     @Test
     void shouldRejectRegistrationWhenEmailIsAlreadyInUse() {
         AuthService authService = new AuthService(
-                userRepository, passwordEncoder, jwtService, authenticationManager);
+                userRepository, passwordEncoder, jwtService, authenticationManager, persistenceTransactions);
         RegisterRequestDto request = validRegistrationRequest();
         when(userRepository.findByEmail(request.getEmail())).thenReturn(Optional.of(new com.wexp.feature.user.UserEntity()));
 
@@ -82,22 +93,23 @@ class ServiceBusinessRulesTests {
     @Test
     void shouldRegisterUserAndGenerateToken() {
         AuthService authService = new AuthService(
-                userRepository, passwordEncoder, jwtService, authenticationManager);
+                userRepository, passwordEncoder, jwtService, authenticationManager, persistenceTransactions);
         RegisterRequestDto request = validRegistrationRequest();
         when(userRepository.findByEmail(request.getEmail())).thenReturn(Optional.empty());
         when(userRepository.findByLogin(request.getLogin())).thenReturn(Optional.empty());
         when(passwordEncoder.encode(request.getPassword())).thenReturn("encoded-password");
+        when(userRepository.saveAndFlush(any())).thenAnswer(invocation -> invocation.getArgument(0));
         when(jwtService.generateToken(any(com.wexp.feature.user.UserEntity.class))).thenReturn("token");
 
         var response = authService.register(request);
 
         assertEquals("token", response.getToken());
-        verify(userRepository).save(any(com.wexp.feature.user.UserEntity.class));
+        verify(userRepository).saveAndFlush(any(com.wexp.feature.user.UserEntity.class));
     }
 
     @Test
     void shouldRejectGuideCreationWhenGuideAlreadyExists() {
-        GuideService guideService = new GuideService(guideRepository, achievementRepository);
+        GuideService guideService = new GuideService(guideRepository, achievementRepository, persistenceTransactions);
         when(guideRepository.existsByAchievement_PublicId("achievement-1")).thenReturn(true);
 
         ApiException exception = assertThrows(ApiException.class, () ->
@@ -173,7 +185,7 @@ class ServiceBusinessRulesTests {
     @Test
     void shouldRejectGameDetailsWhenGameDoesNotExist() {
         GameService gameService = new GameService(
-                gameRepository, steamGameRepository, steamStoreClient, steamApiService);
+                gameRepository, steamGameRepository, steamStoreClient, steamApiService, persistenceTransactions);
         when(gameRepository.findByPublicId("missing")).thenReturn(Optional.empty());
 
         ApiException exception = assertThrows(ApiException.class, () ->

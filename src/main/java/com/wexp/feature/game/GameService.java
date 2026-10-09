@@ -9,6 +9,7 @@ import com.wexp.shared.exception.ApiException;
 import com.wexp.shared.exception.ExceptionResponse;
 import com.wexp.shared.util.PublicIdGenerator;
 import com.wexp.shared.util.PublicIdType;
+import com.wexp.shared.persistence.PersistenceTransactions;
 import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -35,6 +36,7 @@ public class GameService {
 
     private final SteamStoreClient steamStoreClient;
     private final SteamApiService steamApiService;
+    private final PersistenceTransactions persistenceTransactions;
 
 
     public GameEntity viewGameDetails(String publicId) throws ApiException {
@@ -74,9 +76,9 @@ public class GameService {
 
         GameEntity persistedShell;
         try {
-            persistedShell = gameRepository.saveAndFlush(shell);
+            persistedShell = persistenceTransactions.insert(() -> gameRepository.saveAndFlush(shell));
         } catch (DataIntegrityViolationException e) {
-            GameEntity winner = gameRepository.findBySteamAppId(steamId).orElse(shell);
+            GameEntity winner = gameRepository.findBySteamAppId(steamId).orElseThrow(() -> e);
             logger.warn("Conflito de inserção evitado: O jogo com Steam ID {} já foi criado por outra thread.", steamId);
             return GameIdResponse.builder()
                     .steamId(steamId)
@@ -99,7 +101,7 @@ public class GameService {
 
         return GameIdResponse.builder()
                 .steamId(steamId)
-                .gameId(newPublicId)
+                .gameId(persistedShell.getPublicId())
                 .gameStatus(GameIdResponse.GameStatus.NEW)
                 .build();
     }
@@ -177,7 +179,11 @@ public class GameService {
         GameEntity game = steamStoreClient.getGameDetails(steamAppId, newPublicId, null)
                 .orElseThrow(() -> new ApiException(ExceptionResponse.SteamGameNotFound));
 
-        return gameRepository.save(game);
+        try {
+            return persistenceTransactions.insert(() -> gameRepository.saveAndFlush(game));
+        } catch (DataIntegrityViolationException exception) {
+            return gameRepository.findBySteamAppId(steamAppId).orElseThrow(() -> exception);
+        }
     }
 
     private GameEntity getUpdatedSteamGame(GameEntity game) throws ApiException {

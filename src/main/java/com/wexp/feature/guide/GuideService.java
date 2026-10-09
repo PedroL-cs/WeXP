@@ -6,7 +6,9 @@ import com.wexp.feature.achievement.IAchievementRepository;
 import com.wexp.feature.guide.dto.CreateGuideRequestDto;
 import com.wexp.shared.exception.ApiException;
 import com.wexp.shared.exception.ExceptionResponse;
+import com.wexp.shared.persistence.PersistenceTransactions;
 import lombok.RequiredArgsConstructor;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -16,6 +18,7 @@ public class GuideService {
 
     private final IGuideRepository guideRepository;
     private final IAchievementRepository achievementRepository;
+    private final PersistenceTransactions persistenceTransactions;
 
     @Transactional(readOnly = true)
     public GuideEntity getGuideByAchievementPublicId(String achievementPublicId) {
@@ -29,8 +32,18 @@ public class GuideService {
                 .orElseThrow(() -> new ApiException(ExceptionResponse.GuideNotFound));
     }
 
-    @Transactional
     public GuideEntity createInitialGuide(String achievementPublicId, CreateGuideRequestDto dto, UserEntity currentUser) {
+        try {
+            return persistenceTransactions.insert(() -> persistInitialGuide(achievementPublicId, dto, currentUser));
+        } catch (DataIntegrityViolationException exception) {
+            if (guideRepository.existsByAchievement_PublicId(achievementPublicId)) {
+                throw new ApiException(ExceptionResponse.GuideAlreadyExists);
+            }
+            throw exception;
+        }
+    }
+
+    private GuideEntity persistInitialGuide(String achievementPublicId, CreateGuideRequestDto dto, UserEntity currentUser) {
         if (guideRepository.existsByAchievement_PublicId(achievementPublicId)) {
             throw new ApiException(ExceptionResponse.GuideAlreadyExists);
         }
@@ -45,6 +58,6 @@ public class GuideService {
                 .version(1)
                 .build();
 
-        return guideRepository.save(guideEntity);
+        return guideRepository.saveAndFlush(guideEntity);
     }
 }

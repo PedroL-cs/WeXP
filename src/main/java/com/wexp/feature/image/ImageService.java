@@ -4,11 +4,14 @@ import com.wexp.feature.user.UserEntity;
 import com.wexp.shared.exception.ApiException;
 import com.wexp.shared.exception.ExceptionResponse;
 import com.wexp.shared.util.PublicIdGenerator;
+import com.wexp.shared.util.PublicIdType;
 import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.io.Resource;
+import org.springframework.dao.DataIntegrityViolationException;
+import org.springframework.dao.OptimisticLockingFailureException;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -33,6 +36,7 @@ public class ImageService {
     private final ImageRepository imageRepository;
     private final ImageStorage imageStorage;
     private final ImageAuthorizationService imageAuthorizationService;
+    private final ImagePersistenceService imagePersistenceService;
 
     @Value("${images.max-size-bytes:10485760}")
     private long maxSizeBytes;
@@ -43,14 +47,8 @@ public class ImageService {
         validate(file);
 
         String extension = extensionFor(file.getContentType(), file.getOriginalFilename());
-        String publicId = PublicIdGenerator.generate(com.wexp.shared.util.PublicIdType.IMAGE);
+        String publicId = PublicIdGenerator.generate(PublicIdType.IMAGE);
         String storageKey = resolvePath(ownerType, ownerId, variant, publicId, extension);
-        ImageEntity previousImage = imageRepository
-                .findByOwnerTypeAndOwnerIdAndVariant(ownerType, ownerId, variant)
-                .orElse(null);
-        boolean reusesStoragePath = previousImage != null
-                && storageKey.equals(previousImage.getStorageKey());
-
         try {
             try (InputStream input = file.getInputStream()) {
                 imageStorage.store(storageKey, input);
@@ -67,17 +65,19 @@ public class ImageService {
                     .size(file.getSize())
                     .storageKey(storageKey)
                     .build();
-            if (reusesStoragePath) {
-                imageRepository.delete(previousImage);
-                imageRepository.flush();
+            return imagePersistenceService.replace(image);
+        } catch (OptimisticLockingFailureException exception) {
+            cleanupFile(storageKey);
+            throw new ApiException(ExceptionResponse.ImageModificationConflict);
+        } catch (DataIntegrityViolationException exception) {
+            cleanupFile(storageKey);
+            if (isOwnerVariantConflict(exception)) {
+                throw new ApiException(ExceptionResponse.ImageModificationConflict);
             }
-            ImageEntity savedImage = imageRepository.save(image);
-            if (!reusesStoragePath) {
-                removePrevious(previousImage);
-            }
-            return savedImage;
+            logger.error("Erro de integridade ao armazenar imagem {}:{}/{}", ownerType, ownerId, variant, exception);
+            throw new ApiException(ExceptionResponse.InternalServerError);
         } catch (Exception exception) {
-            imageStorage.delete(storageKey);
+            cleanupFile(storageKey);
             logger.error("Erro ao armazenar imagem {}:{}/{}", ownerType, ownerId, variant, exception);
             throw new ApiException(ExceptionResponse.InternalServerError);
         }
@@ -122,8 +122,11 @@ public class ImageService {
                 .orElseThrow(() -> new ApiException(ExceptionResponse.ImageNotFound));
         imageAuthorizationService.authorizeModification(
                 image.getOwnerType(), image.getOwnerId(), image.getVariant(), currentUser);
-        deleteFile(image);
-        imageRepository.delete(image);
+        try {
+            imagePersistenceService.delete(image);
+        } catch (OptimisticLockingFailureException exception) {
+            throw new ApiException(ExceptionResponse.ImageModificationConflict);
+        }
     }
 
     public static String url(String ownerType, String ownerId, String variant) {
@@ -146,47 +149,28 @@ public class ImageService {
     ) throws Exception {
         validateOwner(ownerType, ownerId, variant);
         String extension = extensionFor(null, sourceName);
-        String publicId = com.wexp.shared.util.PublicIdGenerator.generate(com.wexp.shared.util.PublicIdType.IMAGE);
+        String publicId = PublicIdGenerator.generate(PublicIdType.IMAGE);
         String storageKey = resolvePath(ownerType, ownerId, variant, publicId, extension);
-        ImageEntity previousImage = imageRepository
-                .findByOwnerTypeAndOwnerIdAndVariant(ownerType, ownerId, variant)
-                .orElse(null);
-        boolean reusesStoragePath = previousImage != null
-                && storageKey.equals(previousImage.getStorageKey());
-        imageStorage.store(storageKey, input);
-        long size = imageStorage.size(storageKey);
         try {
+            imageStorage.store(storageKey, input);
+            long size = imageStorage.size(storageKey);
             validateSize(size);
-        } catch (ApiException exception) {
-            imageStorage.delete(storageKey);
+            ImageEntity image = ImageEntity.builder()
+                    .publicId(publicId)
+                    .ownerType(ownerType)
+                    .ownerId(ownerId)
+                    .variant(variant)
+                    .originalFilename(sourceName)
+                    .extension(extension)
+                    .contentType(contentTypeFor(extension))
+                    .size(size)
+                    .storageKey(storageKey)
+                    .build();
+            imagePersistenceService.replace(image);
+        } catch (Exception exception) {
+            cleanupFile(storageKey);
             throw exception;
         }
-
-        ImageEntity image = ImageEntity.builder()
-                .publicId(publicId)
-                .ownerType(ownerType)
-                .ownerId(ownerId)
-                .variant(variant)
-                .originalFilename(sourceName)
-                .extension(extension)
-                .contentType(contentTypeFor(extension))
-                .size(size)
-                .storageKey(storageKey)
-                .build();
-        if (reusesStoragePath) {
-            imageRepository.delete(previousImage);
-            imageRepository.flush();
-        }
-        imageRepository.save(image);
-        if (!reusesStoragePath) {
-            removePrevious(previousImage);
-        }
-    }
-
-    private void removePrevious(ImageEntity image) {
-        if (image == null) return;
-        deleteFile(image);
-        imageRepository.delete(image);
     }
 
     private Resource loadResource(ImageEntity image) {
@@ -209,8 +193,22 @@ public class ImageService {
                 .body(resource);
     }
 
-    private void deleteFile(ImageEntity image) {
-        imageStorage.delete(image.getStorageKey());
+    private void cleanupFile(String storageKey) {
+        try {
+            imageStorage.delete(storageKey);
+        } catch (RuntimeException exception) {
+            logger.warn("Não foi possível limpar o arquivo de imagem {}", storageKey, exception);
+        }
+    }
+
+    private boolean isOwnerVariantConflict(Throwable exception) {
+        for (Throwable cause = exception; cause != null; cause = cause.getCause()) {
+            if (cause instanceof org.hibernate.exception.ConstraintViolationException violation) {
+                String constraint = violation.getConstraintName();
+                return constraint != null && constraint.toLowerCase(Locale.ROOT).contains("uk_image_owner_variant");
+            }
+        }
+        return false;
     }
 
     private void validateOwner(String ownerType, String ownerId, String variant) {
@@ -256,11 +254,11 @@ public class ImageService {
     }
 
     private String resolvePath(String ownerType, String ownerId, String variant, String imageId, String extension) {
-        String filename = semanticFilename(ownerType, variant, imageId);
-        return ownerType.toLowerCase(Locale.ROOT) + "/" + ownerId + "/" + filename + extension;
+        String filename = semanticFilename(ownerType, variant);
+        return ownerType.toLowerCase(Locale.ROOT) + "/" + ownerId + "/" + filename + "-" + imageId + extension;
     }
 
-    private String semanticFilename(String ownerType, String variant, String imageId) {
+    private String semanticFilename(String ownerType, String variant) {
         if ("user".equalsIgnoreCase(ownerType) && "profile".equalsIgnoreCase(variant)) {
             return "avatar";
         }
@@ -269,9 +267,6 @@ public class ImageService {
         }
         if ("achievement".equalsIgnoreCase(ownerType) && "icon".equalsIgnoreCase(variant)) {
             return "icon";
-        }
-        if ("guide".equalsIgnoreCase(ownerType)) {
-            return imageId;
         }
         return variant.toLowerCase(Locale.ROOT);
     }

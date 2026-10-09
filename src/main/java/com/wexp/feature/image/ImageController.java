@@ -27,6 +27,8 @@ import org.springframework.web.multipart.MultipartFile;
                  content = @Content(schema = @Schema(ref = "#/components/schemas/ApiErrorResponse"))),
         @ApiResponse(responseCode = "403", description = "Sem permissão para alterar esta imagem",
                 content = @Content(schema = @Schema(ref = "#/components/schemas/ApiErrorResponse"))),
+        @ApiResponse(responseCode = "409", description = "Conflito com outra alteração de imagem",
+                content = @Content(schema = @Schema(ref = "#/components/schemas/ApiErrorResponse"))),
         @ApiResponse(responseCode = "404", description = "Recurso não encontrado",
                 content = @Content(schema = @Schema(ref = "#/components/schemas/ApiErrorResponse")))
 })

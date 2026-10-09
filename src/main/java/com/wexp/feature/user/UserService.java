@@ -8,6 +8,7 @@ import com.wexp.shared.exception.ApiException;
 import com.wexp.shared.exception.ExceptionResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
 @Service
@@ -21,6 +22,7 @@ public class UserService {
         return new UserResponseDto(user);
     }
 
+    @Transactional
     public UserResponseDto updateCurrentUser(UserEntity user, UpdateUserRequestDto dto, MultipartFile avatar) {
         if (dto != null) {
             if (dto.getUsername() != null ) user.setUsername(dto.getUsername());

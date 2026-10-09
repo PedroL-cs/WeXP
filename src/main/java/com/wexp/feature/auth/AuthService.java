@@ -7,7 +7,9 @@ import com.wexp.feature.auth.dto.LoginResponseDto;
 import com.wexp.feature.auth.dto.RegisterRequestDto;
 import com.wexp.shared.exception.ApiException;
 import com.wexp.shared.exception.ExceptionResponse;
+import com.wexp.shared.persistence.PersistenceTransactions;
 import lombok.RequiredArgsConstructor;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -21,6 +23,7 @@ public class AuthService {
     private final PasswordEncoder passwordEncoder;
     private final JwtService jwtService;
     private final AuthenticationManager authenticationManager;
+    private final PersistenceTransactions persistenceTransactions;
 
     public LoginResponseDto login(LoginRequestDto request) {
         authenticationManager.authenticate(
@@ -54,9 +57,20 @@ public class AuthService {
                 .passwordHash(passwordEncoder.encode(request.getPassword()))
                 .build();
 
-        userRepository.save(user);
+        UserEntity savedUser;
+        try {
+            savedUser = persistenceTransactions.insert(() -> userRepository.saveAndFlush(user));
+        } catch (DataIntegrityViolationException exception) {
+            if (userRepository.findByEmail(request.getEmail()).isPresent()) {
+                throw new ApiException(ExceptionResponse.EmailAlreadyInUse);
+            }
+            if (userRepository.findByLogin(request.getLogin()).isPresent()) {
+                throw new ApiException(ExceptionResponse.UsernameAlreadyInUse);
+            }
+            throw exception;
+        }
 
-        String token = jwtService.generateToken(user);
+        String token = jwtService.generateToken(savedUser);
         return new LoginResponseDto(token);
     }
 }
