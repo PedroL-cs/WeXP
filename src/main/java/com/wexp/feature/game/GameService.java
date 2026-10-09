@@ -66,18 +66,30 @@ public class GameService {
         }
 
         String newPublicId = PublicIdGenerator.generate(PublicIdType.GAME);
+        GameEntity shell = GameEntity.builder()
+                .publicId(newPublicId)
+                .steamAppId(steamId)
+                .name(shellNameFor(steamId))
+                .build();
 
+        GameEntity persistedShell;
+        try {
+            persistedShell = gameRepository.saveAndFlush(shell);
+        } catch (DataIntegrityViolationException e) {
+            GameEntity winner = gameRepository.findBySteamAppId(steamId).orElse(shell);
+            logger.warn("Conflito de inserção evitado: O jogo com Steam ID {} já foi criado por outra thread.", steamId);
+            return GameIdResponse.builder()
+                    .steamId(steamId)
+                    .gameId(winner.getPublicId())
+                    .gameStatus(GameIdResponse.GameStatus.EXISTING)
+                    .build();
+        }
+
+        GameEntity gameToEnrich = persistedShell;
         CompletableFuture.runAsync(() -> {
             try {
-                Optional<GameEntity> inFlightGame = gameRepository.findBySteamAppId(steamId);
-
-                if (inFlightGame.isPresent()) {
-                    steamStoreClient.getGameDetails(steamId, inFlightGame.get().getPublicId(), inFlightGame.get())
-                            .ifPresent(gameRepository::save);
-                } else {
-                    steamStoreClient.getGameDetails(steamId, newPublicId, null)
-                            .ifPresent(gameRepository::save);
-                }
+                steamStoreClient.getGameDetails(steamId, gameToEnrich.getPublicId(), gameToEnrich)
+                        .ifPresent(gameRepository::save);
             } catch (DataIntegrityViolationException e) {
                 logger.warn("Conflito de inserção evitado: O jogo com Steam ID {} foi inserido por outra thread.", steamId);
             } catch (Exception e) {
@@ -90,6 +102,12 @@ public class GameService {
                 .gameId(newPublicId)
                 .gameStatus(GameIdResponse.GameStatus.NEW)
                 .build();
+    }
+
+    private String shellNameFor(Long steamAppId) {
+        return steamGameRepository.findByAppid(steamAppId)
+                .map(SteamGameEntity::getName)
+                .orElse("Jogo Steam #" + steamAppId);
     }
 
     public Page<GameEntity> searchGames(String query, Pageable pageable) {

@@ -11,6 +11,8 @@ import java.util.Optional;
 public interface ISteamGameRepository extends JpaRepository<SteamGameEntity, Long> {
     Optional<SteamGameEntity> findFirstBy();
 
+    Optional<SteamGameEntity> findByAppid(Long appid);
+
     @Query("""
             SELECT s FROM SteamGameEntity s
             WHERE LOWER(s.name) LIKE LOWER(CONCAT('%', :query, '%'))
