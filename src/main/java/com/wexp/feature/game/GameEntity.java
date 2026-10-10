@@ -9,6 +9,7 @@ import com.wexp.shared.util.PublicIdGenerator;
 import com.wexp.shared.util.PublicIdType;
 import jakarta.persistence.*;
 import lombok.*;
+import org.hibernate.annotations.DynamicUpdate;
 
 import java.time.LocalDateTime;
 import java.util.*;
@@ -19,6 +20,7 @@ import java.util.*;
 @NoArgsConstructor
 @AllArgsConstructor
 @Entity
+@DynamicUpdate
 @Table(name = "games")
 public class GameEntity {
     @JsonIgnore
@@ -78,6 +80,10 @@ public class GameEntity {
 
     @Column(name = "updated_at", nullable = false)
     private LocalDateTime updatedAt;
+
+    @JsonIgnore
+    @Column(name = "steam_synced_at")
+    private LocalDateTime steamSyncedAt;
 
     @PrePersist
     protected void onCreate() {

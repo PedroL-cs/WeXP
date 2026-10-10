@@ -9,6 +9,9 @@ import com.wexp.feature.game.IGameRepository;
 import com.wexp.feature.game.dto.GameIdResponse;
 import com.wexp.feature.game.steam.ISteamGameRepository;
 import com.wexp.feature.game.steam.SteamApiService;
+import com.wexp.feature.game.steam.GameSynchronizationService;
+import com.wexp.feature.game.steam.GameSteamPersistenceService;
+import com.wexp.shared.client.steam.store.SteamGameDetails;
 import com.wexp.feature.user.IUserRepository;
 import com.wexp.feature.user.UserEntity;
 import com.wexp.shared.client.steam.store.SteamStoreClient;
@@ -43,10 +46,12 @@ class CreationConflictTests {
     @Mock private SteamStoreClient steamStoreClient;
     @Mock private SteamApiService steamApiService;
     @Mock private PersistenceTransactions persistenceTransactions;
+    @Mock private GameSynchronizationService synchronizationService;
+    @Mock private GameSteamPersistenceService steamPersistenceService;
 
     @BeforeEach
     void executeInsert() {
-        when(persistenceTransactions.insert(any())).thenAnswer(invocation ->
+        lenient().when(persistenceTransactions.insert(any())).thenAnswer(invocation ->
                 ((Supplier<?>) invocation.getArgument(0)).get());
     }
 
@@ -112,9 +117,10 @@ class CreationConflictTests {
     void shouldReturnPersistedWinnerOnConcurrentSteamDetailCreation() {
         GameEntity winner = GameEntity.builder().id(1L).publicId("game-winner").steamAppId(10L).build();
         when(gameRepository.findBySteamAppId(10L)).thenReturn(Optional.empty(), Optional.of(winner));
-        when(steamStoreClient.getGameDetails(eq(10L), anyString(), isNull()))
-                .thenReturn(Optional.of(GameEntity.builder().name("Game").steamAppId(10L).build()));
-        when(gameRepository.saveAndFlush(any())).thenThrow(new DataIntegrityViolationException("unique steam id"));
+        SteamGameDetails details = new SteamGameDetails(10L, null, null);
+        when(steamStoreClient.fetchGameDetails(10L)).thenReturn(Optional.of(details));
+        when(steamPersistenceService.create(anyString(), eq(details)))
+                .thenThrow(new DataIntegrityViolationException("unique steam id"));
 
         assertSame(winner, gameService().viewSteamGameDetails(10L));
         verify(gameRepository).incrementViewsCount(1L);
@@ -125,7 +131,8 @@ class CreationConflictTests {
     }
 
     private GameService gameService() {
-        return new GameService(gameRepository, steamGameRepository, steamStoreClient, steamApiService, persistenceTransactions);
+        return new GameService(gameRepository, steamGameRepository, steamStoreClient, steamApiService,
+                persistenceTransactions, synchronizationService, steamPersistenceService);
     }
 
     private RegisterRequestDto registration() {

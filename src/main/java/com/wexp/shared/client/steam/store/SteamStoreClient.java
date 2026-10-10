@@ -1,6 +1,8 @@
 package com.wexp.shared.client.steam.store;
 
 import com.wexp.shared.client.steam.api.SteamApiClient;
+import com.wexp.shared.client.steam.SteamIntegrationException;
+import com.wexp.shared.client.steam.SteamRequestExecutor;
 import com.wexp.feature.achievement.AchievementEntity;
 import com.wexp.feature.category.CategoryEntity;
 import com.wexp.feature.category.ICategoryRepository;
@@ -29,6 +31,7 @@ public class SteamStoreClient {
 
     private final SteamStore steamStore;
     private final SteamApiClient steamApiClient;
+    private final SteamRequestExecutor requests;
     private final ImageService imageService;
     private final ICategoryRepository categoryRepository;
     private final IGenreRepository genreRepository;
@@ -39,38 +42,58 @@ public class SteamStoreClient {
     @Value("${steam.images.base-url}")
     private String imagesUrl;
 
-    public Optional<GameEntity> getGameDetails(Long steamAppId, String publicId, GameEntity existingGame) {
-        try {
+    public Optional<SteamGameDetails> fetchGameDetails(Long steamAppId) {
+        JsonNode data = requests.execute(SteamRequestExecutor.STORE, () -> {
             JsonNode response = steamStore.getAppDetails(steamAppId);
-            if (response == null || !response.has(steamAppId.toString())) return Optional.empty();
-
+            if (response == null || !response.has(steamAppId.toString())) throw invalidResponse();
             JsonNode gameNode = response.get(steamAppId.toString());
-            if (!gameNode.get("success").asBoolean()) return Optional.empty();
+            if (!gameNode.path("success").isBoolean()) throw invalidResponse();
+            if (!gameNode.get("success").asBoolean()) return null;
+            JsonNode details = gameNode.get("data");
+            if (details == null || !details.isObject() || !details.path("name").isString()
+                    || details.path("name").asString().isBlank()) throw invalidResponse();
+            validateCollection(details, "categories", "id", "description");
+            validateCollection(details, "genres", "id", "description");
+            return details;
+        });
+        if (data == null) return Optional.empty();
+        JsonNode schema = steamApiClient.getSchemaForGame(steamAppId);
+        return Optional.of(new SteamGameDetails(steamAppId, data, schema));
+    }
 
-            JsonNode data = gameNode.get("data");
-            GameEntity gameToSave = this.extractGameEntity(publicId, steamAppId, data, existingGame);
+    // No network calls here: this method is used within the persistence transaction.
+    public GameEntity applyDetails(SteamGameDetails details, String publicId, GameEntity existingGame) {
+        GameEntity game = extractGameEntity(publicId, details.appId(), details.data(), existingGame);
+        processCategories(details.data(), game);
+        processGenres(details.data(), game);
+        processAchievements(details.achievementSchema(), game);
+        return game;
+    }
 
-            this.processCategories(data, gameToSave);
-            this.processGenres(data, gameToSave);
-            this.processAchievements(steamAppId, gameToSave);
-            this.processImages(steamAppId, data, gameToSave);
-
-            return Optional.of(gameToSave);
-        } catch (Exception e) {
-            logger.error("Erro ao consultar os detalhes do jogo na Steam", e);
-        }
-
-        return Optional.empty();
+    public void scheduleImages(SteamGameDetails details, GameEntity game) {
+        processImages(details.appId(), details.data(), game);
+        if (details.achievementSchema() == null) return;
+        JsonNode achievements = details.achievementSchema().path("game").path("availableGameStats").path("achievements");
+        if (!achievements.isArray()) return;
+        achievements.forEach(node -> {
+            String name = node.has("displayName") ? node.get("displayName").asString() : node.path("name").asString();
+            String iconUrl = node.path("icon").asString(null);
+            if (iconUrl != null && !iconUrl.isBlank()) {
+                game.getAchievements().stream().filter(a -> a.getName().equalsIgnoreCase(name)).findFirst()
+                        .ifPresent(a -> imageService.replaceFromUrlAsync("achievement", a.getPublicId(), "icon", iconUrl));
+            }
+        });
     }
 
     public List<SteamGameEntity> searchGames(String query) {
         List<SteamGameEntity> results = new ArrayList<>();
 
-        JsonNode response = steamStore.searchGames(query);
-        if (response == null || !response.has("items")) return results;
-
-        JsonNode items = response.get("items");
-        if (items == null || !items.isArray()) return results;
+        JsonNode items = requests.execute(SteamRequestExecutor.STORE, () -> {
+            JsonNode response = steamStore.searchGames(query);
+            if (response == null || !response.path("items").isArray()) throw invalidResponse();
+            validateCollection(response, "items", "id", "name");
+            return response.get("items");
+        });
 
         items.valueStream()
                 .filter(item -> item.has("id") && item.has("name"))
@@ -90,8 +113,8 @@ public class SteamStoreClient {
                 .build();
 
         gameToSave.setName(data.get("name").asString());
-        gameToSave.setShortDescription(data.get("short_description").asString());
-        gameToSave.setDetailedDescription(data.get("detailed_description").asString());
+        gameToSave.setShortDescription(data.path("short_description").asString(""));
+        gameToSave.setDetailedDescription(data.path("detailed_description").asString(""));
         gameToSave.setReleaseDate(this.extractReleaseDate(data));
 
         return gameToSave;
@@ -149,52 +172,45 @@ public class SteamStoreClient {
         }
     }
 
-    private void processAchievements(Long steamAppId, GameEntity gameToSave) {
-        try {
-            JsonNode schema = steamApiClient.getSchemaForGame(steamAppId);
-            if (schema == null || !schema.has("game")) return;
+    private void processAchievements(JsonNode schema, GameEntity gameToSave) {
+        if (schema == null || !schema.has("game")) return;
+        JsonNode achievements = schema.get("game").path("availableGameStats").path("achievements");
+        if (!achievements.isArray()) return;
 
-            JsonNode stats = schema.get("game").path("availableGameStats");
-            if (!stats.has("achievements")) return;
-
-            JsonNode achievementsNode = stats.get("achievements");
-            if (!achievementsNode.isArray()) return;
-
-            achievementsNode.valueStream().forEach(achNode -> {
-                String achName = achNode.has("displayName") ? achNode.get("displayName").asString() : achNode.get("name").asString();
-                String description = achNode.path("description").asString("");
-                String iconUrl = achNode.path("icon").asString(null);
-                boolean isHidden = achNode.path("hidden").asInt(0) == 1;
-
-                Optional<AchievementEntity> existingAch = gameToSave.getAchievements().stream()
-                        .filter(a -> a.getName().equalsIgnoreCase(achName))
-                        .findFirst();
-
-                AchievementEntity achievement;
-                if (existingAch.isPresent()) {
-                    achievement = existingAch.get();
-                    achievement.setDescription(description);
-                    if (achievement.getPublicId() == null) {
-                        achievement.setPublicId(PublicIdGenerator.generate(PublicIdType.ACHIEVEMENT));
-                    }
-                } else {
-                    achievement = AchievementEntity.builder()
-                            .publicId(PublicIdGenerator.generate(PublicIdType.ACHIEVEMENT))
-                            .name(achName)
-                            .description(description)
-                            .isHidden(isHidden)
-                            .build();
-                    gameToSave.addAchievement(achievement);
+        achievements.forEach(node -> {
+            String name = node.has("displayName") ? node.get("displayName").asString() : node.get("name").asString();
+            String description = node.path("description").asString("");
+            boolean hidden = node.path("hidden").asInt(0) == 1;
+            Optional<AchievementEntity> existing = gameToSave.getAchievements().stream()
+                    .filter(a -> a.getName().equalsIgnoreCase(name)).findFirst();
+            if (existing.isPresent()) {
+                AchievementEntity achievement = existing.get();
+                achievement.setDescription(description);
+                achievement.setIsHidden(hidden);
+                if (achievement.getPublicId() == null) {
+                    achievement.setPublicId(PublicIdGenerator.generate(PublicIdType.ACHIEVEMENT));
                 }
+            } else {
+                gameToSave.addAchievement(AchievementEntity.builder()
+                        .publicId(PublicIdGenerator.generate(PublicIdType.ACHIEVEMENT))
+                        .name(name).description(description).isHidden(hidden).build());
+            }
+        });
+    }
 
-                if (iconUrl != null && !iconUrl.isBlank()) {
-                    imageService.replaceFromUrlAsync("achievement", achievement.getPublicId(), "icon", iconUrl);
-                }
-            });
+    private void validateCollection(JsonNode parent, String field, String id, String label) {
+        JsonNode collection = parent.get(field);
+        if (collection == null) return;
+        if (!collection.isArray()) throw invalidResponse();
+        collection.forEach(item -> {
+            if (item.get(id) == null || item.get(id).isNull() || !item.path(label).isString()) throw invalidResponse();
+            if ("categories".equals(field) && !item.get(id).isIntegralNumber()) throw invalidResponse();
+            if ("genres".equals(field) && !item.get(id).isString() && !item.get(id).isIntegralNumber()) throw invalidResponse();
+        });
+    }
 
-        } catch (Exception e) {
-            logger.warn("Jogo sem conquistas ativas ou erro ao buscar esquemas da Steam (AppID {}): {}", steamAppId, e.getMessage());
-        }
+    private SteamIntegrationException invalidResponse() {
+        return new SteamIntegrationException(SteamIntegrationException.Reason.INVALID_RESPONSE);
     }
 
     private void processImages(Long steamAppId, JsonNode data, GameEntity gameToSave) {
@@ -213,9 +229,9 @@ public class SteamStoreClient {
 
     private LocalDateTime extractReleaseDate(JsonNode data) {
         JsonNode releaseNode = data.get("release_date");
-        if (releaseNode == null || releaseNode.isMissingNode() || releaseNode.path("coming_soon").asBoolean()) return null;
+        if (releaseNode == null || releaseNode.isMissingNode() || releaseNode.path("coming_soon").asBoolean(false)) return null;
 
-        String dateString = releaseNode.path("date").asString();
+        String dateString = releaseNode.path("date").asString("");
         try {
             LocalDate releaseDate = LocalDate.parse(dateString, ptBrFormatter);
             return releaseDate.atStartOfDay();

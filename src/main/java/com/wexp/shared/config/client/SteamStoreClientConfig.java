@@ -5,6 +5,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.web.client.RestClient;
+import org.springframework.http.client.SimpleClientHttpRequestFactory;
 import org.springframework.web.client.support.RestClientAdapter;
 import org.springframework.web.service.invoker.HttpServiceProxyFactory;
 
@@ -15,9 +16,10 @@ public class SteamStoreClientConfig {
     private String steamStoreBaseUrl;
 
     @Bean
-    public SteamStore steamStore() {
+    public SteamStore steamStore(SimpleClientHttpRequestFactory steamRequestFactory) {
         RestClient restClient = RestClient.builder()
                 .baseUrl(steamStoreBaseUrl)
+                .requestFactory(steamRequestFactory)
                 .build();
 
         RestClientAdapter restClientAdapter = RestClientAdapter.create(restClient);

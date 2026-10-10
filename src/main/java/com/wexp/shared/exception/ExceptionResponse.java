@@ -32,7 +32,10 @@ public enum ExceptionResponse {
     RouteNotFound(15, "Recurso não encontrado", HttpStatus.NOT_FOUND),
     Forbidden(16, "Acesso negado", HttpStatus.FORBIDDEN),
     MethodNotAllowed(17, "Método HTTP não permitido", HttpStatus.METHOD_NOT_ALLOWED),
-    ImageModificationConflict(18, "A imagem foi alterada por outra requisição. Tente novamente", HttpStatus.CONFLICT);
+    ImageModificationConflict(18, "A imagem foi alterada por outra requisição. Tente novamente", HttpStatus.CONFLICT),
+    SteamUnavailable(19, "A Steam está temporariamente indisponível. Tente novamente mais tarde", HttpStatus.SERVICE_UNAVAILABLE),
+    SteamTimeout(20, "A Steam não respondeu dentro do tempo esperado", HttpStatus.GATEWAY_TIMEOUT),
+    SteamInvalidResponse(21, "Não foi possível obter uma resposta válida da Steam", HttpStatus.BAD_GATEWAY);
 
     private final Integer code;
     private final String message;

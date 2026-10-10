@@ -4,6 +4,9 @@ import com.wexp.shared.client.steam.store.SteamStoreClient;
 import com.wexp.feature.game.steam.SteamApiService;
 import com.wexp.feature.game.steam.SteamGameEntity;
 import com.wexp.feature.game.steam.ISteamGameRepository;
+import com.wexp.feature.game.steam.GameSynchronizationService;
+import com.wexp.feature.game.steam.GameSteamPersistenceService;
+import com.wexp.shared.client.steam.store.SteamGameDetails;
 import com.wexp.feature.game.dto.GameIdResponse;
 import com.wexp.shared.exception.ApiException;
 import com.wexp.shared.exception.ExceptionResponse;
@@ -19,11 +22,9 @@ import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
-import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
-import java.util.concurrent.CompletableFuture;
 
 @Service
 @RequiredArgsConstructor
@@ -37,6 +38,8 @@ public class GameService {
     private final SteamStoreClient steamStoreClient;
     private final SteamApiService steamApiService;
     private final PersistenceTransactions persistenceTransactions;
+    private final GameSynchronizationService synchronizationService;
+    private final GameSteamPersistenceService steamPersistenceService;
 
 
     public GameEntity viewGameDetails(String publicId) throws ApiException {
@@ -60,6 +63,7 @@ public class GameService {
     public GameIdResponse getGameId(Long steamId) {
         Optional<GameEntity> existingGame = gameRepository.findBySteamAppId(steamId);
         if (existingGame.isPresent()) {
+            synchronizationService.refreshIfStale(existingGame.get());
             return GameIdResponse.builder()
                     .steamId(steamId)
                     .gameId(existingGame.get().getPublicId())
@@ -87,17 +91,7 @@ public class GameService {
                     .build();
         }
 
-        GameEntity gameToEnrich = persistedShell;
-        CompletableFuture.runAsync(() -> {
-            try {
-                steamStoreClient.getGameDetails(steamId, gameToEnrich.getPublicId(), gameToEnrich)
-                        .ifPresent(gameRepository::save);
-            } catch (DataIntegrityViolationException e) {
-                logger.warn("Conflito de inserção evitado: O jogo com Steam ID {} foi inserido por outra thread.", steamId);
-            } catch (Exception e) {
-                logger.error("Erro ao salvar dados do jogo Steam ID: {}", steamId, e);
-            }
-        });
+        synchronizationService.refreshIfStale(persistedShell);
 
         return GameIdResponse.builder()
                 .steamId(steamId)
@@ -113,6 +107,11 @@ public class GameService {
     }
 
     public Page<GameEntity> searchGames(String query, Pageable pageable) {
+        Page<GameEntity> localGamesPage = gameRepository.searchByNameOrDescription(query, pageable);
+        if (localGamesPage.hasContent()) {
+            localGamesPage.forEach(synchronizationService::refreshIfStale);
+            return localGamesPage;
+        }
         Page<SteamGameEntity> instantResult = steamApiService.instantSearchGame(query, pageable);
 
         if (instantResult.hasContent()) {
@@ -142,17 +141,7 @@ public class GameService {
             if (!games.isEmpty()) return new PageImpl<>(games, pageable, storeResults.size());
         }
 
-        Page<GameEntity> localGamesPage = gameRepository.searchByNameOrDescription(query, pageable);
-        if (!localGamesPage.hasContent()) return Page.empty(pageable);
-
-        List<GameEntity> updatedGames = localGamesPage.getContent().stream()
-                .map(game -> {
-                    try { return getGameDetails(game.getPublicId()); }
-                    catch (ApiException ignored) { return game; }
-                })
-                .toList();
-
-        return new PageImpl<>(updatedGames, pageable, localGamesPage.getTotalElements());
+        return Page.empty(pageable);
     }
 
     public Page<GameEntity> getMostViewedGames(Pageable pageable) {
@@ -167,33 +156,27 @@ public class GameService {
         GameEntity game = gameRepository.findByPublicId(publicId)
                 .orElseThrow(() -> new ApiException(ExceptionResponse.GameNotFound));
 
-        return getUpdatedSteamGame(game);
+        synchronizationService.refreshIfStale(game);
+        return game;
     }
 
     private GameEntity getSteamGameDetails(Long steamAppId) throws ApiException {
         Optional<GameEntity> optionalGame = gameRepository.findBySteamAppId(steamAppId);
-        if (optionalGame.isPresent()) return getUpdatedSteamGame(optionalGame.get());
+        if (optionalGame.isPresent()) {
+            synchronizationService.refreshIfStale(optionalGame.get());
+            return optionalGame.get();
+        }
 
         String newPublicId = PublicIdGenerator.generate(PublicIdType.GAME);
 
-        GameEntity game = steamStoreClient.getGameDetails(steamAppId, newPublicId, null)
+        SteamGameDetails details = steamStoreClient.fetchGameDetails(steamAppId)
                 .orElseThrow(() -> new ApiException(ExceptionResponse.SteamGameNotFound));
 
         try {
-            return persistenceTransactions.insert(() -> gameRepository.saveAndFlush(game));
+            return steamPersistenceService.create(newPublicId, details);
         } catch (DataIntegrityViolationException exception) {
             return gameRepository.findBySteamAppId(steamAppId).orElseThrow(() -> exception);
         }
     }
 
-    private GameEntity getUpdatedSteamGame(GameEntity game) throws ApiException {
-        LocalDateTime updatedAt = game.getUpdatedAt();
-        if (updatedAt != null && updatedAt.isAfter(LocalDateTime.now().minusDays(7))) return game;
-
-        GameEntity updatedGame = steamStoreClient.getGameDetails(game.getSteamAppId(), game.getPublicId(), game)
-                .orElseThrow(() -> new ApiException(ExceptionResponse.SteamGameNotFound));
-
-        updatedGame.setUpdatedAt(LocalDateTime.now());
-        return gameRepository.save(updatedGame);
-    }
 }

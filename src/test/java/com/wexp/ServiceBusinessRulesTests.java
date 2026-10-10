@@ -11,6 +11,8 @@ import com.wexp.feature.game.GameService;
 import com.wexp.feature.game.IGameRepository;
 import com.wexp.feature.game.steam.ISteamGameRepository;
 import com.wexp.feature.game.steam.SteamApiService;
+import com.wexp.feature.game.steam.GameSynchronizationService;
+import com.wexp.feature.game.steam.GameSteamPersistenceService;
 import com.wexp.feature.genre.GenreService;
 import com.wexp.feature.genre.IGenreRepository;
 import com.wexp.feature.guide.GuideService;
@@ -70,6 +72,8 @@ class ServiceBusinessRulesTests {
     private SteamApiService steamApiService;
     @Mock
     private PersistenceTransactions persistenceTransactions;
+    @Mock private GameSynchronizationService synchronizationService;
+    @Mock private GameSteamPersistenceService steamPersistenceService;
 
     @BeforeEach
     void executePersistenceOperations() {
@@ -185,7 +189,8 @@ class ServiceBusinessRulesTests {
     @Test
     void shouldRejectGameDetailsWhenGameDoesNotExist() {
         GameService gameService = new GameService(
-                gameRepository, steamGameRepository, steamStoreClient, steamApiService, persistenceTransactions);
+                gameRepository, steamGameRepository, steamStoreClient, steamApiService,
+                persistenceTransactions, synchronizationService, steamPersistenceService);
         when(gameRepository.findByPublicId("missing")).thenReturn(Optional.empty());
 
         ApiException exception = assertThrows(ApiException.class, () ->

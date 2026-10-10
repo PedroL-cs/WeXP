@@ -2,6 +2,7 @@ package com.wexp.shared.exception;
 
 import com.wexp.shared.dto.ApiErrorResponse;
 import com.wexp.shared.dto.ApiFieldError;
+import com.wexp.shared.client.steam.SteamIntegrationException;
 import jakarta.servlet.http.HttpServletRequest;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -29,6 +30,22 @@ import java.util.List;
 public class GlobalExceptionHandler {
 
     private static final Logger logger = LoggerFactory.getLogger(GlobalExceptionHandler.class);
+
+    @ExceptionHandler(SteamIntegrationException.class)
+    public ResponseEntity<ApiErrorResponse> handleSteamFailure(SteamIntegrationException exception, HttpServletRequest request) {
+        ExceptionResponse error = switch (exception.getReason()) {
+            case TIMEOUT -> ExceptionResponse.SteamTimeout;
+            case INVALID_RESPONSE, REJECTED -> ExceptionResponse.SteamInvalidResponse;
+            case NOT_FOUND -> ExceptionResponse.SteamGameNotFound;
+            default -> ExceptionResponse.SteamUnavailable;
+        };
+        var response = ResponseEntity.status(error.getHttpStatus());
+        if (exception.getRetryAfter() != null) {
+            response.header("Retry-After", Long.toString(Math.max(1, (long) Math.ceil(exception.getRetryAfter().toMillis() / 1000.0))));
+        }
+        return response.body(ApiErrorResponse.of(error.getCode(), error.getHttpStatus().value(),
+                error.getMessage(), request.getRequestURI()));
+    }
 
     @ExceptionHandler(ApiException.class)
     public ResponseEntity<ApiErrorResponse> handleApiException(

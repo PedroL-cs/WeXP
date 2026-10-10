@@ -9,6 +9,7 @@ import org.springframework.http.HttpRequest;
 import org.springframework.http.client.ClientHttpRequestInterceptor;
 import org.springframework.http.client.support.HttpRequestWrapper;
 import org.springframework.web.client.RestClient;
+import org.springframework.http.client.SimpleClientHttpRequestFactory;
 import org.springframework.web.client.support.RestClientAdapter;
 import org.springframework.web.service.invoker.HttpServiceProxyFactory;
 import org.springframework.web.util.UriComponentsBuilder;
@@ -25,9 +26,10 @@ public class SteamApiClientConfig {
     private String steamApiKey;
 
     @Bean
-    public SteamApi steamApi() {
+    public SteamApi steamApi(SimpleClientHttpRequestFactory steamRequestFactory) {
         RestClient restClient = RestClient.builder()
                 .baseUrl(steamApiBaseUrl)
+                .requestFactory(steamRequestFactory)
                 .requestInterceptor(addSteamApiKey())
                 .build();
 
