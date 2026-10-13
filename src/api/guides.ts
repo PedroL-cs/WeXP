@@ -1,4 +1,11 @@
-import type { Guide, GuideRevision } from '../types/Guide';
+import type {
+  CreateGuideRevisionRequest,
+  Guide,
+  GuideRevision,
+  RevisionVoteResponse,
+} from '../types/Guide';
+import type { PageResponse } from '../types/PageResponse';
+import { throwApiError } from './apiError';
 import { apiFetch } from './apiFetch';
 
 export async function createAchievementGuide(
@@ -15,9 +22,11 @@ export async function createAchievementGuide(
 
 export async function getAchievementGuide(
   achievementId: string,
+  signal?: AbortSignal,
 ): Promise<Guide | null> {
   const response = await apiFetch(
     `/api/v1/achievements/${achievementId}/guide`,
+    { signal },
   );
 
   if (response.status === 404) {
@@ -25,7 +34,7 @@ export async function getAchievementGuide(
   }
 
   if (!response.ok) {
-    throw new Error('Não foi possível carregar o guia.');
+    return throwApiError(response, 'Não foi possível carregar o guia.');
   }
 
   return response.json();
@@ -33,22 +42,67 @@ export async function getAchievementGuide(
 
 export async function createGuideRevision(
   guideId: string,
-  content: string,
-  changeSummary: string,
+  request: CreateGuideRevisionRequest,
+  signal?: AbortSignal,
 ): Promise<GuideRevision> {
   const response = await apiFetch(`/api/v1/guides/${guideId}/revisions`, {
     method: 'POST',
-    body: JSON.stringify({ content, changeSummary }),
+    body: JSON.stringify(request),
+    signal,
   });
-  if (!response.ok) throw new Error('Não foi possível enviar a revisão.');
+  if (!response.ok)
+    return throwApiError(response, 'Não foi possível enviar a revisão.');
   return response.json();
 }
 
 export async function getGuideRevisions(
   guideId: string,
-): Promise<GuideRevision[]> {
-  const response = await apiFetch(`/api/v1/guides/${guideId}/revisions`);
-  if (!response.ok) throw new Error('Não foi possível carregar as revisões.');
-  const data = await response.json();
-  return Array.isArray(data) ? data : (data.content ?? []);
+  page = 0,
+  size = 20,
+  signal?: AbortSignal,
+): Promise<PageResponse<GuideRevision>> {
+  const params = new URLSearchParams({
+    page: String(page),
+    size: String(size),
+  });
+  const response = await apiFetch(
+    `/api/v1/guides/${guideId}/revisions?${params}`,
+    { signal },
+  );
+  if (!response.ok)
+    return throwApiError(response, 'Não foi possível carregar as revisões.');
+  return response.json();
+}
+
+export async function getGuideRevision(
+  revisionId: string,
+  signal?: AbortSignal,
+): Promise<GuideRevision> {
+  const response = await apiFetch(
+    `/api/v1/revisions/${encodeURIComponent(revisionId)}`,
+    { signal },
+  );
+  if (!response.ok)
+    return throwApiError(response, 'Não foi possível carregar esta versão.');
+  return response.json();
+}
+
+export async function setRevisionUpvote(
+  revisionId: string,
+  upvote: boolean,
+  signal?: AbortSignal,
+): Promise<RevisionVoteResponse> {
+  const response = await apiFetch(
+    `/api/v1/revisions/${encodeURIComponent(revisionId)}/upvote`,
+    {
+      method: upvote ? 'PUT' : 'DELETE',
+      signal,
+    },
+  );
+  if (!response.ok)
+    return throwApiError(
+      response,
+      'Não foi possível registrar seu voto. Tente novamente.',
+    );
+  return response.json();
 }

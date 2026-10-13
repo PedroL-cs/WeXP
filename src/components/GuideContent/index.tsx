@@ -1,4 +1,5 @@
 import ReactMarkdown from 'react-markdown';
+import { memo } from 'react';
 import styles from './styles.module.css';
 import remarkGfm from 'remark-gfm';
 import remarkBreaks from 'remark-breaks';
@@ -21,4 +22,4 @@ function GuideContent({ markdown }: GuideContentProps) {
   );
 }
 
-export default GuideContent;
+export default memo(GuideContent);

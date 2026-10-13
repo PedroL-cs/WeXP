@@ -1,4 +1,5 @@
 import ReactMarkdown from 'react-markdown';
+import { memo } from 'react';
 import remarkBreaks from 'remark-breaks';
 import remarkGfm from 'remark-gfm';
 import rehypeRaw from 'rehype-raw';
@@ -22,4 +23,4 @@ function GuideMarkdown({ markdown }: GuideMarkdownProps) {
   );
 }
 
-export default GuideMarkdown;
+export default memo(GuideMarkdown);

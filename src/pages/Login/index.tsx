@@ -1,6 +1,6 @@
 import { type FormEvent, useState } from 'react';
 import styles from './styles.module.css';
-import { Link, useNavigate } from 'react-router';
+import { Link, useLocation, useNavigate } from 'react-router';
 import Logo from '../../components/Logo';
 import AuthShowcase from '../../components/AuthShowcase';
 import { useAuth } from '../../contexts/AuthContext';
@@ -8,6 +8,7 @@ import { login as loginRequest } from '../../api/auth';
 
 function LoginPage() {
   const navigate = useNavigate();
+  const location = useLocation();
 
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
@@ -22,7 +23,15 @@ function LoginPage() {
       const data = await loginRequest(username, password);
 
       login(data.token, rememberMe);
-      navigate('/');
+      const from = location.state?.from;
+      navigate(
+        typeof from === 'string' &&
+          from.startsWith('/') &&
+          !from.startsWith('//')
+          ? from
+          : '/',
+        { replace: true },
+      );
     } catch (error) {
       alert(error instanceof Error ? error.message : 'Erro ao fazer login.');
     }

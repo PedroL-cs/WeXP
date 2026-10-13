@@ -144,6 +144,7 @@
 }
 
 .outline {
+  text-decoration: none;
   display: inline-flex;
   align-items: center;
   justify-content: center;
@@ -330,16 +331,17 @@
   display: flex;
   flex-direction: column;
   gap: 0.8rem;
+  min-height: 0;
+  max-height: calc(100dvh - var(--header-h) - 4rem);
 }
 
-.list button {
+.revisionSelect {
   position: relative;
   display: block;
   width: 100%;
   padding: 1.4rem 1.6rem;
-  border: 1px solid var(--border);
-  border-radius: var(--radius);
-  background: var(--card);
+  border: 0;
+  background: transparent;
   color: var(--text);
   text-align: left;
   cursor: pointer;
@@ -348,13 +350,11 @@
     background 0.2s ease;
 }
 
-.list button:hover {
-  border-color: var(--border-hover);
+.revisionSelect:hover {
   background: var(--card-hover);
 }
 
-.list .selected,
-.list .selected:hover {
+.revisionCard.selected {
   border-color: rgba(34, 228, 255, 0.5);
   background: linear-gradient(90deg, var(--accent-soft), var(--card) 70%);
 }
@@ -408,9 +408,9 @@
 .authorRow {
   display: flex;
   align-items: center;
-  justify-content: space-between;
+  justify-content: flex-start;
   gap: 1rem;
-  margin-top: 1rem;
+  margin: 0 1.6rem;
   padding-top: 1rem;
   border-top: 1px solid var(--border);
   color: var(--muted);
@@ -428,6 +428,369 @@
 
 .diffPanel h2 {
   font-size: 2rem;
+}
+
+.guideMetadata {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.6rem 1.6rem;
+  margin-top: 1.2rem;
+  color: var(--text-soft);
+  font-size: 1.25rem;
+}
+
+.mainLabel {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.6rem;
+  color: var(--xp);
+  font-weight: 700;
+}
+
+.refreshLabel {
+  color: var(--muted);
+  font-size: 1.15rem;
+}
+
+.creator {
+  display: block;
+  margin-top: 0.5rem;
+  font-size: 1.2rem;
+}
+
+.authorIdentity {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.6rem;
+  min-width: 0;
+  vertical-align: middle;
+}
+
+.authorIdentity a {
+  color: var(--text-soft);
+  text-decoration: none;
+  overflow-wrap: anywhere;
+}
+
+.authorIdentity a:hover {
+  color: var(--accent);
+  text-decoration: underline;
+}
+
+.mainToolbar,
+.historyHeader {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1.2rem;
+}
+
+.mainToolbar {
+  margin-top: 2rem;
+  color: var(--muted);
+  font-size: 1.3rem;
+}
+
+.mainToolbar button {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.7rem;
+  padding: 0.6rem 0;
+  border: 0;
+  background: transparent;
+  color: var(--accent);
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.historyHeader {
+  margin-bottom: 2rem;
+}
+
+.historyHeader h2 {
+  font-size: 2.1rem;
+}
+
+.historyHeader p {
+  max-width: 680px;
+  margin-top: 0.7rem;
+  color: var(--muted);
+  font-size: 1.3rem;
+  line-height: 1.7;
+}
+
+.refreshButton,
+.notice button {
+  padding: 0.8rem 1.2rem;
+  border: 1px solid var(--border-hover);
+  border-radius: var(--radius-sm);
+  background: var(--elevated);
+  color: var(--text-soft);
+  font-size: 1.25rem;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.refreshButton:disabled {
+  opacity: 0.5;
+  cursor: wait;
+}
+
+.notice {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  margin: 1.6rem 0;
+  padding: 1.2rem 1.6rem;
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  font-size: 1.35rem;
+  line-height: 1.65;
+}
+
+.errorNotice {
+  border-color: rgba(255, 77, 109, 0.3);
+  background: var(--danger-bg);
+  color: var(--danger);
+}
+
+.infoNotice {
+  border-color: rgba(34, 228, 255, 0.25);
+  background: var(--accent-soft);
+  color: var(--text-soft);
+}
+
+.loadingLine,
+.singleVersion {
+  margin: 1.2rem 0;
+  color: var(--muted);
+  font-size: 1.3rem;
+}
+
+.listHeading {
+  display: flex;
+  flex-direction: column;
+  gap: 0.3rem;
+  padding: 0 0.3rem 0.4rem;
+}
+
+.listHeading strong {
+  font-size: 1.4rem;
+}
+
+.listHeading span {
+  color: var(--muted);
+  font-size: 1.15rem;
+}
+
+.cards {
+  display: flex;
+  flex-direction: column;
+  gap: 0.9rem;
+  min-height: 0;
+  overflow-y: auto;
+  padding: 0.3rem;
+  scrollbar-width: thin;
+}
+
+.revisionCard {
+  flex-shrink: 0;
+  overflow: hidden;
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  background: var(--card);
+  transition: border-color 0.2s ease;
+}
+
+.revisionCard:hover,
+.revisionCard:focus-within {
+  border-color: var(--border-hover);
+}
+
+.revisionSelect:focus-visible {
+  outline-offset: -3px;
+}
+
+.badges {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  margin-top: 0.8rem;
+}
+
+.badges .badge {
+  margin-top: 0;
+}
+
+.badges .badge::before {
+  display: none;
+}
+
+.mainBadge {
+  color: var(--xp);
+  background: var(--xp-soft);
+}
+
+.revisionDate {
+  display: block;
+  margin-top: 0.8rem;
+  color: var(--muted);
+  font-size: 1.1rem;
+}
+
+.cardActions {
+  padding: 1rem 1.6rem 1.4rem;
+}
+
+.voteButton,
+.voteLogin {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.7rem;
+  min-height: 38px;
+  padding: 0.8rem 1.2rem;
+  border: 1px solid var(--border-hover);
+  border-radius: var(--radius-sm);
+  background: var(--elevated);
+  color: var(--text-soft);
+  font-size: 1.25rem;
+  text-decoration: none;
+  cursor: pointer;
+}
+
+.voteButton strong {
+  font-family: var(--font-mono);
+  font-size: 1.3rem;
+}
+
+.voteButton:hover:not(:disabled),
+.voteLogin:hover {
+  border-color: var(--accent);
+  color: var(--accent);
+}
+
+.voteButton.voted {
+  border-color: rgba(34, 228, 255, 0.5);
+  background: var(--accent-soft);
+  color: var(--accent);
+}
+
+.voteButton:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.listEmpty {
+  padding: 2rem 1rem;
+  color: var(--muted);
+  font-size: 1.3rem;
+}
+
+.pagination {
+  display: flex;
+  flex-shrink: 0;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.8rem;
+  padding-top: 1rem;
+  border-top: 1px solid var(--border);
+  color: var(--muted);
+  font-size: 1.15rem;
+}
+
+.pagination button {
+  display: grid;
+  place-items: center;
+  width: 34px;
+  height: 34px;
+  padding: 0;
+  border: 1px solid var(--border-hover);
+  border-radius: var(--radius-sm);
+  background: var(--card);
+  color: var(--text-soft);
+  cursor: pointer;
+}
+
+.pagination button:disabled {
+  opacity: 0.35;
+  cursor: not-allowed;
+}
+
+.diffPanel {
+  min-width: 0;
+  scroll-margin-top: calc(var(--header-h) + 1.6rem);
+}
+
+.versionHeader {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 1.2rem;
+  padding-bottom: 1.6rem;
+  border-bottom: 1px solid var(--border);
+}
+
+.versionHeader > div {
+  flex: 1;
+  min-width: 180px;
+}
+
+.versionHeader .badges {
+  margin-top: 0;
+}
+
+.versionHeader h2 {
+  margin-top: 0.8rem;
+  line-height: 1.4;
+  overflow-wrap: anywhere;
+}
+
+.versionByline {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.6rem;
+  margin-top: 0.7rem;
+  color: var(--muted);
+  font-size: 1.25rem;
+}
+
+.versionByline time {
+  margin-left: 0.5rem;
+  font-size: 1.1rem;
+}
+
+.contextNote {
+  margin: 1.2rem 0;
+  padding: 1rem 1.2rem;
+  border-left: 2px solid var(--border-hover);
+  background: var(--elevated);
+  color: var(--muted);
+  font-size: 1.25rem;
+  line-height: 1.65;
+}
+
+.detailTabs {
+  margin-top: 1.6rem;
+  border-radius: var(--radius);
+}
+
+.tabs button:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+
+.diffDescription {
+  margin-top: 1.6rem;
+  color: var(--muted);
+  font-size: 1.3rem;
+  line-height: 1.7;
 }
 
 .note {
@@ -474,6 +837,11 @@
 
   .list {
     position: static;
+    max-height: none;
+  }
+
+  .cards {
+    max-height: 36rem;
   }
 }
 

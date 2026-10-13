@@ -1,8 +1,10 @@
 import { apiFetch } from './apiFetch';
 
 export async function login(login: string, password: string) {
-  const response = await apiFetch('/api/v1/auth/login', {
+  // Login must also work when a previous session's token has expired.
+  const response = await fetch('/api/v1/auth/login', {
     method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify({
       login,
       password,

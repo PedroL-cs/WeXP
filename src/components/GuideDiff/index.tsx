@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useMemo } from 'react';
 import GuideMarkdown from '../GuideMarkdown';
 import styles from './styles.module.css';
 
@@ -12,6 +12,8 @@ type GuideDiffProps = {
   current: string;
   previousAuthor: AuthorInfo;
   currentAuthor: AuthorInfo;
+  previousLabel?: string;
+  currentLabel?: string;
 };
 
 function GuideDiff({
@@ -19,14 +21,19 @@ function GuideDiff({
   current,
   previousAuthor,
   currentAuthor,
+  previousLabel = 'Versão usada como base',
+  currentLabel = 'Revisão selecionada',
 }: GuideDiffProps) {
-  const blocks = getBlockDiff(previous, current);
+  const blocks = useMemo(
+    () => getBlockDiff(previous, current),
+    [previous, current],
+  );
 
   return (
     <div className={styles.diff}>
       <div className={styles.panel}>
         <header className={styles.panelHeader}>
-          <div className={styles.panelTitle}>Versão anterior</div>
+          <div className={styles.panelTitle}>{previousLabel}</div>
           <div className={styles.panelAuthor}>
             {previousAuthor.avatar && (
               <img
@@ -55,7 +62,7 @@ function GuideDiff({
 
       <div className={styles.panel}>
         <header className={styles.panelHeader}>
-          <div className={styles.panelTitle}>Versão atual</div>
+          <div className={styles.panelTitle}>{currentLabel}</div>
           <div className={styles.panelAuthor}>
             {currentAuthor.avatar && (
               <img

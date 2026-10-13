@@ -55,6 +55,18 @@
   margin-top: 2.8rem;
 }
 
+.baseNotice {
+  margin-bottom: 2rem;
+  padding: 1.4rem 1.6rem;
+  border: 1px solid var(--border);
+  border-left: 3px solid var(--accent);
+  border-radius: var(--radius);
+  background: var(--accent-soft);
+  color: var(--text-soft);
+  font-size: 1.35rem;
+  line-height: 1.65;
+}
+
 /* Barra de ações fixa no rodapé enquanto se escreve */
 .footer {
   position: sticky;
