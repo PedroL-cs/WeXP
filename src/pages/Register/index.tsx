@@ -1,10 +1,24 @@
-import { type FormEvent, useState } from 'react';
+import {
+  type ChangeEvent,
+  type ClipboardEvent,
+  type FormEvent,
+  useLayoutEffect,
+  useRef,
+  useState,
+} from 'react';
 import { Link, useNavigate } from 'react-router';
 import styles from './styles.module.css';
 import Logo from '../../components/Logo';
 import AuthShowcase from '../../components/AuthShowcase';
 import { register as registerRequest } from '../../api/auth';
 import { useAuth } from '../../contexts/AuthContext';
+import {
+  birthDateCursor,
+  birthDateDigits,
+  formatBirthDate,
+  getBirthDateError,
+  maskBirthDateChange,
+} from '../../utils/birthDate';
 
 function RegisterPage() {
   const navigate = useNavigate();
@@ -14,9 +28,72 @@ function RegisterPage() {
   const [login, setLogin] = useState('');
   const [password, setPassword] = useState('');
   const [birthDate, setBirthDate] = useState('');
+  const [dateTouched, setDateTouched] = useState(false);
+  const dateInput = useRef<HTMLInputElement>(null);
+  const dateSelection = useRef<number | null>(null);
+  const birthDateError = dateTouched ? getBirthDateError(birthDate) : '';
+
+  useLayoutEffect(() => {
+    if (dateSelection.current === null) return;
+    dateInput.current?.setSelectionRange(
+      dateSelection.current,
+      dateSelection.current,
+    );
+    dateSelection.current = null;
+  }, [birthDate]);
+
+  function updateBirthDate(
+    input: HTMLInputElement,
+    value: string,
+    cursor: number,
+  ) {
+    dateSelection.current = value === birthDate ? null : cursor;
+    // Keep the caret correct even when an ignored character leaves state unchanged.
+    input.value = value;
+    input.setSelectionRange(cursor, cursor);
+    setBirthDate(value);
+  }
+
+  function changeBirthDate(event: ChangeEvent<HTMLInputElement>) {
+    const input = event.currentTarget;
+    const masked = maskBirthDateChange(
+      birthDate,
+      input.value,
+      input.selectionStart ?? input.value.length,
+      (event.nativeEvent as InputEvent).inputType,
+    );
+    updateBirthDate(input, masked.value, masked.cursor);
+  }
+
+  function pasteBirthDate(event: ClipboardEvent<HTMLInputElement>) {
+    event.preventDefault();
+    const input = event.currentTarget;
+    const pasted = birthDateDigits(event.clipboardData.getData('text'));
+    if (!pasted) return;
+    const digits = birthDateDigits(birthDate);
+    const start = birthDateDigits(
+      birthDate.slice(0, input.selectionStart ?? 0),
+    ).length;
+    const end = birthDateDigits(
+      birthDate.slice(0, input.selectionEnd ?? birthDate.length),
+    ).length;
+    const value = formatBirthDate(
+      digits.slice(0, start) + pasted + digits.slice(end),
+    );
+    updateBirthDate(
+      input,
+      value,
+      birthDateCursor(value, start + pasted.length),
+    );
+  }
 
   async function handleSubmit(event: FormEvent) {
     event.preventDefault();
+    setDateTouched(true);
+    if (getBirthDateError(birthDate)) {
+      dateInput.current?.focus();
+      return;
+    }
 
     try {
       const data = await registerRequest(
@@ -106,12 +183,38 @@ function RegisterPage() {
 
                 <input
                   id='birthDate'
+                  ref={dateInput}
                   type='text'
                   placeholder='dd/mm/aaaa'
                   inputMode='numeric'
+                  autoComplete='bday'
+                  maxLength={10}
+                  required
+                  aria-invalid={Boolean(birthDateError)}
+                  aria-describedby={
+                    birthDateError
+                      ? 'birthDateHint birthDateError'
+                      : 'birthDateHint'
+                  }
                   value={birthDate}
-                  onChange={event => setBirthDate(event.target.value)}
+                  onChange={changeBirthDate}
+                  onPaste={pasteBirthDate}
+                  onBlur={() => setDateTouched(true)}
+                  onInvalid={event => {
+                    event.preventDefault();
+                    setDateTouched(true);
+                    dateInput.current?.focus();
+                  }}
                 />
+                {birthDateError && (
+                  <p
+                    id='birthDateError'
+                    className={styles.fieldError}
+                    role='alert'
+                  >
+                    {birthDateError}
+                  </p>
+                )}
               </div>
             </div>
 

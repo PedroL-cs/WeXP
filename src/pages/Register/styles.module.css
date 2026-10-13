@@ -105,6 +105,26 @@
   box-shadow: 0 0 0 4px var(--accent-soft);
 }
 
+.inputGroup input[aria-invalid='true'] {
+  border-color: var(--danger);
+}
+
+.inputGroup input[aria-invalid='true']:focus {
+  box-shadow: 0 0 0 4px var(--danger-bg);
+}
+
+.inputHint {
+  color: var(--muted);
+  font-size: 1.15rem;
+  line-height: 1.5;
+}
+
+.fieldError {
+  color: var(--danger);
+  font-size: 1.2rem;
+  line-height: 1.5;
+}
+
 .formOptions {
   display: flex;
   align-items: center;
