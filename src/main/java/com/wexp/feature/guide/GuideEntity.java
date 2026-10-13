@@ -4,6 +4,7 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.wexp.feature.achievement.AchievementEntity;
 import com.wexp.feature.user.UserEntity;
+import com.wexp.feature.revision.GuideRevisionEntity;
 import com.wexp.shared.util.PublicIdGenerator;
 import com.wexp.shared.util.PublicIdType;
 import jakarta.persistence.*;
@@ -17,7 +18,9 @@ import java.time.LocalDateTime;
 @NoArgsConstructor
 @AllArgsConstructor
 @Entity
-@Table(name = "guides")
+@Table(name = "guides", uniqueConstraints = {
+        @UniqueConstraint(name = "uk_guide_original_revision", columnNames = "original_revision_id")
+})
 public class GuideEntity {
     @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
@@ -26,7 +29,7 @@ public class GuideEntity {
     @Column(name = "public_id", nullable = false, unique = true, updatable = false, length = 16)
     private String publicId;
 
-    @Column(columnDefinition = "TEXT", nullable = false)
+    @Column(columnDefinition = "TEXT", nullable = false, updatable = false)
     private String content;
 
     @Column(nullable = false)
@@ -40,8 +43,18 @@ public class GuideEntity {
 
     @JsonIgnore
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "author_id", nullable = false)
+    @JoinColumn(name = "author_id", nullable = false, updatable = false)
     private UserEntity author;
+
+    @JsonIgnore
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "original_revision_id")
+    private GuideRevisionEntity originalRevision;
+
+    @JsonIgnore
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "active_revision_id")
+    private GuideRevisionEntity activeRevision;
 
     @Column(name = "created_at", nullable = false, updatable = false)
     private LocalDateTime createdAt;

@@ -36,13 +36,13 @@ public class GuideController {
     @GetMapping("/achievements/{achievementId}/guide")
     @ResponseStatus(HttpStatus.OK)
     public GuideResponseDto getGuideByAchievement(@PathVariable String achievementId) {
-        return new GuideResponseDto(guideService.getGuideByAchievementPublicId(achievementId));
+        return guideService.getGuideByAchievementPublicId(achievementId);
     }
 
     @GetMapping("/guides/{id}")
     @ResponseStatus(HttpStatus.OK)
     public GuideResponseDto getGuideByPublicId(@PathVariable String id) {
-        return new GuideResponseDto(guideService.getGuideByPublicId(id));
+        return guideService.getGuideByPublicId(id);
     }
 
     @PostMapping("/achievements/{achievementId}/guide")
@@ -52,6 +52,6 @@ public class GuideController {
             @PathVariable String achievementId,
             @Valid @RequestBody CreateGuideRequestDto dto,
             @AuthenticationPrincipal UserEntity currentUser) {
-        return new GuideResponseDto(guideService.createInitialGuide(achievementId, dto, currentUser));
+        return guideService.createInitialGuide(achievementId, dto, currentUser);
     }
 }

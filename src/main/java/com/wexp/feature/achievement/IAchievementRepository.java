@@ -10,6 +10,7 @@ import java.util.Optional;
 
 public interface IAchievementRepository extends JpaRepository<AchievementEntity, Long> {
     Optional<AchievementEntity> findByPublicId(String publicId);
+    boolean existsByPublicId(String publicId);
 
     @Query("""
     SELECT a FROM AchievementEntity a

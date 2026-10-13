@@ -35,7 +35,11 @@ public enum ExceptionResponse {
     ImageModificationConflict(18, "A imagem foi alterada por outra requisição. Tente novamente", HttpStatus.CONFLICT),
     SteamUnavailable(19, "A Steam está temporariamente indisponível. Tente novamente mais tarde", HttpStatus.SERVICE_UNAVAILABLE),
     SteamTimeout(20, "A Steam não respondeu dentro do tempo esperado", HttpStatus.GATEWAY_TIMEOUT),
-    SteamInvalidResponse(21, "Não foi possível obter uma resposta válida da Steam", HttpStatus.BAD_GATEWAY);
+    SteamInvalidResponse(21, "Não foi possível obter uma resposta válida da Steam", HttpStatus.BAD_GATEWAY),
+    RevisionNotFound(22, "Revisão não encontrada", HttpStatus.NOT_FOUND),
+    InvalidRevisionBase(23, "A versão utilizada como base não pertence a este guia ou não está publicada", HttpStatus.BAD_REQUEST),
+    OwnRevisionVote(24, "Não é permitido votar na própria versão", HttpStatus.FORBIDDEN),
+    RevisionNotEligible(25, "Esta revisão não está disponível para votação", HttpStatus.CONFLICT);
 
     private final Integer code;
     private final String message;

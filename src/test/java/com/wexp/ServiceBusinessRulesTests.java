@@ -19,6 +19,8 @@ import com.wexp.feature.guide.GuideService;
 import com.wexp.feature.guide.IGuideRepository;
 import com.wexp.feature.guide.dto.CreateGuideRequestDto;
 import com.wexp.feature.revision.GuideRevisionService;
+import com.wexp.feature.revision.GuideRevisionLifecycleService;
+import com.wexp.feature.revision.IGuideRevisionVoteRepository;
 import com.wexp.feature.revision.IGuideRevisionRepository;
 import com.wexp.feature.user.IUserRepository;
 import com.wexp.shared.client.steam.store.SteamStoreClient;
@@ -64,6 +66,8 @@ class ServiceBusinessRulesTests {
     private IGuideRepository guideRepository;
     @Mock
     private IGuideRevisionRepository revisionRepository;
+    @Mock private IGuideRevisionVoteRepository voteRepository;
+    @Mock private GuideRevisionLifecycleService revisionLifecycle;
     @Mock
     private ISteamGameRepository steamGameRepository;
     @Mock
@@ -113,7 +117,8 @@ class ServiceBusinessRulesTests {
 
     @Test
     void shouldRejectGuideCreationWhenGuideAlreadyExists() {
-        GuideService guideService = new GuideService(guideRepository, achievementRepository, persistenceTransactions);
+        GuideService guideService = new GuideService(guideRepository, achievementRepository, persistenceTransactions,
+                revisionLifecycle, voteRepository);
         when(guideRepository.existsByAchievement_PublicId("achievement-1")).thenReturn(true);
 
         ApiException exception = assertThrows(ApiException.class, () ->
@@ -176,8 +181,9 @@ class ServiceBusinessRulesTests {
 
     @Test
     void shouldRejectRevisionCreationWhenGuideDoesNotExist() {
-        GuideRevisionService revisionService = new GuideRevisionService(guideRepository, revisionRepository);
-        when(guideRepository.findByPublicId("missing")).thenReturn(Optional.empty());
+        GuideRevisionService revisionService = new GuideRevisionService(guideRepository, revisionRepository,
+                voteRepository, achievementRepository, revisionLifecycle);
+        when(guideRepository.findByPublicIdForUpdate("missing")).thenReturn(Optional.empty());
 
         @SuppressWarnings("DataFlowIssue") ApiException exception = assertThrows(ApiException.class, () ->
                 revisionService.createRevision("missing", null, null));

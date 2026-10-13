@@ -8,6 +8,7 @@ import com.wexp.feature.auth.dto.RegisterRequestDto;
 import com.wexp.feature.game.GameEntity;
 import com.wexp.feature.game.IGameRepository;
 import com.wexp.feature.guide.GuideService;
+import com.wexp.feature.revision.GuideRevisionLifecycleService;
 import com.wexp.feature.guide.IGuideRepository;
 import com.wexp.feature.guide.dto.CreateGuideRequestDto;
 import com.wexp.feature.image.*;
@@ -59,7 +60,7 @@ import static org.mockito.Mockito.doThrow;
 @DataJpaTest(properties = {"spring.jpa.hibernate.ddl-auto=create-drop", "spring.jpa.show-sql=false"}, showSql = false)
 @Transactional(propagation = Propagation.NOT_SUPPORTED)
 @Import({ImageService.class, ImagePersistenceService.class, LocalImageStorage.class,
-        PersistenceTransactions.class, AuthService.class, GuideService.class, UserService.class})
+        PersistenceTransactions.class, AuthService.class, GuideService.class, UserService.class, GuideRevisionLifecycleService.class})
 class PersistenceIntegrityTests {
 
     @TempDir

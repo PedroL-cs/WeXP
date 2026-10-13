@@ -45,6 +45,7 @@ public class SecurityConfig {
                         .requestMatchers("/api/v1/users/me").authenticated()
                         .requestMatchers(HttpMethod.GET, "/api/v1/users/*").permitAll()
                         .requestMatchers(HttpMethod.GET, "/api/v1/guides/**").permitAll()
+                        .requestMatchers(HttpMethod.GET, "/api/v1/revisions/**").permitAll()
                         .requestMatchers(HttpMethod.POST, "/api/v1/achievements/*/guide").authenticated()
                         .requestMatchers(HttpMethod.POST, "/api/v1/guides/**").authenticated()
                         // Todas as outras rotas

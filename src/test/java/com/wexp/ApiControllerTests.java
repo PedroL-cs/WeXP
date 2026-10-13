@@ -19,12 +19,14 @@ import com.wexp.feature.genre.GenreController;
 import com.wexp.feature.genre.GenreService;
 import com.wexp.feature.guide.GuideController;
 import com.wexp.feature.guide.GuideEntity;
+import com.wexp.feature.guide.dto.GuideResponseDto;
 import com.wexp.feature.guide.GuideService;
 import com.wexp.feature.image.ImageController;
 import com.wexp.feature.image.ImageEntity;
 import com.wexp.feature.image.ImageService;
 import com.wexp.feature.revision.GuideRevisionController;
 import com.wexp.feature.revision.GuideRevisionService;
+import com.wexp.feature.revision.GuideRevisionVoteService;
 import com.wexp.feature.revision.dto.GuideRevisionResponse;
 import com.wexp.feature.user.UserController;
 import com.wexp.feature.user.UserEntity;
@@ -95,6 +97,8 @@ class ApiControllerTests {
     private GuideService guideService;
     @MockitoBean
     private GuideRevisionService guideRevisionService;
+    @MockitoBean
+    private GuideRevisionVoteService guideRevisionVoteService;
     @MockitoBean
     private ImageService imageService;
 
@@ -330,9 +334,10 @@ class ApiControllerTests {
         when(guide.getVersion()).thenReturn(1);
         when(guide.getAchievementPublicId()).thenReturn("ach-1");
         when(guide.getAuthorUsername()).thenReturn("usuario");
-        when(guideService.getGuideByAchievementPublicId("ach-1")).thenReturn(guide);
-        when(guideService.getGuideByPublicId("guide-1")).thenReturn(guide);
-        when(guideService.createInitialGuide(eq("ach-1"), any(), nullable(UserEntity.class))).thenReturn(guide);
+        GuideResponseDto response = new GuideResponseDto(guide);
+        when(guideService.getGuideByAchievementPublicId("ach-1")).thenReturn(response);
+        when(guideService.getGuideByPublicId("guide-1")).thenReturn(response);
+        when(guideService.createInitialGuide(eq("ach-1"), any(), nullable(UserEntity.class))).thenReturn(response);
 
         mockMvc.perform(get("/api/v1/achievements/ach-1/guide"))
                 .andExpect(status().isOk())
@@ -366,7 +371,7 @@ class ApiControllerTests {
         mockMvc.perform(post("/api/v1/guides/guide-1/revisions")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content("""
-                                {"content":"conteúdo revisado","changeSummary":"Correção de texto"}
+                                {"content":"conteúdo revisado","changeSummary":"Correção de texto","baseRevisionId":"revision-base"}
                                 """))
                 .andExpect(status().isCreated())
                 .andExpect(jsonPath("$.publicId").value("revision-1"));
