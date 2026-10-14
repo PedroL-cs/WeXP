@@ -16,6 +16,7 @@ import {
 import { getGame } from '../../api/games';
 
 import type { Game } from '../../types/Game';
+import SaveButton from '../../components/SaveButton';
 
 function GamePage() {
   const { id } = useParams();
@@ -106,32 +107,35 @@ function GamePage() {
 
             <p>{game.shortDescription}</p>
 
-            <dl className={styles.stats}>
-              <div className={styles.statXp}>
-                <dt>
-                  <TrophyIcon size={16} weight='fill' /> Conquistas
-                </dt>
-                <dd>{game.achievements.length}</dd>
-              </div>
+            <div className={styles.heroActions}>
+              <dl className={styles.stats}>
+                <div className={styles.statXp}>
+                  <dt>
+                    <TrophyIcon size={16} weight='fill' /> Conquistas
+                  </dt>
+                  <dd>{game.achievements.length}</dd>
+                </div>
 
-              {secretCount > 0 && (
+                {secretCount > 0 && (
+                  <div>
+                    <dt>
+                      <LockSimpleIcon size={16} weight='fill' /> Secretas
+                    </dt>
+                    <dd>{secretCount}</dd>
+                  </div>
+                )}
+
                 <div>
                   <dt>
-                    <LockSimpleIcon size={16} weight='fill' /> Secretas
+                    <CalendarBlankIcon size={16} weight='fill' /> Lançamento
                   </dt>
-                  <dd>{secretCount}</dd>
+                  <dd>
+                    {new Date(game.releaseDate).toLocaleDateString('pt-BR')}
+                  </dd>
                 </div>
-              )}
-
-              <div>
-                <dt>
-                  <CalendarBlankIcon size={16} weight='fill' /> Lançamento
-                </dt>
-                <dd>
-                  {new Date(game.releaseDate).toLocaleDateString('pt-BR')}
-                </dd>
-              </div>
-            </dl>
+              </dl>
+              <SaveButton type='GAME' resourceId={game.id} />
+            </div>
           </div>
         </div>
       </section>

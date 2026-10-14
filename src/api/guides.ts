@@ -40,6 +40,20 @@ export async function getAchievementGuide(
   return response.json();
 }
 
+export async function getGuide(
+  guideId: string,
+  signal?: AbortSignal,
+): Promise<Guide> {
+  const response = await apiFetch(
+    `/api/v1/guides/${encodeURIComponent(guideId)}`,
+    { signal },
+  );
+  if (!response.ok) {
+    return throwApiError(response, 'Não foi possível carregar o guia.');
+  }
+  return response.json();
+}
+
 export async function createGuideRevision(
   guideId: string,
   request: CreateGuideRevisionRequest,

@@ -92,7 +92,20 @@ function getBreadcrumbs(pathname: string): BreadcrumbItem[] {
     search: 'Busca',
     profile: 'Perfil',
     users: 'Usuário',
+    library: 'Biblioteca',
   };
+
+  if (segments[0] === 'library' && segments[1]) {
+    const libraryLabels: Record<string, string> = {
+      games: 'Jogos',
+      achievements: 'Conquistas',
+      guides: 'Guias',
+    };
+    return [
+      { label: 'Biblioteca', path: '/library' },
+      { label: libraryLabels[segments[1]] ?? 'Itens salvos' },
+    ];
+  }
 
   const label = labels[segments[0]];
 

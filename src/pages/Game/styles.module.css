@@ -120,6 +120,13 @@
   backdrop-filter: blur(10px);
 }
 
+.heroActions {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 1.2rem;
+}
+
 .stats > div {
   padding: 1.2rem 2rem;
 }
@@ -390,6 +397,10 @@
     display: grid;
     grid-auto-columns: 1fr;
     grid-auto-flow: column;
+    width: 100%;
+  }
+
+  .heroActions {
     width: 100%;
   }
 

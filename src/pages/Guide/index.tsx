@@ -18,6 +18,7 @@ import { useAuth } from '../../contexts/AuthContext';
 import type { GuideRevision } from '../../types/Guide';
 import { useGuideData, type AuthorInfo } from './useGuideData';
 import styles from './styles.module.css';
+import SaveButton from '../../components/SaveButton';
 
 const dateFormat = new Intl.DateTimeFormat('pt-BR', {
   dateStyle: 'medium',
@@ -376,11 +377,16 @@ function GuidePageContent() {
             </div>
           )}
         </div>
-        {isAuthenticated && guide && (
-          <Link className={styles.outline} to={`${editorPath}/revise`}>
-            <NotePencilIcon size={18} />
-            Sugerir revisão
-          </Link>
+        {guide && (
+          <div className={styles.headerActions}>
+            <SaveButton type='GUIDE' resourceId={guide.id} />
+            {isAuthenticated && (
+              <Link className={styles.outline} to={`${editorPath}/revise`}>
+                <NotePencilIcon size={18} />
+                Sugerir revisão
+              </Link>
+            )}
+          </div>
         )}
       </header>
 

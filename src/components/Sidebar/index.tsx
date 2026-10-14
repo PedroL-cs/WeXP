@@ -26,31 +26,38 @@ function Sidebar() {
           <span>Home</span>
         </NavLink>
 
-        <Link
-          to='#'
-          className={`${styles['navigation-item']} ${styles.secondary}`}
+        <NavLink
+          to='/library'
+          end
+          className={({ isActive }) =>
+            `${styles['navigation-item']} ${styles.secondary} ${isActive ? styles.active : ''}`
+          }
           title='Biblioteca'
         >
           <BookBookmarkIcon size={22} />
           <span>Biblioteca</span>
-        </Link>
+        </NavLink>
 
         <div className={styles.divider}></div>
 
-        <Link to='#' className={styles['navigation-item']} title='Jogos'>
+        <NavLink to='/library/games' className={itemClass} title='Jogos'>
           <GameControllerIcon size={22} />
           <span>Jogos</span>
-        </Link>
+        </NavLink>
 
-        <Link to='#' className={styles['navigation-item']} title='Conquistas'>
+        <NavLink
+          to='/library/achievements'
+          className={itemClass}
+          title='Conquistas'
+        >
           <TrophyIcon size={22} />
           <span>Conquistas</span>
-        </Link>
+        </NavLink>
 
-        <Link to='#' className={styles['navigation-item']} title='Guias'>
+        <NavLink to='/library/guides' className={itemClass} title='Guias'>
           <BookOpenIcon size={22} />
           <span>Guias</span>
-        </Link>
+        </NavLink>
 
         <div className={styles.divider}></div>
 

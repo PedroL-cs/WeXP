@@ -2,6 +2,7 @@ import { useNavigate } from 'react-router';
 import { CaretRightIcon, LockSimpleIcon } from '@phosphor-icons/react';
 import type { Achievement } from '../../types/Achievement';
 import styles from './styles.module.css';
+import SaveButton from '../SaveButton';
 
 type AchievementCardProps = {
   achievement: Achievement;
@@ -30,7 +31,9 @@ function AchievementCard({
     tabIndex: 0,
     style,
     onKeyDown: (event: React.KeyboardEvent) => {
-      if (event.key === 'Enter') handleClick();
+      if (event.target === event.currentTarget && event.key === 'Enter') {
+        handleClick();
+      }
     },
   };
 
@@ -58,6 +61,7 @@ function AchievementCard({
           {achievement.description && <p>{achievement.description}</p>}
         </div>
 
+        <SaveButton type='ACHIEVEMENT' resourceId={achievement.id} compact />
         {arrow}
       </div>
     );
@@ -99,6 +103,7 @@ function AchievementCard({
         </div>
       </div>
 
+      <SaveButton type='ACHIEVEMENT' resourceId={achievement.id} compact />
       {arrow}
     </div>
   );

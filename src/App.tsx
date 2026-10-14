@@ -12,6 +12,8 @@ import GuidePage from './pages/Guide';
 import CreateRevisionPage from './pages/CreateRevision';
 import CreateGuidePage from './pages/CreateGuide';
 import UserProfilePage from './pages/UserProfile';
+import LibraryPage from './pages/Library';
+import ProtectedRoute from './components/ProtectedRoute';
 
 function App() {
   return (
@@ -36,6 +38,21 @@ function App() {
             />
             <Route path='/profile' element={<UserProfilePage />} />
             <Route path='/users/:userId' element={<UserProfilePage />} />
+            <Route element={<ProtectedRoute />}>
+              <Route path='/library' element={<LibraryPage />} />
+              <Route
+                path='/library/games'
+                element={<LibraryPage type='GAME' />}
+              />
+              <Route
+                path='/library/achievements'
+                element={<LibraryPage type='ACHIEVEMENT' />}
+              />
+              <Route
+                path='/library/guides'
+                element={<LibraryPage type='GUIDE' />}
+              />
+            </Route>
             <Route path='*' element={<NotFound />} />
           </Route>
 

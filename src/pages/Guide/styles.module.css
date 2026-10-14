@@ -171,6 +171,13 @@
   box-shadow: 0 0 24px -4px var(--accent-glow);
 }
 
+.headerActions {
+  display: flex;
+  flex-direction: column;
+  align-self: flex-start;
+  gap: 0.8rem;
+}
+
 /* =========================
    Abas
 ========================= */
@@ -872,6 +879,11 @@
   }
 
   .outline {
+    width: 100%;
+  }
+
+  .headerActions,
+  .headerActions > * {
     width: 100%;
   }
 
