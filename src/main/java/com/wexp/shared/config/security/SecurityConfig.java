@@ -42,6 +42,7 @@ public class SecurityConfig {
                         .requestMatchers(HttpMethod.GET, "/api/v1/images/**").permitAll()
                         .requestMatchers("/swagger-ui/**", "/swagger-ui.html", "/v3/api-docs/**").permitAll()
                         // Rotas protegidas
+                        .requestMatchers("/api/v1/users/me/saved-items/**").authenticated()
                         .requestMatchers("/api/v1/users/me").authenticated()
                         .requestMatchers(HttpMethod.GET, "/api/v1/users/*").permitAll()
                         .requestMatchers(HttpMethod.GET, "/api/v1/guides/**").permitAll()
