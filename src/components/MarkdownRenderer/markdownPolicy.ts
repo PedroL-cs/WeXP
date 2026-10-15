@@ -46,11 +46,12 @@ export function remarkRestrictGuideHtml() {
 
 export const guideMarkdownSchema: Options = {
   ...defaultSchema,
-  tagNames: [...(defaultSchema.tagNames ?? []), 'u'],
+  tagNames: [...(defaultSchema.tagNames ?? []), 'u', 'youtube-embed'],
   attributes: {
     ...defaultSchema.attributes,
     img: ['src', 'alt', 'title'],
     u: [],
+    'youtube-embed': ['dataVideoId', 'dataTitle'],
   },
   protocols: {
     ...defaultSchema.protocols,

@@ -16,14 +16,24 @@ import {
   CodeToggle,
   imagePlugin,
   InsertImage,
+  ButtonWithTooltip,
+  directivesPlugin,
   type MDXEditorMethods,
+  type Translation,
 } from '@mdxeditor/editor';
+import { YoutubeLogoIcon } from '@phosphor-icons/react';
 import { useRef, useState, type ClipboardEvent } from 'react';
 import '@mdxeditor/editor/style.css';
 import styles from './styles.module.css';
 import ImageUrlDialog from './ImageUrlDialog';
 import { imageMarkdownFromPaste } from './imageMarkdown';
 import { guideImagePolicyPlugin, previewGuideImage } from './imagePolicyPlugin';
+import YouTubeDialog from './YouTubeDialog';
+import { youtubeDirectiveDescriptor } from './youtubeDirective';
+import {
+  youtubeMarkdown,
+  youtubeVideoIdFromPaste,
+} from './youtubeMarkdown';
 
 const labels: Record<string, string> = {
   'toolbar.image': 'Inserir imagem por URL',
@@ -38,6 +48,25 @@ type GuideEditorProps = {
   onChange?: (markdown: string) => void;
 };
 
+const translate: Translation = (key, fallback, interpolations = {}) => {
+  const template = labels[key] ?? fallback;
+  return template.replace(/\{\{(\w+)\}\}/g, (placeholder, name) =>
+    name in interpolations ? String(interpolations[name]) : placeholder,
+  );
+};
+
+function InsertYouTubeButton({ open }: { open: () => void }) {
+  return (
+    <ButtonWithTooltip
+      title='Inserir vídeo do YouTube'
+      type='button'
+      onClick={open}
+    >
+      <YoutubeLogoIcon size={18} />
+    </ButtonWithTooltip>
+  );
+}
+
 function GuideEditor({
   initialMarkdown = '# Comece a digitar',
   onChange,
@@ -45,6 +74,7 @@ function GuideEditor({
   const editor = useRef<MDXEditorMethods>(null);
   const [mode, setMode] = useState<'visual' | 'markdown'>('visual');
   const [markdown, setMarkdown] = useState(initialMarkdown);
+  const [youtubeDialogUrl, setYoutubeDialogUrl] = useState<string | null>(null);
 
   function updateMarkdown(value: string) {
     setMarkdown(value);
@@ -56,19 +86,26 @@ function GuideEditor({
       !event.target.closest('.mdxeditor-root-contenteditable')
     )
       return;
-    const markdown = imageMarkdownFromPaste(
-      event.clipboardData.getData('text/plain'),
-    );
-    if (!markdown || !editor.current) return;
-    event.preventDefault();
-    event.stopPropagation();
-    editor.current.insertMarkdown(markdown);
+    const pasted = event.clipboardData.getData('text/plain');
+    const imageMarkdown = imageMarkdownFromPaste(pasted);
+    if (imageMarkdown && editor.current) {
+      event.preventDefault();
+      event.stopPropagation();
+      editor.current.insertMarkdown(imageMarkdown);
+      return;
+    }
+    if (youtubeVideoIdFromPaste(pasted)) {
+      event.preventDefault();
+      event.stopPropagation();
+      setYoutubeDialogUrl(pasted.trim());
+    }
   }
   return (
     <div className={styles.editor} onPasteCapture={pasteImages}>
       <p className={styles.help}>
         Para imagens, use “Inserir imagem por URL”, cole a sintaxe{' '}
-        <code>![descrição](https://...)</code> ou escreva no modo Markdown.
+        <code>![descrição](https://...)</code>. Para vídeos, use o botão do
+        YouTube ou cole a URL de um vídeo no editor visual.
       </p>
       <div
         className={styles.modeSwitch}
@@ -103,7 +140,7 @@ function GuideEditor({
           ref={editor}
           markdown={markdown}
           onChange={updateMarkdown}
-          translation={(key, fallback) => labels[key] ?? fallback}
+          translation={translate}
           plugins={[
             headingsPlugin(),
             listsPlugin(),
@@ -118,6 +155,10 @@ function GuideEditor({
               allowSetImageDimensions: false,
             }),
             guideImagePolicyPlugin(),
+            directivesPlugin({
+              directiveDescriptors: [youtubeDirectiveDescriptor],
+              escapeUnknownTextDirectives: true,
+            }),
             markdownShortcutPlugin(),
             toolbarPlugin({
               toolbarClassName: styles.toolbar,
@@ -130,10 +171,25 @@ function GuideEditor({
                   <CodeToggle />
                   <CreateLink />
                   <InsertImage />
+                  <InsertYouTubeButton
+                    open={() => setYoutubeDialogUrl('')}
+                  />
                 </>
               ),
             }),
           ]}
+        />
+      )}
+      {youtubeDialogUrl !== null && (
+        <YouTubeDialog
+          initial={{ url: youtubeDialogUrl }}
+          save={values => {
+            editor.current?.insertMarkdown(
+              youtubeMarkdown(values.videoId, values.title),
+            );
+            setYoutubeDialogUrl(null);
+          }}
+          close={() => setYoutubeDialogUrl(null)}
         />
       )}
     </div>

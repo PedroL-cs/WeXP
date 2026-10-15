@@ -149,6 +149,88 @@
   color: var(--accent-ink);
 }
 
+.youtubeEditor {
+  display: flex;
+  align-items: center;
+  gap: 1.4rem;
+  width: 100%;
+  margin: 1.6rem 0;
+  padding: 1.4rem;
+  border: 1px solid var(--border-hover);
+  border-radius: var(--radius);
+  background:
+    linear-gradient(105deg, rgba(255, 0, 51, 0.08), transparent 48%),
+    var(--elevated);
+}
+
+.youtubeEditorIcon {
+  display: grid;
+  place-items: center;
+  width: 48px;
+  height: 48px;
+  flex-shrink: 0;
+  border-radius: 50%;
+  background: rgba(255, 0, 51, 0.12);
+  color: #ff3158;
+}
+
+.youtubeEditorInfo {
+  display: flex;
+  flex: 1;
+  min-width: 0;
+  flex-direction: column;
+  gap: 0.2rem;
+}
+
+.youtubeEditorInfo > span {
+  color: var(--muted);
+  font-family: var(--font-mono);
+  font-size: 1.05rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.youtubeEditorInfo strong {
+  overflow: hidden;
+  color: var(--text);
+  font-size: 1.45rem;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.youtubeEditorInfo a {
+  align-self: flex-start;
+  color: var(--accent);
+  font-size: 1.2rem;
+}
+
+.youtubeEditorActions {
+  display: flex;
+  gap: 0.6rem;
+}
+
+.youtubeEditorActions button {
+  display: grid;
+  place-items: center;
+  width: 36px;
+  height: 36px;
+  border: 1px solid var(--border-hover);
+  border-radius: var(--radius-sm);
+  background: var(--card);
+  color: var(--text-soft);
+  cursor: pointer;
+}
+
+.youtubeEditorActions button:hover {
+  border-color: var(--accent);
+  color: var(--accent);
+}
+
+.youtubeInvalid {
+  border-color: rgba(255, 77, 109, 0.45);
+}
+
 /* ESCALA
    O MDXEditor dimensiona tudo em rem, mas o html usa 62.5% (1rem = 10px).
    Reescalamos as variáveis da lib (x1.6) para o tamanho pretendido, e
@@ -315,6 +397,20 @@
   .editor :global(.mdxeditor-root-contenteditable) {
     min-height: 320px;
     padding: 2rem 1.8rem;
+  }
+
+  .youtubeEditor {
+    align-items: flex-start;
+    flex-wrap: wrap;
+  }
+
+  .youtubeEditorInfo {
+    width: calc(100% - 64px);
+  }
+
+  .youtubeEditorActions {
+    width: 100%;
+    justify-content: flex-end;
   }
 }
 
