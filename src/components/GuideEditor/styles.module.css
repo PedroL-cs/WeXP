@@ -5,6 +5,150 @@
   min-width: 0;
 }
 
+.help {
+  margin-bottom: 1rem;
+  color: var(--muted);
+  font-size: 1.25rem;
+  line-height: 1.7;
+}
+
+.help code {
+  color: var(--accent);
+  overflow-wrap: anywhere;
+}
+
+.modeSwitch {
+  display: flex;
+  gap: 0.6rem;
+  margin-bottom: 1rem;
+}
+
+.modeSwitch button {
+  padding: 0.8rem 1.2rem;
+  border: 1px solid var(--border-hover);
+  border-radius: var(--radius-sm);
+  background: var(--card);
+  color: var(--text-soft);
+  font-size: 1.3rem;
+  cursor: pointer;
+}
+
+.modeSwitch button[aria-pressed='true'] {
+  border-color: var(--accent);
+  background: var(--accent-soft);
+  color: var(--accent);
+}
+
+.markdownSource {
+  display: block;
+  width: 100%;
+  min-height: 440px;
+  padding: 2rem;
+  resize: vertical;
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  background: var(--card);
+  color: var(--text);
+  font-family: var(--font-mono);
+  font-size: 1.4rem;
+  line-height: 1.7;
+}
+
+.editor :global([data-editor-block-type='image'] img) {
+  max-width: 100%;
+  height: auto;
+  max-height: 600px;
+  object-fit: contain;
+}
+
+.imageDialog {
+  position: fixed;
+  inset: 0;
+  width: min(520px, calc(100% - 3.2rem));
+  max-height: calc(100dvh - 3.2rem);
+  margin: auto;
+  padding: 2.4rem;
+  overflow-y: auto;
+  border: 1px solid var(--border-hover);
+  border-radius: var(--radius-lg);
+  background: var(--card);
+  color: var(--text);
+  box-shadow: var(--shadow-lg);
+}
+
+.imageDialog::backdrop {
+  background: var(--overlay);
+}
+
+.imageDialog h2 {
+  font-size: 2.2rem;
+  line-height: 1.4;
+}
+
+.imageDialog > p {
+  margin: 1rem 0 1.6rem;
+  color: var(--muted);
+  font-size: 1.3rem;
+  line-height: 1.7;
+}
+
+.imageDialog form {
+  display: flex;
+  flex-direction: column;
+  gap: 0.8rem;
+}
+
+.imageDialog label {
+  margin-top: 0.6rem;
+  font-size: 1.3rem;
+  font-weight: 700;
+}
+
+.imageDialog input {
+  width: 100%;
+  min-width: 0;
+  height: 44px;
+  padding: 0 1.2rem;
+  border: 1px solid var(--border-hover);
+  border-radius: var(--radius-sm);
+  background: var(--input-bg);
+  color: var(--text);
+  font-size: 1.4rem;
+}
+
+.imageDialog input[aria-invalid='true'] {
+  border-color: var(--danger);
+}
+
+.imageError {
+  color: var(--danger);
+  font-size: 1.3rem;
+}
+
+.imageDialogActions {
+  display: flex;
+  justify-content: flex-end;
+  flex-wrap: wrap;
+  gap: 1rem;
+  margin-top: 1.6rem;
+}
+
+.imageDialogActions button {
+  padding: 1rem 1.6rem;
+  border: 1px solid var(--border-hover);
+  border-radius: var(--radius-sm);
+  background: var(--elevated);
+  font-size: 1.35rem;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.imageDialogActions button[type='submit'] {
+  border-color: var(--accent);
+  background: var(--accent);
+  color: var(--accent-ink);
+}
+
 /* ESCALA
    O MDXEditor dimensiona tudo em rem, mas o html usa 62.5% (1rem = 10px).
    Reescalamos as variáveis da lib (x1.6) para o tamanho pretendido, e

@@ -69,7 +69,7 @@
 
 /* Barra de ações fixa no rodapé enquanto se escreve */
 .footer {
-  position: sticky;
+  /* position: sticky; */
   bottom: 1.6rem;
   z-index: 5;
   display: flex;

@@ -1,0 +1,50 @@
+.imageWrapper {
+  display: block;
+  width: 100%;
+  max-width: 100%;
+  margin: 1.6rem 0;
+}
+
+.imageWrapper > .image {
+  display: block;
+  width: auto;
+  max-width: 100%;
+  height: auto;
+  max-height: min(70vh, 720px);
+  margin: 0;
+  border-radius: var(--radius);
+  object-fit: contain;
+}
+
+.placeholder {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 0.6rem;
+  width: 100%;
+  max-width: 100%;
+  min-height: 120px;
+  margin: 1.6rem 0;
+  padding: 1.6rem;
+  border: 1px dashed var(--border-hover);
+  border-radius: var(--radius);
+  background: var(--elevated);
+  color: var(--muted);
+  font-size: 1.3rem;
+  line-height: 1.6;
+  text-align: center;
+}
+
+.alternativeText {
+  max-width: 60ch;
+  color: var(--text-soft);
+  font-size: 1.2rem;
+  overflow-wrap: anywhere;
+}
+
+@media (max-width: 720px) {
+  .imageWrapper > .image {
+    border-radius: var(--radius-sm);
+  }
+}
