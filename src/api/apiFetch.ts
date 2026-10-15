@@ -1,3 +1,9 @@
+const apiBaseUrl = import.meta.env.VITE_API_BASE_URL?.replace(/\/$/, '') ?? '';
+
+export function apiUrl(path: string) {
+  return `${apiBaseUrl}${path}`;
+}
+
 export async function apiFetch(
   input: RequestInfo | URL,
   init: RequestInit = {},
@@ -19,7 +25,9 @@ export async function apiFetch(
     headers.set('Content-Type', 'application/json');
   }
 
-  return fetch(input, {
+  const requestInput = typeof input === 'string' ? apiUrl(input) : input;
+
+  return fetch(requestInput, {
     ...init,
     headers,
   });
