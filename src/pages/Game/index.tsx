@@ -75,12 +75,15 @@ function GamePage() {
     <main className={styles.gamePage}>
       {/* Hero */}
       <section className={styles.gameHero}>
-        <img
-          className={styles.heroImage}
-          src={game.images.hero}
-          alt=''
-          aria-hidden='true'
-        />
+        {game.images.hero && (
+          <img
+            className={styles.heroImage}
+            src={game.images.hero}
+            alt=''
+            aria-hidden='true'
+            onError={event => (event.currentTarget.hidden = true)}
+          />
+        )}
 
         <div className={styles.heroOverlay} />
 

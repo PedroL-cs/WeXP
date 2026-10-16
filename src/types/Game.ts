@@ -1,12 +1,12 @@
 import type { Achievement } from './Achievement';
 
 export interface GameImage {
-  cover: string;
-  capsule: string;
-  background: string;
-  header: string;
-  logo: string;
-  hero: string;
+  cover: string | null;
+  capsule: string | null;
+  background: string | null;
+  header: string | null;
+  logo: string | null;
+  hero: string | null;
 }
 
 export interface GameCategory {

@@ -320,7 +320,9 @@ function GuidePageContent() {
           {data.achievement?.icon_url || data.achievement?.icon ? (
             <img
               className={styles.achievementIcon}
-              src={data.achievement.icon_url || data.achievement.icon}
+              src={
+                data.achievement.icon_url || data.achievement.icon || undefined
+              }
               alt={`Ícone da conquista ${data.achievement.name}`}
             />
           ) : (

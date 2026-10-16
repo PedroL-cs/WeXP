@@ -29,6 +29,7 @@ function SearchBar({
   // Busca os jogos com debounce
   useEffect(() => {
     const query = search.trim();
+    const controller = new AbortController();
 
     if (!query) {
       setSearchResults([]);
@@ -38,9 +39,10 @@ function SearchBar({
     const timeout = setTimeout(async () => {
       try {
         setIsSearching(true);
-        const results = await instantSearchGames(query);
+        const results = await instantSearchGames(query, controller.signal);
         setSearchResults(results ?? []);
       } catch (error) {
+        if (error instanceof DOMException && error.name === 'AbortError') return;
         console.error('Erro na busca:', error);
         setSearchResults([]);
       } finally {
@@ -48,7 +50,10 @@ function SearchBar({
       }
     }, 300);
 
-    return () => clearTimeout(timeout);
+    return () => {
+      clearTimeout(timeout);
+      controller.abort();
+    };
   }, [search]);
 
   // Fecha o dropdown ao clicar fora do container de busca

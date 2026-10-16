@@ -1,5 +1,9 @@
 import { useNavigate } from 'react-router';
-import { CaretRightIcon, LockSimpleIcon } from '@phosphor-icons/react';
+import {
+  CaretRightIcon,
+  LockSimpleIcon,
+  TrophyIcon,
+} from '@phosphor-icons/react';
 import type { Achievement } from '../../types/Achievement';
 import styles from './styles.module.css';
 import SaveButton from '../SaveButton';
@@ -48,12 +52,17 @@ function AchievementCard({
     return (
       <div className={styles.achievementCard} {...cardProps}>
         <div className={styles.iconContainer}>
-          <img
-            className={styles.achievementIcon}
-            src={achievement.icon}
-            alt=''
-            loading='lazy'
-          />
+          {achievement.icon ? (
+            <img
+              className={styles.achievementIcon}
+              src={achievement.icon}
+              alt=''
+              loading='lazy'
+              onError={event => (event.currentTarget.hidden = true)}
+            />
+          ) : (
+            <TrophyIcon size={22} weight='fill' />
+          )}
         </div>
 
         <div className={styles.achievementInfo}>
@@ -77,12 +86,17 @@ function AchievementCard({
       {...cardProps}
     >
       <div className={styles.iconContainer}>
-        <img
-          className={styles.revealedIcon}
-          src={achievement.icon}
-          alt=''
-          loading='lazy'
-        />
+        {achievement.icon ? (
+          <img
+            className={styles.revealedIcon}
+            src={achievement.icon}
+            alt=''
+            loading='lazy'
+            onError={event => (event.currentTarget.hidden = true)}
+          />
+        ) : (
+          <TrophyIcon size={22} weight='fill' />
+        )}
         <span className={styles.hiddenIcon}>
           <LockSimpleIcon size={22} weight='fill' />
         </span>

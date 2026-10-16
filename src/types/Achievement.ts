@@ -3,7 +3,7 @@ export type Achievement = {
   name: string;
   description: string;
   hidden: boolean;
-  icon: string;
+  icon: string | null;
   game?: {
     id: string;
     name: string;

@@ -33,12 +33,15 @@ function SearchGameCard({ game, style }: SearchGameCardProps) {
       }}
     >
       <div className={styles.imageContainer}>
-        <img
-          src={game.images.header}
-          alt={game.name}
-          className={styles.image}
-          loading='lazy'
-        />
+        {game.images.header && (
+          <img
+            src={game.images.header}
+            alt={game.name}
+            className={styles.image}
+            loading='lazy'
+            onError={event => (event.currentTarget.hidden = true)}
+          />
+        )}
       </div>
 
       <div className={styles.content}>

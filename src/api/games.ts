@@ -2,7 +2,10 @@ import { apiFetch } from './apiFetch';
 import type { Game } from '../types/Game';
 import type { SteamGame } from '../types/SteamGame';
 
-export async function instantSearchGames(query: string): Promise<SteamGame[]> {
+export async function instantSearchGames(
+  query: string,
+  signal?: AbortSignal,
+): Promise<SteamGame[]> {
   const params = new URLSearchParams({
     q: query,
     page: '0',
@@ -10,6 +13,7 @@ export async function instantSearchGames(query: string): Promise<SteamGame[]> {
 
   const response = await apiFetch(
     `/api/v1/games/steam-games?${params.toString()}`,
+    { signal },
   );
 
   if (!response.ok) {

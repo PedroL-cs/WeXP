@@ -15,8 +15,8 @@ import type { CurrentUser } from '../../types/User';
 type AchievementInfo = {
   name: string;
   description?: string;
-  icon?: string;
-  icon_url?: string;
+  icon?: string | null;
+  icon_url?: string | null;
 };
 
 export type AuthorInfo = { username: string; avatar?: string };

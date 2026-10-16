@@ -279,6 +279,12 @@ export default function LibraryPage({ type }: LibraryPageProps) {
 
   function itemCard(item: ResolvedItem, index: number) {
     const card = cardInfo(item);
+    const FallbackIcon =
+      item.type === 'GAME'
+        ? GameControllerIcon
+        : item.type === 'GUIDE'
+          ? ClipboardTextIcon
+          : TrophyIcon;
     const frameClass =
       item.type === 'GAME'
         ? styles.gameFrame
@@ -294,7 +300,16 @@ export default function LibraryPage({ type }: LibraryPageProps) {
       >
         <Link className={styles.cardLink} to={card.href}>
           <div className={`${styles.imageFrame} ${frameClass}`}>
-            <img src={card.image} alt='' loading='lazy' />
+            {card.image ? (
+              <img
+                src={card.image}
+                alt=''
+                loading='lazy'
+                onError={event => (event.currentTarget.hidden = true)}
+              />
+            ) : (
+              <FallbackIcon size={28} weight='fill' />
+            )}
             {item.type === 'GUIDE' && (
               <span className={styles.guideOverlay} aria-hidden='true'>
                 <ClipboardTextIcon size={17} weight='fill' />

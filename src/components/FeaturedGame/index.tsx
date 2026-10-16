@@ -50,13 +50,16 @@ function FeaturedGame({ games }: FeaturedGameProps) {
       onMouseLeave={() => setIsPaused(false)}
       aria-roledescription='carrossel'
     >
-      <img
-        key={currentGame.id}
-        className={styles.background}
-        src={currentGame.images.hero}
-        onClick={goToGame}
-        alt=''
-      />
+      {currentGame.images.hero && (
+        <img
+          key={currentGame.id}
+          className={styles.background}
+          src={currentGame.images.hero}
+          onClick={goToGame}
+          onError={event => (event.currentTarget.hidden = true)}
+          alt=''
+        />
+      )}
 
       <div className={styles.overlay} key={`info-${currentGame.id}`}>
         <span className={styles.eyebrow}>
@@ -70,7 +73,7 @@ function FeaturedGame({ games }: FeaturedGameProps) {
         {showLogo ? (
           <img
             className={styles.logo}
-            src={currentGame.images.logo}
+            src={currentGame.images.logo ?? undefined}
             alt={currentGame.name}
             onError={() =>
               setBrokenLogos(current => [...current, currentGame.id])
