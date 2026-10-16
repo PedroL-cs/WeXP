@@ -1,4 +1,11 @@
-import { createContext, useContext, useState, type ReactNode } from 'react';
+import {
+  createContext,
+  useContext,
+  useEffect,
+  useState,
+  type ReactNode,
+} from 'react';
+import { AUTH_EXPIRED_EVENT } from '../api/apiFetch';
 
 interface AuthContextData {
   isAuthenticated: boolean;
@@ -19,6 +26,17 @@ export function AuthProvider({ children }: AuthProviderProps) {
       sessionStorage.getItem('token') !== null
     );
   });
+
+  useEffect(() => {
+    function handleExpiredSession() {
+      setIsAuthenticated(false);
+    }
+
+    window.addEventListener(AUTH_EXPIRED_EVENT, handleExpiredSession);
+    return () => {
+      window.removeEventListener(AUTH_EXPIRED_EVENT, handleExpiredSession);
+    };
+  }, []);
 
   function login(token: string, rememberMe: boolean) {
     if (rememberMe) {

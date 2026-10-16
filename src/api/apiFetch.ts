@@ -1,4 +1,5 @@
 const apiBaseUrl = import.meta.env.VITE_API_BASE_URL?.replace(/\/$/, '') ?? '';
+export const AUTH_EXPIRED_EVENT = 'auth-expired';
 
 export function apiUrl(path: string) {
   return `${apiBaseUrl}${path}`;
@@ -27,8 +28,16 @@ export async function apiFetch(
 
   const requestInput = typeof input === 'string' ? apiUrl(input) : input;
 
-  return fetch(requestInput, {
+  const response = await fetch(requestInput, {
     ...init,
     headers,
   });
+
+  if (response.status === 401 && token) {
+    localStorage.removeItem('token');
+    sessionStorage.removeItem('token');
+    window.dispatchEvent(new Event(AUTH_EXPIRED_EVENT));
+  }
+
+  return response;
 }

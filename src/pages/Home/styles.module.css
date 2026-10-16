@@ -22,6 +22,26 @@
   font-weight: 700;
 }
 
+.errorState {
+  display: grid;
+  justify-items: center;
+  gap: 1.6rem;
+  padding: 8rem 2rem;
+  color: var(--muted);
+  text-align: center;
+}
+
+.errorState button {
+  padding: 1rem 1.6rem;
+  border: 0;
+  border-radius: var(--radius);
+  background: var(--accent);
+  color: var(--accent-ink);
+  font: inherit;
+  font-weight: 700;
+  cursor: pointer;
+}
+
 /* Skeleton de carregamento */
 .skeleton {
   border-radius: var(--radius);

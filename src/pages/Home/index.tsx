@@ -14,9 +14,14 @@ export function HomePage() {
   const [featuredGames, setFeaturedGames] = useState<Game[]>([]);
   const [releasedGames, setReleasedGames] = useState<Game[]>([]);
   const [isLoading, setIsLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+  const [retry, setRetry] = useState(0);
 
   useEffect(() => {
     async function loadHome() {
+      setIsLoading(true);
+      setError(null);
+
       try {
         const [featured, released] = await Promise.all([
           getFeaturedGames(),
@@ -27,13 +32,14 @@ export function HomePage() {
         setReleasedGames(released);
       } catch (error) {
         console.error('Erro ao carregar Home:', error);
+        setError('Não foi possível carregar os jogos. Tente novamente.');
       } finally {
         setIsLoading(false);
       }
     }
 
     loadHome();
-  }, []);
+  }, [retry]);
 
   const sliderGames = featuredGames.slice(0, 5);
   const remainingFeaturedGames = featuredGames.slice(5);
@@ -46,6 +52,19 @@ export function HomePage() {
           {Array.from({ length: 4 }, (_, index) => (
             <div key={index} className={styles.skeleton} />
           ))}
+        </div>
+      </section>
+    );
+  }
+
+  if (error) {
+    return (
+      <section className={styles.homePage}>
+        <div className={styles.errorState} role='alert'>
+          <p>{error}</p>
+          <button type='button' onClick={() => setRetry(value => value + 1)}>
+            Tentar novamente
+          </button>
         </div>
       </section>
     );
