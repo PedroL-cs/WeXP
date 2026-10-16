@@ -3,7 +3,6 @@ package com.wexp;
 import com.sun.net.httpserver.HttpServer;
 import com.wexp.feature.category.ICategoryRepository;
 import com.wexp.feature.genre.IGenreRepository;
-import com.wexp.feature.image.ImageService;
 import com.wexp.shared.client.steam.SteamIntegrationException;
 import com.wexp.shared.client.steam.SteamRequestExecutor;
 import com.wexp.shared.client.steam.api.SteamApiClient;
@@ -36,7 +35,6 @@ class SteamHttpResilienceTests {
     private SteamApiClient api;
     private SteamRequestExecutor requests;
     private ICategoryRepository categories;
-    private ImageService images;
     private final AtomicInteger storeCalls = new AtomicInteger();
     private final AtomicInteger status = new AtomicInteger(200);
     private final AtomicInteger delayMillis = new AtomicInteger();
@@ -91,8 +89,7 @@ class SteamHttpResilienceTests {
         SteamStoreClientConfig storeConfig = new SteamStoreClientConfig();
         ReflectionTestUtils.setField(storeConfig, "steamStoreBaseUrl", baseUrl);
         categories = mock(ICategoryRepository.class);
-        images = mock(ImageService.class);
-        store = new SteamStoreClient(storeConfig.steamStore(factory), api, requests, images,
+        store = new SteamStoreClient(storeConfig.steamStore(factory), api, requests,
                 categories, mock(IGenreRepository.class));
     }
 
@@ -111,7 +108,7 @@ class SteamHttpResilienceTests {
         SteamIntegrationException error = assertThrows(SteamIntegrationException.class, () -> store.fetchGameDetails(10L));
 
         assertEquals(TIMEOUT, error.getReason());
-        verifyNoInteractions(categories, images);
+        verifyNoInteractions(categories);
     }
 
     @Test
@@ -193,7 +190,7 @@ class SteamHttpResilienceTests {
         body.set("{\"10\":{\"data\":{\"name\":\"Game\"}}}");
         assertEquals(INVALID_RESPONSE, assertThrows(SteamIntegrationException.class,
                 () -> store.fetchGameDetails(10L)).getReason());
-        verifyNoInteractions(categories, images);
+        verifyNoInteractions(categories);
     }
 
     @Test

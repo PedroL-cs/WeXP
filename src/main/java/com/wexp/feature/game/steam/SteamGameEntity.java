@@ -2,6 +2,7 @@ package com.wexp.feature.game.steam;
 
 import jakarta.persistence.*;
 import lombok.*;
+import org.springframework.data.domain.Persistable;
 
 @Getter
 @Setter
@@ -10,7 +11,7 @@ import lombok.*;
 @AllArgsConstructor
 @Entity
 @Table(name = "steam_games")
-public class SteamGameEntity {
+public class SteamGameEntity implements Persistable<Long> {
 
     @Id
     private Long appid;
@@ -23,6 +24,25 @@ public class SteamGameEntity {
 
     @Transient
     private String capsuleUrl;
+
+    @Transient
+    @Builder.Default
+    private boolean newEntity = true;
+
+    @Override
+    public Long getId() {
+        return appid;
+    }
+
+    @Override
+    public boolean isNew() {
+        return newEntity;
+    }
+
+    @PostLoad
+    public void markNotNew() {
+        this.newEntity = false;
+    }
 
     @PrePersist
     @PreUpdate

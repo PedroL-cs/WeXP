@@ -23,8 +23,10 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
+import java.util.concurrent.ConcurrentHashMap;
 
 @Service
 @RequiredArgsConstructor
@@ -40,6 +42,7 @@ public class GameService {
     private final PersistenceTransactions persistenceTransactions;
     private final GameSynchronizationService synchronizationService;
     private final GameSteamPersistenceService steamPersistenceService;
+    private final Map<Long, Object> gameCreationLocks = new ConcurrentHashMap<>();
 
 
     public GameEntity viewGameDetails(String publicId) throws ApiException {
@@ -61,6 +64,12 @@ public class GameService {
     }
 
     public GameIdResponse getGameId(Long steamId) {
+        synchronized (gameCreationLocks.computeIfAbsent(steamId, ignored -> new Object())) {
+            return getGameIdLocked(steamId);
+        }
+    }
+
+    private GameIdResponse getGameIdLocked(Long steamId) {
         Optional<GameEntity> existingGame = gameRepository.findBySteamAppId(steamId);
         if (existingGame.isPresent()) {
             synchronizationService.refreshIfStale(existingGame.get());
@@ -161,6 +170,12 @@ public class GameService {
     }
 
     private GameEntity getSteamGameDetails(Long steamAppId) throws ApiException {
+        synchronized (gameCreationLocks.computeIfAbsent(steamAppId, ignored -> new Object())) {
+            return getSteamGameDetailsLocked(steamAppId);
+        }
+    }
+
+    private GameEntity getSteamGameDetailsLocked(Long steamAppId) throws ApiException {
         Optional<GameEntity> optionalGame = gameRepository.findBySteamAppId(steamAppId);
         if (optionalGame.isPresent()) {
             synchronizationService.refreshIfStale(optionalGame.get());

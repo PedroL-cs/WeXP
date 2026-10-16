@@ -1,7 +1,6 @@
 package com.wexp.feature.achievement.dto;
 
 import com.wexp.feature.achievement.AchievementEntity;
-import com.wexp.feature.image.ImageService;
 
 public record AchievementSummaryDto(
         String id,
@@ -14,7 +13,7 @@ public record AchievementSummaryDto(
                 achievement.getPublicId(),
                 achievement.getName(),
                 achievement.getIsHidden(),
-                ImageService.url("achievement", achievement.getPublicId(), "icon")
+                achievement.getIconUrl()
         );
     }
 }

@@ -4,10 +4,8 @@ import com.wexp.feature.achievement.dto.AchievementSummaryDto;
 import com.wexp.feature.category.dto.CategoryResponseDto;
 import com.wexp.feature.game.GameEntity;
 import com.wexp.feature.genre.dto.GenreResponseDto;
-import com.wexp.feature.game.GameImageType;
-import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
-
 import java.time.LocalDateTime;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -42,24 +40,18 @@ public record GameResponseDto(
                 game.getAchievements() == null
                         ? List.of()
                         : game.getAchievements().stream().map(AchievementSummaryDto::new).toList(),
-                imageUrls(game.getPublicId())
+                imageUrls(game)
         );
     }
 
-    private static Map<String, String> imageUrls(String publicId) {
-        String baseUrl;
-        try {
-            baseUrl = ServletUriComponentsBuilder.fromCurrentContextPath().build().toUriString();
-        } catch (IllegalStateException exception) {
-            baseUrl = "http://localhost:8080";
-        }
-        final String imageBaseUrl = baseUrl;
-        return java.util.Arrays.stream(GameImageType.values())
-                .collect(java.util.stream.Collectors.toMap(
-                        type -> type.name().toLowerCase(),
-                        type -> imageBaseUrl + "/api/v1/images/game/" + publicId + "/" + type.name().toLowerCase(),
-                        (first, ignored) -> first,
-                        java.util.LinkedHashMap::new
-                ));
+    private static Map<String, String> imageUrls(GameEntity game) {
+        Map<String, String> images = new LinkedHashMap<>();
+        images.put("cover", game.getCoverImageUrl());
+        images.put("capsule", game.getCapsuleImageUrl());
+        images.put("background", game.getBackgroundImageUrl());
+        images.put("header", game.getHeaderImageUrl());
+        images.put("logo", game.getLogoImageUrl());
+        images.put("hero", game.getHeroImageUrl());
+        return images;
     }
 }

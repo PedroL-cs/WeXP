@@ -20,10 +20,7 @@ import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
 import java.io.InputStream;
-import java.net.URI;
-import java.util.Map;
 import java.util.Locale;
-import java.util.concurrent.CompletableFuture;
 
 @Service
 @RequiredArgsConstructor
@@ -83,27 +80,6 @@ public class ImageService {
         }
     }
 
-    public void replaceFromUrlAsync(String ownerType, String ownerId, String variant, String sourceUrl) {
-        if (sourceUrl == null || sourceUrl.isBlank()) return;
-        ImageEntity existingImage = imageRepository
-                .findByOwnerTypeAndOwnerIdAndVariant(ownerType, ownerId, variant)
-                .orElse(null);
-        if (existingImage != null && imageStorage.load(existingImage.getStorageKey()) != null) return;
-
-        CompletableFuture.runAsync(() -> {
-            try (InputStream input = URI.create(sourceUrl).toURL().openStream()) {
-                replaceFromStream(ownerType, ownerId, variant, sourceUrl, input);
-            } catch (Exception exception) {
-                logger.warn("Erro ao armazenar imagem remota {}:{}/{}", ownerType, ownerId, variant, exception);
-            }
-        });
-    }
-
-    public void replaceFromUrlsAsync(String ownerType, String ownerId, Map<String, String> sources) {
-        if (sources == null || sources.isEmpty()) return;
-        sources.forEach((variant, sourceUrl) -> replaceFromUrlAsync(ownerType, ownerId, variant, sourceUrl));
-    }
-
     public ResponseEntity<Resource> get(String publicId) {
         ImageEntity image = imageRepository.findByPublicId(publicId)
                 .orElseThrow(() -> new ApiException(ExceptionResponse.ImageNotFound));
@@ -138,39 +114,6 @@ public class ImageService {
             baseUrl = DEFAULT_BASE_URL;
         }
         return baseUrl + "/api/v1/images/" + ownerType + "/" + ownerId + "/" + variant;
-    }
-
-    private void replaceFromStream(
-            String ownerType,
-            String ownerId,
-            String variant,
-            String sourceName,
-            InputStream input
-    ) throws Exception {
-        validateOwner(ownerType, ownerId, variant);
-        String extension = extensionFor(null, sourceName);
-        String publicId = PublicIdGenerator.generate(PublicIdType.IMAGE);
-        String storageKey = resolvePath(ownerType, ownerId, variant, publicId, extension);
-        try {
-            imageStorage.store(storageKey, input);
-            long size = imageStorage.size(storageKey);
-            validateSize(size);
-            ImageEntity image = ImageEntity.builder()
-                    .publicId(publicId)
-                    .ownerType(ownerType)
-                    .ownerId(ownerId)
-                    .variant(variant)
-                    .originalFilename(sourceName)
-                    .extension(extension)
-                    .contentType(contentTypeFor(extension))
-                    .size(size)
-                    .storageKey(storageKey)
-                    .build();
-            imagePersistenceService.replace(image);
-        } catch (Exception exception) {
-            cleanupFile(storageKey);
-            throw exception;
-        }
     }
 
     private Resource loadResource(ImageEntity image) {
@@ -229,12 +172,6 @@ public class ImageService {
         }
     }
 
-    private void validateSize(long size) {
-        if (size > maxSizeBytes) {
-            throw new ApiException(ExceptionResponse.InvalidInput);
-        }
-    }
-
     private String extensionFor(String contentType, String filename) {
         if (MediaType.IMAGE_PNG_VALUE.equals(contentType) || hasExtension(filename, ".png")) {
             return ".png";
@@ -243,14 +180,6 @@ public class ImageService {
             return ".webp";
         }
         return ".jpg";
-    }
-
-    private String contentTypeFor(String extension) {
-        return switch (extension) {
-            case ".png" -> MediaType.IMAGE_PNG_VALUE;
-            case ".webp" -> IMAGE_WEBP;
-            default -> MediaType.IMAGE_JPEG_VALUE;
-        };
     }
 
     private String resolvePath(String ownerType, String ownerId, String variant, String imageId, String extension) {

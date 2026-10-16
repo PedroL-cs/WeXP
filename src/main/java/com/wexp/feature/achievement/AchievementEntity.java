@@ -33,6 +33,9 @@ public class AchievementEntity {
     @Column(columnDefinition = "TEXT")
     private String description;
 
+    @Column(name = "icon_url", length = 2048)
+    private String iconUrl;
+
     @Column(name = "is_hidden", nullable = false)
     private Boolean isHidden;
 

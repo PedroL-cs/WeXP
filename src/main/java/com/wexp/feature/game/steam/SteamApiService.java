@@ -15,12 +15,13 @@ public class SteamApiService {
 
     private final ISteamGameRepository steamGameRepository;
     private final SteamApiClient steamApiClient;
+    private final Object catalogImportLock = new Object();
 
     @Value("${steam.capsule-image-base-url}")
     private String baseCapsuleUrl;
 
     public Page<SteamGameEntity> instantSearchGame(String query, Pageable pageable) {
-        if (steamGameRepository.findFirstBy().isEmpty()) importAllSteamGames();
+        ensureCatalogImported();
 
         String cleanQuery = query != null ? query.replaceAll("[^a-zA-Z0-9]", "") : "";
 
@@ -32,8 +33,12 @@ public class SteamApiService {
         return page;
     }
 
-    private void importAllSteamGames() {
-        List<SteamGameEntity> steamGames = steamApiClient.listAllSteamGames();
-        steamGameRepository.saveAll(steamGames);
+    private void ensureCatalogImported() {
+        synchronized (catalogImportLock) {
+            if (steamGameRepository.findFirstBy().isPresent()) return;
+
+            List<SteamGameEntity> steamGames = steamApiClient.listAllSteamGames();
+            steamGameRepository.saveAll(steamGames);
+        }
     }
 }

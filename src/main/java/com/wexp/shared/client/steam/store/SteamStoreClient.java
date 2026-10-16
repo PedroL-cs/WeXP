@@ -10,7 +10,6 @@ import com.wexp.feature.game.GameEntity;
 import com.wexp.feature.game.steam.SteamGameEntity;
 import com.wexp.feature.genre.IGenreRepository;
 import com.wexp.feature.genre.GenreEntity;
-import com.wexp.feature.image.ImageService;
 import com.wexp.shared.util.PublicIdGenerator;
 import com.wexp.shared.util.PublicIdType;
 import lombok.RequiredArgsConstructor;
@@ -32,7 +31,6 @@ public class SteamStoreClient {
     private final SteamStore steamStore;
     private final SteamApiClient steamApiClient;
     private final SteamRequestExecutor requests;
-    private final ImageService imageService;
     private final ICategoryRepository categoryRepository;
     private final IGenreRepository genreRepository;
 
@@ -67,22 +65,8 @@ public class SteamStoreClient {
         processCategories(details.data(), game);
         processGenres(details.data(), game);
         processAchievements(details.achievementSchema(), game);
-        return game;
-    }
-
-    public void scheduleImages(SteamGameDetails details, GameEntity game) {
         processImages(details.appId(), details.data(), game);
-        if (details.achievementSchema() == null) return;
-        JsonNode achievements = details.achievementSchema().path("game").path("availableGameStats").path("achievements");
-        if (!achievements.isArray()) return;
-        achievements.forEach(node -> {
-            String name = node.has("displayName") ? node.get("displayName").asString() : node.path("name").asString();
-            String iconUrl = node.path("icon").asString(null);
-            if (iconUrl != null && !iconUrl.isBlank()) {
-                game.getAchievements().stream().filter(a -> a.getName().equalsIgnoreCase(name)).findFirst()
-                        .ifPresent(a -> imageService.replaceFromUrlAsync("achievement", a.getPublicId(), "icon", iconUrl));
-            }
-        });
+        return game;
     }
 
     public List<SteamGameEntity> searchGames(String query) {
@@ -180,12 +164,14 @@ public class SteamStoreClient {
         achievements.forEach(node -> {
             String name = node.has("displayName") ? node.get("displayName").asString() : node.get("name").asString();
             String description = node.path("description").asString("");
+            String iconUrl = textOrNull(node, "icon");
             boolean hidden = node.path("hidden").asInt(0) == 1;
             Optional<AchievementEntity> existing = gameToSave.getAchievements().stream()
                     .filter(a -> a.getName().equalsIgnoreCase(name)).findFirst();
             if (existing.isPresent()) {
                 AchievementEntity achievement = existing.get();
                 achievement.setDescription(description);
+                achievement.setIconUrl(iconUrl);
                 achievement.setIsHidden(hidden);
                 if (achievement.getPublicId() == null) {
                     achievement.setPublicId(PublicIdGenerator.generate(PublicIdType.ACHIEVEMENT));
@@ -193,7 +179,7 @@ public class SteamStoreClient {
             } else {
                 gameToSave.addAchievement(AchievementEntity.builder()
                         .publicId(PublicIdGenerator.generate(PublicIdType.ACHIEVEMENT))
-                        .name(name).description(description).isHidden(hidden).build());
+                        .name(name).description(description).iconUrl(iconUrl).isHidden(hidden).build());
             }
         });
     }
@@ -215,16 +201,17 @@ public class SteamStoreClient {
 
     private void processImages(Long steamAppId, JsonNode data, GameEntity gameToSave) {
         String baseCdnUrl = imagesUrl + "/" + steamAppId + "/";
-        Map<String, String> imageUrls = new LinkedHashMap<>();
+        gameToSave.setHeaderImageUrl(textOrNull(data, "header_image"));
+        gameToSave.setBackgroundImageUrl(textOrNull(data, "background_raw"));
+        gameToSave.setCapsuleImageUrl(textOrNull(data, "capsule_image"));
+        gameToSave.setLogoImageUrl(baseCdnUrl + "logo.png");
+        gameToSave.setCoverImageUrl(baseCdnUrl + "library_600x900.jpg");
+        gameToSave.setHeroImageUrl(baseCdnUrl + "library_hero.jpg");
+    }
 
-        imageUrls.put("header", data.path("header_image").asString(null));
-        imageUrls.put("background", data.path("background_raw").asString(null));
-        imageUrls.put("capsule", data.path("capsule_image").asString(null));
-        imageUrls.put("logo", baseCdnUrl + "logo.png");
-        imageUrls.put("cover", baseCdnUrl + "library_600x900.jpg");
-        imageUrls.put("hero", baseCdnUrl + "library_hero.jpg");
-
-        imageService.replaceFromUrlsAsync("game", gameToSave.getPublicId(), imageUrls);
+    private String textOrNull(JsonNode node, String field) {
+        String value = node.path(field).asString(null);
+        return value == null || value.isBlank() ? null : value;
     }
 
     private LocalDateTime extractReleaseDate(JsonNode data) {

@@ -50,6 +50,24 @@ public class GameEntity {
     @Column(name = "release_date")
     private LocalDateTime releaseDate;
 
+    @Column(name = "header_image_url", length = 2048)
+    private String headerImageUrl;
+
+    @Column(name = "background_image_url", length = 2048)
+    private String backgroundImageUrl;
+
+    @Column(name = "capsule_image_url", length = 2048)
+    private String capsuleImageUrl;
+
+    @Column(name = "logo_image_url", length = 2048)
+    private String logoImageUrl;
+
+    @Column(name = "cover_image_url", length = 2048)
+    private String coverImageUrl;
+
+    @Column(name = "hero_image_url", length = 2048)
+    private String heroImageUrl;
+
     @JsonIgnore
     @ManyToMany(cascade = {CascadeType.MERGE})
     @JoinTable(

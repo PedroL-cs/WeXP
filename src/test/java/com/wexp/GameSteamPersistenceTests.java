@@ -3,7 +3,6 @@ package com.wexp;
 import com.wexp.feature.game.GameEntity;
 import com.wexp.feature.game.IGameRepository;
 import com.wexp.feature.game.steam.GameSteamPersistenceService;
-import com.wexp.feature.image.ImageService;
 import com.wexp.shared.client.steam.SteamRequestExecutor;
 import com.wexp.shared.client.steam.api.SteamApiClient;
 import com.wexp.shared.client.steam.store.*;
@@ -34,22 +33,43 @@ class GameSteamPersistenceTests {
     @MockitoBean private SteamStore remoteStore;
     @MockitoBean private SteamApiClient remoteApi;
     @MockitoBean private SteamRequestExecutor requests;
-    @MockitoBean private ImageService images;
     private final JsonMapper json = JsonMapper.builder().build();
 
     @Test
-    void shouldPersistSynchronizationTimeAndScheduleImagesOnlyAfterCommit() {
+    void shouldPersistSynchronizationTimeAndRemoteImageUrls() {
         var transaction = new TransactionTemplate(transactionManager);
         GameEntity game = transaction.execute(status -> {
-            GameEntity saved = persistence.create("game-sync-1", details("{\"name\":\"Game\"}"));
+            GameEntity saved = persistence.create("game-sync-1", details("""
+                    {"name":"Game","header_image":"https://steam.example/header.jpg"}
+                    """));
             assertNotNull(saved.getSteamSyncedAt());
-            verifyNoInteractions(images, remoteStore, remoteApi, requests);
+            verifyNoInteractions(remoteStore, remoteApi, requests);
             return saved;
         });
 
         assertNotNull(game);
-        assertNotNull(games.findByPublicId(game.getPublicId()).orElseThrow().getSteamSyncedAt());
-        verify(images).replaceFromUrlsAsync(eq("game"), eq(game.getPublicId()), anyMap());
+        GameEntity persisted = games.findByPublicId(game.getPublicId()).orElseThrow();
+        assertNotNull(persisted.getSteamSyncedAt());
+        assertEquals("https://steam.example/header.jpg", persisted.getHeaderImageUrl());
+        assertTrue(persisted.getHeroImageUrl().endsWith("/10/library_hero.jpg"));
+    }
+
+    @Test
+    void shouldPersistAchievementIconUrl() {
+        var schema = json.readTree("""
+                {"game":{"availableGameStats":{"achievements":[{
+                  "name":"ACH_ONE","displayName":"First","description":"Description",
+                  "hidden":0,"icon":"https://steam.example/achievement.jpg"
+                }]}}}
+                """);
+
+        String iconUrl = new TransactionTemplate(transactionManager).execute(status -> {
+            GameEntity game = persistence.create("game-sync-icon", new SteamGameDetails(
+                    13L, json.readTree("{\"name\":\"Game\"}"), schema));
+            return game.getAchievements().get(0).getIconUrl();
+        });
+
+        assertEquals("https://steam.example/achievement.jpg", iconUrl);
     }
 
     @Test
@@ -64,7 +84,7 @@ class GameSteamPersistenceTests {
         GameEntity current = games.findByPublicId(original.getPublicId()).orElseThrow();
         assertEquals("Original", current.getName());
         assertEquals(previousSync, current.getSteamSyncedAt());
-        verifyNoInteractions(images, remoteStore, remoteApi, requests);
+        verifyNoInteractions(remoteStore, remoteApi, requests);
     }
 
     @Test

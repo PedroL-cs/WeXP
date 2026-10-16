@@ -2,7 +2,6 @@ package com.wexp.feature.achievement.dto;
 
 import com.wexp.feature.achievement.AchievementEntity;
 import com.wexp.feature.game.dto.GameSummaryDto;
-import com.wexp.feature.image.ImageService;
 import lombok.Getter;
 
 import java.time.LocalDateTime;
@@ -24,7 +23,7 @@ public class AchievementResponseDto {
         this.name = achievementEntity.getName();
         this.description = achievementEntity.getDescription();
         this.isHidden = achievementEntity.getIsHidden();
-        this.icon = ImageService.url("achievement", achievementEntity.getPublicId(), "icon");
+        this.icon = achievementEntity.getIconUrl();
         this.createdAt = achievementEntity.getCreatedAt();
         this.updatedAt = achievementEntity.getUpdatedAt();
         this.game = new GameSummaryDto(achievementEntity.getGame());
@@ -35,7 +34,7 @@ public class AchievementResponseDto {
         this.name = achievementEntity.getName();
         this.description = achievementEntity.getDescription();
         this.isHidden = achievementEntity.getIsHidden();
-        this.icon = ImageService.url("achievement", achievementEntity.getPublicId(), "icon");
+        this.icon = achievementEntity.getIconUrl();
         this.createdAt = achievementEntity.getCreatedAt();
         this.updatedAt = achievementEntity.getUpdatedAt();
         this.game = includeGame ? new GameSummaryDto(achievementEntity.getGame()) : null;
