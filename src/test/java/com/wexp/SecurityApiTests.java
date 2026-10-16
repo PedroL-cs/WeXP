@@ -8,6 +8,7 @@ import org.springframework.test.web.servlet.MockMvc;
 
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 import static org.springframework.http.HttpHeaders.AUTHORIZATION;
 
@@ -36,6 +37,13 @@ class SecurityApiTests {
                         .contentType("application/json")
                         .content("{\"content\":\"conteudo\",\"changeSummary\":\"resumo\"}"))
                 .andExpect(status().isUnauthorized());
+    }
+
+    @Test
+    void shouldExposePublicHealthCheck() throws Exception {
+        mockMvc.perform(get("/api/health"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.status").value("ok"));
     }
 
     @Test
