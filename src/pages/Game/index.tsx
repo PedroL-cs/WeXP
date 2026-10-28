@@ -5,6 +5,7 @@ import styles from './styles.module.css';
 
 import AchievementCard from '../../components/AchievementCard';
 import {
+  ArrowsDownUpIcon,
   CalendarBlankIcon,
   EyeIcon,
   EyeSlashIcon,
@@ -18,6 +19,8 @@ import { getGame } from '../../api/games';
 import type { Game } from '../../types/Game';
 import SaveButton from '../../components/SaveButton';
 
+type AchievementSort = 'default' | 'name-asc' | 'name-desc';
+
 function GamePage() {
   const { id } = useParams();
 
@@ -26,6 +29,8 @@ function GamePage() {
   const [posterFailed, setPosterFailed] = useState(false);
 
   const [search, setSearch] = useState('');
+  const [achievementSort, setAchievementSort] =
+    useState<AchievementSort>('default');
   const [showSecretAchievements, setShowSecretAchievements] = useState(false);
 
   useEffect(() => {
@@ -65,7 +70,17 @@ function GamePage() {
     .filter(achievement =>
       achievement.name.toLowerCase().includes(search.toLowerCase()),
     )
-    .sort((a, b) => Number(a.hidden) - Number(b.hidden));
+    .sort((a, b) => {
+      if (achievementSort === 'default') {
+        return Number(a.hidden) - Number(b.hidden);
+      }
+
+      const nameOrder = a.name.localeCompare(b.name, 'pt-BR', {
+        sensitivity: 'base',
+      });
+
+      return achievementSort === 'name-asc' ? nameOrder : -nameOrder;
+    });
 
   const secretCount = game.achievements.filter(
     achievement => achievement.hidden,
@@ -172,6 +187,21 @@ function GamePage() {
                 />
               </label>
 
+              <label className={styles.sortContainer}>
+                <ArrowsDownUpIcon size={22} />
+                <select
+                  value={achievementSort}
+                  onChange={event =>
+                    setAchievementSort(event.target.value as AchievementSort)
+                  }
+                  aria-label='Ordenar conquistas'
+                >
+                  <option value='default'>Padrão</option>
+                  <option value='name-asc'>Nome (A–Z)</option>
+                  <option value='name-desc'>Nome (Z–A)</option>
+                </select>
+              </label>
+
               {secretCount > 0 && (
                 <button
                   type='button'
@@ -182,9 +212,9 @@ function GamePage() {
                   onClick={() => setShowSecretAchievements(prev => !prev)}
                 >
                   {showSecretAchievements ? (
-                    <EyeIcon size={18} />
+                    <EyeIcon size={22} />
                   ) : (
-                    <EyeSlashIcon size={18} />
+                    <EyeSlashIcon size={22} />
                   )}
                   {showSecretAchievements
                     ? 'Ocultar secretas'
