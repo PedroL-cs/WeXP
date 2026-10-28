@@ -3,6 +3,7 @@ import { useState } from 'react';
 import Header from '../Header';
 import Sidebar from '../Sidebar';
 import Breadcrumbs from '../Breadcrumbs';
+import Footer from '../Footer';
 
 function Layout() {
   const [search, setSearch] = useState('');
@@ -19,8 +20,11 @@ function Layout() {
       <Sidebar />
 
       <div className='layout'>
-        <Breadcrumbs />
-        <Outlet />
+        <div className='layout-content'>
+          <Breadcrumbs />
+          <Outlet />
+        </div>
+        <Footer />
       </div>
     </>
   );

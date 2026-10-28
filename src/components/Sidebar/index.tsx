@@ -2,7 +2,6 @@ import {
   BookBookmarkIcon,
   BookOpenIcon,
   GameControllerIcon,
-  GearSixIcon,
   HouseIcon,
   InfoIcon,
   SignOutIcon,
@@ -10,7 +9,7 @@ import {
 } from '@phosphor-icons/react';
 import styles from './styles.module.css';
 import { useAuth } from '../../contexts/AuthContext';
-import { Link, NavLink } from 'react-router';
+import { NavLink } from 'react-router';
 
 function Sidebar() {
   const { isAuthenticated, logout } = useAuth();
@@ -61,23 +60,14 @@ function Sidebar() {
 
         <div className={styles.divider}></div>
 
-        <Link
-          to='#'
-          className={`${styles['navigation-item']} ${styles.secondary}`}
-          title='Opções'
-        >
-          <GearSixIcon size={22} />
-          <span>Opções</span>
-        </Link>
-
-        <Link
-          to='#'
+        <NavLink
+          to='/about'
           className={`${styles['navigation-item']} ${styles.secondary}`}
           title='Sobre'
         >
           <InfoIcon size={22} />
           <span>Sobre</span>
-        </Link>
+        </NavLink>
 
         {isAuthenticated && (
           <button

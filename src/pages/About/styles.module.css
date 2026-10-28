@@ -1,0 +1,277 @@
+.aboutPage {
+  width: min(1180px, 100%);
+  padding: 3.2rem 3.2rem 8rem;
+}
+
+.hero {
+  position: relative;
+  display: grid;
+  grid-template-columns: minmax(0, 1.45fr) minmax(240px, 0.55fr);
+  align-items: center;
+  min-height: 52rem;
+  overflow: hidden;
+  border: 1px solid var(--border);
+  background:
+    linear-gradient(115deg, rgba(34, 228, 255, 0.08), transparent 42%),
+    var(--card);
+  clip-path: polygon(0 0, calc(100% - 28px) 0, 100% 28px, 100% 100%, 28px 100%, 0 calc(100% - 28px));
+}
+
+.hero::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background:
+    linear-gradient(rgba(255, 255, 255, 0.025) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(255, 255, 255, 0.025) 1px, transparent 1px);
+  background-size: 48px 48px;
+  mask-image: linear-gradient(90deg, transparent, black);
+  pointer-events: none;
+}
+
+.heroCopy {
+  position: relative;
+  z-index: 1;
+  padding: clamp(4rem, 7vw, 8rem);
+}
+
+.eyebrow,
+.sectionIntro > span {
+  display: inline-block;
+  margin-bottom: 1.6rem;
+  color: var(--accent);
+  font-family: var(--font-mono);
+  font-size: 1.2rem;
+  font-weight: 700;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+}
+
+.hero h1 {
+  max-width: 72rem;
+  font-size: clamp(4.2rem, 6vw, 7.2rem);
+  letter-spacing: -0.045em;
+}
+
+.hero h1 span {
+  color: var(--accent);
+}
+
+.heroCopy > p {
+  max-width: 66rem;
+  margin-top: 2.4rem;
+  color: var(--text-soft);
+  font-size: 1.7rem;
+  line-height: 1.8;
+}
+
+.heroMark {
+  position: relative;
+  display: grid;
+  place-items: center;
+  align-self: stretch;
+  min-height: 34rem;
+  padding-right: clamp(3.2rem, 5vw, 6.4rem);
+  color: rgba(34, 228, 255, 0.08);
+}
+
+.heroMark svg {
+  width: clamp(16rem, 20vw, 24rem);
+  height: clamp(16rem, 20vw, 24rem);
+}
+
+.pillars {
+  padding: 9.6rem 0;
+}
+
+.sectionIntro {
+  max-width: 56rem;
+  margin-bottom: 4rem;
+}
+
+.sectionIntro h2,
+.collaboration h2,
+.project h2 {
+  font-size: clamp(2.8rem, 4vw, 4.4rem);
+}
+
+.pillarGrid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 1.6rem;
+}
+
+.pillar {
+  position: relative;
+  min-height: 28rem;
+  padding: 3.2rem;
+  overflow: hidden;
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  background: var(--card);
+  transition:
+    border-color 0.2s ease,
+    transform 0.2s var(--ease-out);
+}
+
+.pillar:hover {
+  border-color: var(--border-hover);
+  transform: translateY(-4px);
+}
+
+.pillarTop {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 6rem;
+  color: var(--accent);
+}
+
+.pillarTop span {
+  color: var(--faint);
+  font-family: var(--font-mono);
+  font-size: 1.2rem;
+}
+
+.pillar h3 {
+  margin-bottom: 1.2rem;
+  font-size: 2.4rem;
+}
+
+.pillar p,
+.collaboration p,
+.project p {
+  color: var(--muted);
+  line-height: 1.75;
+}
+
+.collaboration {
+  display: grid;
+  grid-template-columns: auto minmax(0, 70rem);
+  justify-content: center;
+  gap: 3.2rem;
+  padding: 7.2rem clamp(3.2rem, 8vw, 9.6rem);
+  border-top: 1px solid var(--border);
+  border-bottom: 1px solid var(--border);
+  background: linear-gradient(90deg, transparent, var(--accent-soft), transparent);
+}
+
+.collaborationIcon {
+  display: grid;
+  place-items: center;
+  width: 6.4rem;
+  height: 6.4rem;
+  border: 1px solid rgba(34, 228, 255, 0.25);
+  border-radius: 50%;
+  background: var(--accent-soft);
+  color: var(--accent);
+}
+
+.collaboration p {
+  margin-top: 1.8rem;
+  font-size: 1.6rem;
+}
+
+.project {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(300px, 0.8fr);
+  gap: 8rem;
+  align-items: center;
+  padding: 9.6rem 0 2rem;
+}
+
+.project p {
+  max-width: 64rem;
+  margin-top: 2rem;
+  font-size: 1.6rem;
+}
+
+.stack {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1rem;
+  align-content: center;
+}
+
+.stack span {
+  padding: 1rem 1.4rem;
+  border: 1px solid var(--border-hover);
+  border-radius: 999px;
+  background: var(--card);
+  color: var(--text-soft);
+  font-family: var(--font-mono);
+  font-size: 1.2rem;
+}
+
+@media (max-width: 900px) {
+  .hero {
+    grid-template-columns: 1fr;
+  }
+
+  .heroMark {
+    position: absolute;
+    inset: 0 0 0 auto;
+    width: 42%;
+    opacity: 0.7;
+  }
+
+  .heroCopy {
+    padding-right: 20%;
+  }
+
+  .pillarGrid {
+    grid-template-columns: 1fr;
+  }
+
+  .pillar {
+    min-height: auto;
+  }
+
+  .pillarTop {
+    margin-bottom: 3.2rem;
+  }
+
+  .project {
+    grid-template-columns: 1fr;
+    gap: 3.2rem;
+  }
+}
+
+@media (max-width: 600px) {
+  .aboutPage {
+    padding: 1.6rem 1.6rem 5.6rem;
+  }
+
+  .hero {
+    min-height: auto;
+  }
+
+  .heroCopy {
+    padding: 4.8rem 2.4rem;
+  }
+
+  .heroMark {
+    display: none;
+  }
+
+  .hero h1 {
+    font-size: 3.8rem;
+  }
+
+  .heroCopy > p {
+    font-size: 1.5rem;
+  }
+
+  .pillars {
+    padding: 6.4rem 0;
+  }
+
+  .collaboration {
+    grid-template-columns: 1fr;
+    padding: 4.8rem 2.4rem;
+  }
+
+  .project {
+    padding-top: 6.4rem;
+  }
+}

@@ -14,10 +14,13 @@ import CreateGuidePage from './pages/CreateGuide';
 import UserProfilePage from './pages/UserProfile';
 import LibraryPage from './pages/Library';
 import ProtectedRoute from './components/ProtectedRoute';
+import AboutPage from './pages/About';
+import ScrollToTop from './components/ScrollToTop';
 
 function App() {
   return (
     <BrowserRouter>
+      <ScrollToTop />
       <AuthProvider>
         <Routes>
           <Route element={<Layout />}>
@@ -38,6 +41,7 @@ function App() {
             />
             <Route path='/profile' element={<UserProfilePage />} />
             <Route path='/users/:userId' element={<UserProfilePage />} />
+            <Route path='/about' element={<AboutPage />} />
             <Route element={<ProtectedRoute />}>
               <Route path='/library' element={<LibraryPage />} />
               <Route

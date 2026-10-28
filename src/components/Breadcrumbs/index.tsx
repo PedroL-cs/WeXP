@@ -93,6 +93,7 @@ function getBreadcrumbs(pathname: string): BreadcrumbItem[] {
     profile: 'Perfil',
     users: 'Usuário',
     library: 'Biblioteca',
+    about: 'Sobre',
   };
 
   if (segments[0] === 'library' && segments[1]) {
