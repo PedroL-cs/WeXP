@@ -8,6 +8,14 @@ import type { Achievement } from '../../types/Achievement';
 import styles from './styles.module.css';
 import SaveButton from '../SaveButton';
 
+function formatUnlockPercentage(percentage: number) {
+  if (percentage > 0 && percentage < 0.1) return '< 0,1%';
+  return `${percentage.toLocaleString('pt-BR', {
+    minimumFractionDigits: 1,
+    maximumFractionDigits: 1,
+  })}%`;
+}
+
 type AchievementCardProps = {
   achievement: Achievement;
   showSecret: boolean;
@@ -68,6 +76,15 @@ function AchievementCard({
         <div className={styles.achievementInfo}>
           <h3>{achievement.name}</h3>
           {achievement.description && <p>{achievement.description}</p>}
+          {achievement.globalUnlockPercentage != null && (
+            <span
+              className={styles.rarity}
+              title='Porcentagem global de jogadores que desbloquearam esta conquista'
+            >
+              {formatUnlockPercentage(achievement.globalUnlockPercentage)} dos
+              jogadores
+            </span>
+          )}
         </div>
 
         <SaveButton type='ACHIEVEMENT' resourceId={achievement.id} compact />
@@ -114,6 +131,15 @@ function AchievementCard({
             <span className={styles.secretBadge}>Secreta</span>
           </h3>
           {achievement.description && <p>{achievement.description}</p>}
+          {achievement.globalUnlockPercentage != null && (
+            <span
+              className={styles.rarity}
+              title='Porcentagem global de jogadores que desbloquearam esta conquista'
+            >
+              {formatUnlockPercentage(achievement.globalUnlockPercentage)} dos
+              jogadores
+            </span>
+          )}
         </div>
       </div>
 

@@ -17,6 +17,7 @@ type AchievementInfo = {
   description?: string;
   icon?: string | null;
   icon_url?: string | null;
+  globalUnlockPercentage?: number | null;
 };
 
 export type AuthorInfo = { username: string; avatar?: string };

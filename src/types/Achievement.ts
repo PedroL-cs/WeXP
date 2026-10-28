@@ -4,6 +4,7 @@ export type Achievement = {
   description: string;
   hidden: boolean;
   icon: string | null;
+  globalUnlockPercentage: number | null;
   game?: {
     id: string;
     name: string;

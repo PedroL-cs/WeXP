@@ -146,6 +146,18 @@
   line-height: 1.45;
 }
 
+.rarity {
+  display: inline-flex;
+  width: fit-content;
+  margin-top: 0.6rem;
+  color: var(--xp);
+  font-family: var(--font-mono);
+  font-size: 1.05rem;
+  font-weight: 700;
+  letter-spacing: 0.03em;
+  text-transform: uppercase;
+}
+
 .arrow {
   display: grid;
   place-items: center;

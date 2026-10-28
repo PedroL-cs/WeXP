@@ -25,6 +25,10 @@ const dateFormat = new Intl.DateTimeFormat('pt-BR', {
   timeStyle: 'short',
 });
 const numberFormat = new Intl.NumberFormat('pt-BR');
+const percentageFormat = new Intl.NumberFormat('pt-BR', {
+  minimumFractionDigits: 1,
+  maximumFractionDigits: 1,
+});
 
 function dateLabel(value?: string) {
   if (!value) return '';
@@ -341,6 +345,18 @@ function GuidePageContent() {
           {data.achievement?.description && (
             <p className={styles.achievementDescription}>
               {data.achievement.description}
+            </p>
+          )}
+          {data.achievement?.globalUnlockPercentage != null && (
+            <p
+              className={styles.achievementRarity}
+              title='Porcentagem global de jogadores que desbloquearam esta conquista'
+            >
+              <TrophyIcon size={13} weight='fill' />
+              {percentageFormat.format(
+                data.achievement.globalUnlockPercentage,
+              )}
+              % dos jogadores desbloquearam
             </p>
           )}
           {guide && (

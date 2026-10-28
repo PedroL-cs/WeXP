@@ -63,7 +63,7 @@
   width: 96px;
   height: 96px;
   flex-shrink: 0;
-  border-radius: 14px;
+  border-radius: 10px;
   background: var(--bg-dark);
   color: var(--xp);
   box-shadow:
@@ -86,12 +86,24 @@
   );
   background-size: 250% 100%;
   background-position: 150% 0;
-  animation: glint 1.4s ease 0.5s both;
+  opacity: 0;
+  animation: glint 1.4s ease 0.5s;
   pointer-events: none;
 }
 
 @keyframes glint {
+  0% {
+    opacity: 0;
+    background-position: 150% 0;
+  }
+
+  15%,
+  85% {
+    opacity: 1;
+  }
+
   to {
+    opacity: 0;
     background-position: -100% 0;
   }
 }
@@ -100,7 +112,7 @@
   width: 100%;
   height: 100%;
   object-fit: cover;
-  border-radius: 14px;
+  border-radius: 8px;
 }
 
 .headerInfo {
@@ -169,6 +181,21 @@
   background: var(--accent);
   color: var(--accent-ink);
   box-shadow: 0 0 24px -4px var(--accent-glow);
+}
+
+.achievementRarity {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin-top: 1rem;
+  padding: 0.45rem 0.8rem;
+  border: 1px solid rgba(255, 201, 74, 0.22);
+  border-radius: 6px;
+  background: rgba(255, 201, 74, 0.07);
+  color: var(--xp);
+  font-family: var(--font-mono);
+  font-size: 1.15rem;
+  font-weight: 700;
 }
 
 .headerActions {
@@ -867,11 +894,11 @@
   .iconFrame {
     width: 64px;
     height: 64px;
-    border-radius: 10px;
+    border-radius: 8px;
   }
 
   .achievementIcon {
-    border-radius: 10px;
+    border-radius: 6px;
   }
 
   .headerInfo {

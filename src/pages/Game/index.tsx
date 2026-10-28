@@ -19,7 +19,12 @@ import { getGame } from '../../api/games';
 import type { Game } from '../../types/Game';
 import SaveButton from '../../components/SaveButton';
 
-type AchievementSort = 'default' | 'name-asc' | 'name-desc';
+type AchievementSort =
+  | 'default'
+  | 'name-asc'
+  | 'name-desc'
+  | 'rarity-asc'
+  | 'rarity-desc';
 
 function GamePage() {
   const { id } = useParams();
@@ -79,7 +84,20 @@ function GamePage() {
         sensitivity: 'base',
       });
 
-      return achievementSort === 'name-asc' ? nameOrder : -nameOrder;
+      if (achievementSort === 'name-asc') return nameOrder;
+      if (achievementSort === 'name-desc') return -nameOrder;
+
+      const aPercentage = a.globalUnlockPercentage;
+      const bPercentage = b.globalUnlockPercentage;
+      if (aPercentage == null && bPercentage == null) return nameOrder;
+      if (aPercentage == null) return 1;
+      if (bPercentage == null) return -1;
+
+      const rarityOrder = aPercentage - bPercentage;
+      if (rarityOrder === 0) return nameOrder;
+      return achievementSort === 'rarity-asc'
+        ? rarityOrder
+        : -rarityOrder;
     });
 
   const secretCount = game.achievements.filter(
@@ -199,6 +217,8 @@ function GamePage() {
                   <option value='default'>Padrão</option>
                   <option value='name-asc'>Nome (A–Z)</option>
                   <option value='name-desc'>Nome (Z–A)</option>
+                  <option value='rarity-asc'>Mais raras</option>
+                  <option value='rarity-desc'>Mais comuns</option>
                 </select>
               </label>
 
