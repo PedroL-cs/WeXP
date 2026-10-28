@@ -18,6 +18,7 @@ import java.nio.charset.StandardCharsets;
 import java.time.Duration;
 import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
+import java.util.Map;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.atomic.AtomicInteger;
@@ -70,6 +71,15 @@ class SteamHttpResilienceTests {
             exchange.getResponseBody().write(bytes);
             exchange.close();
         });
+        server.createContext("/ISteamUserStats/GetGlobalAchievementPercentagesForApp/v2", exchange -> {
+            byte[] bytes = ("{\"achievementpercentages\":{\"achievements\":["
+                    + "{\"name\":\"ACH_ONE\",\"percent\":\"2.5\"}]}}")
+                    .getBytes(StandardCharsets.UTF_8);
+            exchange.getResponseHeaders().set("Content-Type", "application/json");
+            exchange.sendResponseHeaders(200, bytes.length);
+            exchange.getResponseBody().write(bytes);
+            exchange.close();
+        });
         server.start();
         properties = new SteamClientProperties();
         properties.setReadTimeout(Duration.ofSeconds(2));
@@ -109,6 +119,13 @@ class SteamHttpResilienceTests {
 
         assertEquals(TIMEOUT, error.getReason());
         verifyNoInteractions(categories);
+    }
+
+    @Test
+    void shouldParseGlobalAchievementPercentages() {
+        Map<String, Double> percentages = api.getGlobalAchievementPercentages(10L);
+
+        assertEquals(2.5, percentages.get("ACH_ONE"));
     }
 
     @Test

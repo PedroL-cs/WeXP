@@ -29,6 +29,7 @@ public class GameSteamPersistenceService {
     private GameEntity persist(String publicId, SteamGameDetails details, GameEntity existing) {
         GameEntity game = steamStoreClient.applyDetails(details, publicId, existing);
         game.setSteamSyncedAt(LocalDateTime.now());
+        game.setAchievementPercentagesCheckedAt(LocalDateTime.now());
         return gameRepository.saveAndFlush(game);
     }
 }

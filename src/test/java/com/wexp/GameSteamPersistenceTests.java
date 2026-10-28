@@ -1,5 +1,6 @@
 package com.wexp;
 
+import com.wexp.feature.achievement.AchievementEntity;
 import com.wexp.feature.game.GameEntity;
 import com.wexp.feature.game.IGameRepository;
 import com.wexp.feature.game.steam.GameSteamPersistenceService;
@@ -19,6 +20,7 @@ import org.springframework.transaction.support.TransactionTemplate;
 import tools.jackson.databind.json.JsonMapper;
 
 import java.time.LocalDateTime;
+import java.util.Map;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
@@ -63,13 +65,20 @@ class GameSteamPersistenceTests {
                 }]}}}
                 """);
 
-        String iconUrl = new TransactionTemplate(transactionManager).execute(status -> {
+        AchievementEntity achievement = new TransactionTemplate(transactionManager).execute(status -> {
             GameEntity game = persistence.create("game-sync-icon", new SteamGameDetails(
-                    13L, json.readTree("{\"name\":\"Game\"}"), schema));
-            return game.getAchievements().get(0).getIconUrl();
+                    13L,
+                    json.readTree("{\"name\":\"Game\"}"),
+                    schema,
+                    Map.of("ACH_ONE", 2.5)
+            ));
+            return game.getAchievements().get(0);
         });
 
-        assertEquals("https://steam.example/achievement.jpg", iconUrl);
+        assertNotNull(achievement);
+        assertEquals("https://steam.example/achievement.jpg", achievement.getIconUrl());
+        assertEquals("ACH_ONE", achievement.getSteamApiName());
+        assertEquals(2.5, achievement.getGlobalUnlockPercentage());
     }
 
     @Test

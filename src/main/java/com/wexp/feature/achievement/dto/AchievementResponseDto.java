@@ -13,6 +13,7 @@ public class AchievementResponseDto {
     private final String description;
     private final Boolean isHidden;
     private final String icon;
+    private final Double globalUnlockPercentage;
     private final LocalDateTime createdAt;
     private final LocalDateTime updatedAt;
 
@@ -24,6 +25,7 @@ public class AchievementResponseDto {
         this.description = achievementEntity.getDescription();
         this.isHidden = achievementEntity.getIsHidden();
         this.icon = achievementEntity.getIconUrl();
+        this.globalUnlockPercentage = achievementEntity.getGlobalUnlockPercentage();
         this.createdAt = achievementEntity.getCreatedAt();
         this.updatedAt = achievementEntity.getUpdatedAt();
         this.game = new GameSummaryDto(achievementEntity.getGame());
@@ -35,6 +37,7 @@ public class AchievementResponseDto {
         this.description = achievementEntity.getDescription();
         this.isHidden = achievementEntity.getIsHidden();
         this.icon = achievementEntity.getIconUrl();
+        this.globalUnlockPercentage = achievementEntity.getGlobalUnlockPercentage();
         this.createdAt = achievementEntity.getCreatedAt();
         this.updatedAt = achievementEntity.getUpdatedAt();
         this.game = includeGame ? new GameSummaryDto(achievementEntity.getGame()) : null;

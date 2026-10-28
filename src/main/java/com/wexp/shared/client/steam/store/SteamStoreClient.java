@@ -56,7 +56,23 @@ public class SteamStoreClient {
         });
         if (data == null) return Optional.empty();
         JsonNode schema = steamApiClient.getSchemaForGame(steamAppId);
-        return Optional.of(new SteamGameDetails(steamAppId, data, schema));
+        Map<String, Double> globalUnlockPercentages;
+        boolean globalUnlockPercentagesFetched;
+        try {
+            globalUnlockPercentages = steamApiClient.getGlobalAchievementPercentages(steamAppId);
+            globalUnlockPercentagesFetched = true;
+        } catch (SteamIntegrationException exception) {
+            logger.warn("Percentuais globais indisponíveis para o jogo {}: {}", steamAppId, exception.getReason());
+            globalUnlockPercentages = Map.of();
+            globalUnlockPercentagesFetched = false;
+        }
+        return Optional.of(new SteamGameDetails(
+                steamAppId,
+                data,
+                schema,
+                globalUnlockPercentages,
+                globalUnlockPercentagesFetched
+        ));
     }
 
     // No network calls here: this method is used within the persistence transaction.
@@ -64,7 +80,12 @@ public class SteamStoreClient {
         GameEntity game = extractGameEntity(publicId, details.appId(), details.data(), existingGame);
         processCategories(details.data(), game);
         processGenres(details.data(), game);
-        processAchievements(details.achievementSchema(), game);
+        processAchievements(
+                details.achievementSchema(),
+                details.globalUnlockPercentages(),
+                details.globalUnlockPercentagesFetched(),
+                game
+        );
         processImages(details.appId(), details.data(), game);
         return game;
     }
@@ -156,30 +177,54 @@ public class SteamStoreClient {
         }
     }
 
-    private void processAchievements(JsonNode schema, GameEntity gameToSave) {
+    private void processAchievements(
+            JsonNode schema,
+            Map<String, Double> globalUnlockPercentages,
+            boolean globalUnlockPercentagesFetched,
+            GameEntity gameToSave
+    ) {
         if (schema == null || !schema.has("game")) return;
         JsonNode achievements = schema.get("game").path("availableGameStats").path("achievements");
         if (!achievements.isArray()) return;
 
         achievements.forEach(node -> {
-            String name = node.has("displayName") ? node.get("displayName").asString() : node.get("name").asString();
+            String steamApiName = node.get("name").asString();
+            String name = node.has("displayName") ? node.get("displayName").asString() : steamApiName;
             String description = node.path("description").asString("");
             String iconUrl = textOrNull(node, "icon");
             boolean hidden = node.path("hidden").asInt(0) == 1;
             Optional<AchievementEntity> existing = gameToSave.getAchievements().stream()
-                    .filter(a -> a.getName().equalsIgnoreCase(name)).findFirst();
+                    .filter(achievement -> steamApiName.equalsIgnoreCase(achievement.getSteamApiName()))
+                    .findFirst()
+                    .or(() -> gameToSave.getAchievements().stream()
+                            .filter(achievement -> achievement.getSteamApiName() == null
+                                    && achievement.getName().equalsIgnoreCase(name))
+                            .findFirst());
             if (existing.isPresent()) {
                 AchievementEntity achievement = existing.get();
+                achievement.setName(name);
                 achievement.setDescription(description);
                 achievement.setIconUrl(iconUrl);
                 achievement.setIsHidden(hidden);
+                achievement.setSteamApiName(steamApiName);
+                if (globalUnlockPercentagesFetched) {
+                    achievement.setGlobalUnlockPercentage(globalUnlockPercentages.get(steamApiName));
+                }
                 if (achievement.getPublicId() == null) {
                     achievement.setPublicId(PublicIdGenerator.generate(PublicIdType.ACHIEVEMENT));
                 }
             } else {
                 gameToSave.addAchievement(AchievementEntity.builder()
                         .publicId(PublicIdGenerator.generate(PublicIdType.ACHIEVEMENT))
-                        .name(name).description(description).iconUrl(iconUrl).isHidden(hidden).build());
+                        .name(name)
+                        .description(description)
+                        .iconUrl(iconUrl)
+                        .isHidden(hidden)
+                        .steamApiName(steamApiName)
+                        .globalUnlockPercentage(globalUnlockPercentagesFetched
+                                ? globalUnlockPercentages.get(steamApiName)
+                                : null)
+                        .build());
             }
         });
     }

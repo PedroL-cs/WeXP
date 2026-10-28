@@ -36,6 +36,13 @@ public class AchievementEntity {
     @Column(name = "icon_url", length = 2048)
     private String iconUrl;
 
+    @JsonIgnore
+    @Column(name = "steam_api_name", length = 255)
+    private String steamApiName;
+
+    @Column(name = "global_unlock_percentage")
+    private Double globalUnlockPercentage;
+
     @Column(name = "is_hidden", nullable = false)
     private Boolean isHidden;
 

@@ -28,7 +28,7 @@ public class GameSynchronizationService {
     private final Set<String> running = ConcurrentHashMap.newKeySet();
 
     public void refreshIfStale(GameEntity game) {
-        if (game.getSteamAppId() == null || !isStale(game) || !running.add(game.getPublicId())) return;
+        if (game.getSteamAppId() == null || !needsRefresh(game) || !running.add(game.getPublicId())) return;
         String publicId = game.getPublicId();
         try {
             CompletableFuture.runAsync(() -> {
@@ -50,7 +50,8 @@ public class GameSynchronizationService {
 
     void synchronize(String publicId) {
         GameEntity current = gameRepository.findByPublicId(publicId).orElse(null);
-        if (current == null || current.getSteamAppId() == null || !isStale(current)) return;
+        if (current == null || current.getSteamAppId() == null) return;
+        if (!needsRefresh(current)) return;
         for (int attempt = 1; attempt <= properties.getRefreshMaxAttempts(); attempt++) {
             try {
                 Optional<SteamGameDetails> details = steamStoreClient.fetchGameDetails(current.getSteamAppId());
@@ -71,5 +72,9 @@ public class GameSynchronizationService {
     private boolean isStale(GameEntity game) {
         return game.getSteamSyncedAt() == null
                 || game.getSteamSyncedAt().isBefore(LocalDateTime.now().minus(properties.getRefreshInterval()));
+    }
+
+    private boolean needsRefresh(GameEntity game) {
+        return isStale(game) || game.getAchievementPercentagesCheckedAt() == null;
     }
 }

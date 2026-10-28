@@ -25,4 +25,9 @@ public interface SteamApi {
         return getSchemaForGame(appId, "brazilian");
     }
 
+    @GetExchange("/ISteamUserStats/GetGlobalAchievementPercentagesForApp/v2")
+    JsonNode getGlobalAchievementPercentages(
+            @RequestParam("gameid") Long appId
+    );
+
 }

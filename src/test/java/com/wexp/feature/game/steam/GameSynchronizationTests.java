@@ -88,8 +88,21 @@ class GameSynchronizationTests {
     }
 
     @Test
+    void shouldRefreshFreshGamesWithLegacyAchievements() {
+        local.setSteamSyncedAt(LocalDateTime.now());
+        SteamGameDetails details = new SteamGameDetails(10L, null, null);
+        when(games.findByPublicId("game-1")).thenReturn(Optional.of(local));
+        when(store.fetchGameDetails(10L)).thenReturn(Optional.of(details));
+
+        service.synchronize("game-1");
+
+        verify(persistence).refresh("game-1", details);
+    }
+
+    @Test
     void shouldSkipFreshGamesAndLocalOnlyGames() {
         local.setSteamSyncedAt(LocalDateTime.now());
+        local.setAchievementPercentagesCheckedAt(LocalDateTime.now());
         service.refreshIfStale(local);
         local.setSteamSyncedAt(null);
         local.setSteamAppId(null);

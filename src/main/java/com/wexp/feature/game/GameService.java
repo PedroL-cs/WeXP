@@ -137,8 +137,6 @@ public class GameService {
 
         List<SteamGameEntity> storeResults = steamStoreClient.searchGames(query);
         if (storeResults != null && !storeResults.isEmpty()) {
-            steamGameRepository.saveAll(storeResults);
-
             List<GameEntity> games = storeResults.stream()
                     .map(steamGame -> {
                         try { return getSteamGameDetails(steamGame.getAppid()); }

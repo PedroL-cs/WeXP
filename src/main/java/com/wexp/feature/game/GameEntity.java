@@ -103,6 +103,10 @@ public class GameEntity {
     @Column(name = "steam_synced_at")
     private LocalDateTime steamSyncedAt;
 
+    @JsonIgnore
+    @Column(name = "achievement_percentages_checked_at")
+    private LocalDateTime achievementPercentagesCheckedAt;
+
     @PrePersist
     protected void onCreate() {
         if (publicId == null) this.publicId = PublicIdGenerator.generate(PublicIdType.GAME);

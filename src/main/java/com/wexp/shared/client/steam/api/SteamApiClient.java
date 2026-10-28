@@ -8,7 +8,9 @@ import org.springframework.stereotype.Component;
 import tools.jackson.databind.JsonNode;
 
 import java.util.ArrayList;
+import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
 
 @Component
 @RequiredArgsConstructor
@@ -61,6 +63,40 @@ public class SteamApiClient {
                 });
             }
             return schema;
+        });
+    }
+
+    public Map<String, Double> getGlobalAchievementPercentages(Long steamAppId) {
+        return requests.execute(SteamRequestExecutor.API, () -> {
+            JsonNode response = steamApi.getGlobalAchievementPercentages(steamAppId);
+            if (response == null || !response.path("achievementpercentages").isObject()) {
+                throw invalidResponse();
+            }
+
+            JsonNode achievements = response.path("achievementpercentages").get("achievements");
+            if (achievements == null || achievements.isNull()) return Map.of();
+            if (!achievements.isArray()) throw invalidResponse();
+
+            Map<String, Double> percentages = new LinkedHashMap<>();
+            achievements.forEach(achievement -> {
+                JsonNode percent = achievement.path("percent");
+                if (!achievement.path("name").isString()
+                        || (!percent.isNumber() && !percent.isString())) {
+                    throw invalidResponse();
+                }
+
+                double percentage;
+                try {
+                    percentage = Double.parseDouble(percent.asString());
+                } catch (NumberFormatException exception) {
+                    throw invalidResponse();
+                }
+                if (!Double.isFinite(percentage) || percentage < 0 || percentage > 100) {
+                    throw invalidResponse();
+                }
+                percentages.put(achievement.get("name").asString(), percentage);
+            });
+            return percentages;
         });
     }
 
