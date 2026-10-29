@@ -3,7 +3,6 @@ package com.wexp.feature.game;
 import com.wexp.shared.client.steam.store.SteamStoreClient;
 import com.wexp.feature.game.steam.SteamApiService;
 import com.wexp.feature.game.steam.SteamGameEntity;
-import com.wexp.feature.game.steam.ISteamGameRepository;
 import com.wexp.feature.game.steam.GameSynchronizationService;
 import com.wexp.feature.game.steam.GameSteamPersistenceService;
 import com.wexp.shared.client.steam.store.SteamGameDetails;
@@ -12,7 +11,6 @@ import com.wexp.shared.exception.ApiException;
 import com.wexp.shared.exception.ExceptionResponse;
 import com.wexp.shared.util.PublicIdGenerator;
 import com.wexp.shared.util.PublicIdType;
-import com.wexp.shared.persistence.PersistenceTransactions;
 import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -35,11 +33,8 @@ public class GameService {
     private static final Logger logger = LoggerFactory.getLogger(GameService.class);
 
     private final IGameRepository gameRepository;
-    private final ISteamGameRepository steamGameRepository;
-
     private final SteamStoreClient steamStoreClient;
     private final SteamApiService steamApiService;
-    private final PersistenceTransactions persistenceTransactions;
     private final GameSynchronizationService synchronizationService;
     private final GameSteamPersistenceService steamPersistenceService;
     private final Map<Long, Object> gameCreationLocks = new ConcurrentHashMap<>();
@@ -71,48 +66,15 @@ public class GameService {
 
     private GameIdResponse getGameIdLocked(Long steamId) {
         Optional<GameEntity> existingGame = gameRepository.findBySteamAppId(steamId);
-        if (existingGame.isPresent()) {
-            synchronizationService.refreshIfStale(existingGame.get());
-            return GameIdResponse.builder()
-                    .steamId(steamId)
-                    .gameId(existingGame.get().getPublicId())
-                    .gameStatus(GameIdResponse.GameStatus.EXISTING)
-                    .build();
-        }
-
-        String newPublicId = PublicIdGenerator.generate(PublicIdType.GAME);
-        GameEntity shell = GameEntity.builder()
-                .publicId(newPublicId)
-                .steamAppId(steamId)
-                .name(shellNameFor(steamId))
-                .build();
-
-        GameEntity persistedShell;
-        try {
-            persistedShell = persistenceTransactions.insert(() -> gameRepository.saveAndFlush(shell));
-        } catch (DataIntegrityViolationException e) {
-            GameEntity winner = gameRepository.findBySteamAppId(steamId).orElseThrow(() -> e);
-            logger.warn("Conflito de inserção evitado: O jogo com Steam ID {} já foi criado por outra thread.", steamId);
-            return GameIdResponse.builder()
-                    .steamId(steamId)
-                    .gameId(winner.getPublicId())
-                    .gameStatus(GameIdResponse.GameStatus.EXISTING)
-                    .build();
-        }
-
-        synchronizationService.refreshIfStale(persistedShell);
+        GameEntity game = materializeSteamGame(steamId, existingGame);
 
         return GameIdResponse.builder()
                 .steamId(steamId)
-                .gameId(persistedShell.getPublicId())
-                .gameStatus(GameIdResponse.GameStatus.NEW)
+                .gameId(game.getPublicId())
+                .gameStatus(existingGame.isPresent()
+                        ? GameIdResponse.GameStatus.EXISTING
+                        : GameIdResponse.GameStatus.NEW)
                 .build();
-    }
-
-    private String shellNameFor(Long steamAppId) {
-        return steamGameRepository.findByAppid(steamAppId)
-                .map(SteamGameEntity::getName)
-                .orElse("Jogo Steam #" + steamAppId);
     }
 
     public Page<GameEntity> searchGames(String query, Pageable pageable) {
@@ -175,21 +137,38 @@ public class GameService {
 
     private GameEntity getSteamGameDetailsLocked(Long steamAppId) throws ApiException {
         Optional<GameEntity> optionalGame = gameRepository.findBySteamAppId(steamAppId);
+        return materializeSteamGame(steamAppId, optionalGame);
+    }
+
+    private GameEntity materializeSteamGame(Long steamAppId, Optional<GameEntity> optionalGame) {
         if (optionalGame.isPresent()) {
-            synchronizationService.refreshIfStale(optionalGame.get());
-            return optionalGame.get();
+            GameEntity game = optionalGame.get();
+            if (game.getSteamSyncedAt() != null) {
+                synchronizationService.refreshIfStale(game);
+                return game;
+            }
+
+            SteamGameDetails details = fetchSteamGameDetails(steamAppId);
+            return steamPersistenceService.refresh(game.getPublicId(), details);
         }
 
         String newPublicId = PublicIdGenerator.generate(PublicIdType.GAME);
-
-        SteamGameDetails details = steamStoreClient.fetchGameDetails(steamAppId)
-                .orElseThrow(() -> new ApiException(ExceptionResponse.SteamGameNotFound));
+        SteamGameDetails details = fetchSteamGameDetails(steamAppId);
 
         try {
             return steamPersistenceService.create(newPublicId, details);
         } catch (DataIntegrityViolationException exception) {
-            return gameRepository.findBySteamAppId(steamAppId).orElseThrow(() -> exception);
+            GameEntity winner = gameRepository.findBySteamAppId(steamAppId).orElseThrow(() -> exception);
+            logger.warn("Conflito de inserção evitado: O jogo com Steam ID {} já foi criado por outra thread.", steamAppId);
+            return winner.getSteamSyncedAt() == null
+                    ? steamPersistenceService.refresh(winner.getPublicId(), details)
+                    : winner;
         }
+    }
+
+    private SteamGameDetails fetchSteamGameDetails(Long steamAppId) {
+        return steamStoreClient.fetchGameDetails(steamAppId)
+                .orElseThrow(() -> new ApiException(ExceptionResponse.SteamGameNotFound));
     }
 
 }

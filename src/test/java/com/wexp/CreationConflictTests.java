@@ -28,6 +28,7 @@ import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
 import java.util.Optional;
+import java.time.LocalDateTime;
 import java.util.function.Supplier;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -59,7 +60,8 @@ class CreationConflictTests {
     void shouldTranslateEmailRaceAfterFailedInsertWithoutIssuingToken() {
         RegisterRequestDto request = registration();
         when(userRepository.findByEmail(request.getEmail()))
-                .thenReturn(Optional.empty(), Optional.of(new UserEntity()));
+                .thenReturn(Optional.empty())
+                .thenReturn(Optional.of(new UserEntity()));
         when(userRepository.saveAndFlush(any())).thenThrow(new DataIntegrityViolationException("unique email"));
 
         ApiException exception = assertThrows(ApiException.class, () -> authService().register(request));
@@ -72,7 +74,8 @@ class CreationConflictTests {
     void shouldTranslateLoginRaceAfterFailedInsertWithoutIssuingToken() {
         RegisterRequestDto request = registration();
         when(userRepository.findByLogin(request.getLogin()))
-                .thenReturn(Optional.empty(), Optional.of(new UserEntity()));
+                .thenReturn(Optional.empty())
+                .thenReturn(Optional.of(new UserEntity()));
         when(userRepository.saveAndFlush(any())).thenThrow(new DataIntegrityViolationException("unique login"));
 
         ApiException exception = assertThrows(ApiException.class, () -> authService().register(request));
@@ -93,30 +96,41 @@ class CreationConflictTests {
 
     @Test
     void shouldReturnPersistedWinnerOnConcurrentGameShellCreation() {
-        GameEntity winner = GameEntity.builder().publicId("game-winner").steamAppId(10L).build();
-        when(gameRepository.findBySteamAppId(10L)).thenReturn(Optional.empty(), Optional.of(winner));
-        when(gameRepository.saveAndFlush(any())).thenThrow(new DataIntegrityViolationException("unique steam id"));
+        GameEntity winner = GameEntity.builder().publicId("game-winner").steamAppId(10L)
+                .steamSyncedAt(LocalDateTime.now()).build();
+        when(gameRepository.findBySteamAppId(10L))
+                .thenReturn(Optional.empty())
+                .thenReturn(Optional.of(winner));
+        SteamGameDetails details = new SteamGameDetails(10L, null, null);
+        when(steamStoreClient.fetchGameDetails(10L)).thenReturn(Optional.of(details));
+        when(steamPersistenceService.create(anyString(), eq(details)))
+                .thenThrow(new DataIntegrityViolationException("unique steam id"));
 
         GameIdResponse response = gameService().getGameId(10L);
 
         assertEquals("game-winner", response.gameId());
-        assertEquals(GameIdResponse.GameStatus.EXISTING, response.gameStatus());
-        verifyNoInteractions(steamStoreClient);
+        assertEquals(GameIdResponse.GameStatus.NEW, response.gameStatus());
+        verify(steamStoreClient).fetchGameDetails(10L);
     }
 
     @Test
     void shouldNotReturnUnpersistedGameIdWhenNoWinnerExists() {
         DataIntegrityViolationException failure = new DataIntegrityViolationException("unrelated constraint");
-        when(gameRepository.saveAndFlush(any())).thenThrow(failure);
+        SteamGameDetails details = new SteamGameDetails(10L, null, null);
+        when(steamStoreClient.fetchGameDetails(10L)).thenReturn(Optional.of(details));
+        when(steamPersistenceService.create(anyString(), eq(details))).thenThrow(failure);
 
         assertSame(failure, assertThrows(DataIntegrityViolationException.class, () -> gameService().getGameId(10L)));
-        verifyNoInteractions(steamStoreClient);
+        verify(steamStoreClient).fetchGameDetails(10L);
     }
 
     @Test
     void shouldReturnPersistedWinnerOnConcurrentSteamDetailCreation() {
-        GameEntity winner = GameEntity.builder().id(1L).publicId("game-winner").steamAppId(10L).build();
-        when(gameRepository.findBySteamAppId(10L)).thenReturn(Optional.empty(), Optional.of(winner));
+        GameEntity winner = GameEntity.builder().id(1L).publicId("game-winner").steamAppId(10L)
+                .steamSyncedAt(LocalDateTime.now()).build();
+        when(gameRepository.findBySteamAppId(10L))
+                .thenReturn(Optional.empty())
+                .thenReturn(Optional.of(winner));
         SteamGameDetails details = new SteamGameDetails(10L, null, null);
         when(steamStoreClient.fetchGameDetails(10L)).thenReturn(Optional.of(details));
         when(steamPersistenceService.create(anyString(), eq(details)))
@@ -131,8 +145,8 @@ class CreationConflictTests {
     }
 
     private GameService gameService() {
-        return new GameService(gameRepository, steamGameRepository, steamStoreClient, steamApiService,
-                persistenceTransactions, synchronizationService, steamPersistenceService);
+        return new GameService(gameRepository, steamStoreClient, steamApiService,
+                synchronizationService, steamPersistenceService);
     }
 
     private RegisterRequestDto registration() {

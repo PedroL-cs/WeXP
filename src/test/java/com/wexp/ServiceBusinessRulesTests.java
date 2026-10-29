@@ -195,8 +195,8 @@ class ServiceBusinessRulesTests {
     @Test
     void shouldRejectGameDetailsWhenGameDoesNotExist() {
         GameService gameService = new GameService(
-                gameRepository, steamGameRepository, steamStoreClient, steamApiService,
-                persistenceTransactions, synchronizationService, steamPersistenceService);
+                gameRepository, steamStoreClient, steamApiService,
+                synchronizationService, steamPersistenceService);
         when(gameRepository.findByPublicId("missing")).thenReturn(Optional.empty());
 
         ApiException exception = assertThrows(ApiException.class, () ->

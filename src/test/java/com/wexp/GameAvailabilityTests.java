@@ -3,6 +3,7 @@ package com.wexp;
 import com.wexp.feature.game.*;
 import com.wexp.feature.game.steam.*;
 import com.wexp.shared.client.steam.SteamIntegrationException;
+import com.wexp.shared.client.steam.store.SteamGameDetails;
 import com.wexp.shared.client.steam.store.SteamStoreClient;
 import com.wexp.shared.persistence.PersistenceTransactions;
 import org.junit.jupiter.api.BeforeEach;
@@ -34,7 +35,7 @@ class GameAvailabilityTests {
 
     @BeforeEach
     void setup() {
-        service = new GameService(games, steamGames, store, api, transactions, synchronization, persistence);
+        service = new GameService(games, store, api, synchronization, persistence);
         local = GameEntity.builder().id(1L).publicId("game-1").steamAppId(10L).name("Local data")
                 .steamSyncedAt(LocalDateTime.now().minusDays(8)).build();
     }
@@ -57,6 +58,46 @@ class GameAvailabilityTests {
         assertSame(local, service.viewSteamGameDetails(10L));
         verify(synchronization).refreshIfStale(local);
         verifyNoInteractions(store, api, persistence);
+    }
+
+    @Test
+    void shouldMaterializeNewGameBeforeReturningItsId() {
+        SteamGameDetails details = new SteamGameDetails(10L, null, null);
+        GameEntity materialized = GameEntity.builder()
+                .id(2L)
+                .publicId("game-new")
+                .steamAppId(10L)
+                .steamSyncedAt(LocalDateTime.now())
+                .build();
+        when(games.findBySteamAppId(10L)).thenReturn(Optional.empty());
+        when(store.fetchGameDetails(10L)).thenReturn(Optional.of(details));
+        when(persistence.create(anyString(), eq(details))).thenReturn(materialized);
+
+        var response = service.getGameId(10L);
+
+        assertEquals("game-new", response.gameId());
+        assertEquals(com.wexp.feature.game.dto.GameIdResponse.GameStatus.NEW, response.gameStatus());
+        verifyNoInteractions(synchronization);
+    }
+
+    @Test
+    void shouldMaterializeLegacyShellBeforeReturningItsId() {
+        GameEntity shell = GameEntity.builder().publicId("game-shell").steamAppId(10L).build();
+        SteamGameDetails details = new SteamGameDetails(10L, null, null);
+        GameEntity materialized = GameEntity.builder()
+                .publicId("game-shell")
+                .steamAppId(10L)
+                .steamSyncedAt(LocalDateTime.now())
+                .build();
+        when(games.findBySteamAppId(10L)).thenReturn(Optional.of(shell));
+        when(store.fetchGameDetails(10L)).thenReturn(Optional.of(details));
+        when(persistence.refresh("game-shell", details)).thenReturn(materialized);
+
+        var response = service.getGameId(10L);
+
+        assertEquals("game-shell", response.gameId());
+        assertEquals(com.wexp.feature.game.dto.GameIdResponse.GameStatus.EXISTING, response.gameStatus());
+        verifyNoInteractions(synchronization);
     }
 
     @Test

@@ -22,8 +22,10 @@ public class GameSteamPersistenceService {
     }
 
     @Transactional
-    public void refresh(String publicId, SteamGameDetails details) {
-        gameRepository.findByPublicId(publicId).ifPresent(game -> persist(publicId, details, game));
+    public GameEntity refresh(String publicId, SteamGameDetails details) {
+        GameEntity game = gameRepository.findByPublicId(publicId)
+                .orElseThrow(() -> new IllegalStateException("Jogo não encontrado durante sincronização: " + publicId));
+        return persist(publicId, details, game);
     }
 
     private GameEntity persist(String publicId, SteamGameDetails details, GameEntity existing) {
