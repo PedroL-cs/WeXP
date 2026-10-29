@@ -1,6 +1,7 @@
 import { apiFetch } from './apiFetch';
 import type { Game } from '../types/Game';
 import type { SteamGame } from '../types/SteamGame';
+import { throwApiError } from './apiError';
 
 export async function instantSearchGames(
   query: string,
@@ -25,11 +26,22 @@ export async function instantSearchGames(
   return data.content;
 }
 
-export async function getGameIdBySteamAppId(steamAppId: number) {
-  const response = await apiFetch(`/api/v1/games/steam/${steamAppId}/id`);
+type GameIdResponse = {
+  steamId: number;
+  gameId: string;
+  gameStatus: 'NEW' | 'EXISTING';
+};
+
+export async function getGameIdBySteamAppId(
+  steamAppId: number,
+  signal?: AbortSignal,
+): Promise<GameIdResponse> {
+  const response = await apiFetch(`/api/v1/games/steam/${steamAppId}/id`, {
+    signal,
+  });
 
   if (!response.ok) {
-    throw new Error('Erro ao buscar ID do jogo');
+    await throwApiError(response, 'Não foi possível preparar este jogo.');
   }
 
   return response.json();

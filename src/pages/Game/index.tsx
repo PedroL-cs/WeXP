@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { useParams } from 'react-router';
+import { useNavigate, useParams } from 'react-router';
 
 import styles from './styles.module.css';
 
@@ -14,7 +14,7 @@ import {
   TrophyIcon,
 } from '@phosphor-icons/react';
 
-import { getGame } from '../../api/games';
+import { getGame, getGameIdBySteamAppId } from '../../api/games';
 
 import type { Game } from '../../types/Game';
 import SaveButton from '../../components/SaveButton';
@@ -25,6 +25,75 @@ type AchievementSort =
   | 'name-desc'
   | 'rarity-asc'
   | 'rarity-desc';
+
+export function SteamGameLoadingPage() {
+  const { steamAppId } = useParams();
+  const navigate = useNavigate();
+  const [error, setError] = useState('');
+  const [attempt, setAttempt] = useState(0);
+
+  useEffect(() => {
+    const appId = Number(steamAppId);
+    if (!Number.isSafeInteger(appId) || appId <= 0) {
+      setError('Este jogo possui um identificador inválido.');
+      return;
+    }
+
+    const controller = new AbortController();
+    setError('');
+
+    getGameIdBySteamAppId(appId, controller.signal)
+      .then(data => {
+        if (!controller.signal.aborted) {
+          navigate(`/games/${data.gameId}`, { replace: true });
+        }
+      })
+      .catch(error => {
+        if (error instanceof DOMException && error.name === 'AbortError') return;
+        console.error('Erro ao preparar jogo:', error);
+        setError(
+          error instanceof Error
+            ? error.message
+            : 'Não foi possível preparar este jogo.',
+        );
+      });
+
+    return () => controller.abort();
+  }, [attempt, navigate, steamAppId]);
+
+  if (error) {
+    return (
+      <main className={styles.gamePage}>
+        <div className={styles.loadError}>
+          <TrophyIcon size={30} weight='duotone' />
+          <strong>Não foi possível carregar o jogo</strong>
+          <p>{error}</p>
+          <div className={styles.loadActions}>
+            <button type='button' onClick={() => setAttempt(value => value + 1)}>
+              Tentar novamente
+            </button>
+            <button type='button' onClick={() => navigate(-1)}>
+              Voltar
+            </button>
+          </div>
+        </div>
+      </main>
+    );
+  }
+
+  return (
+    <main className={`${styles.gamePage} ${styles.initialLoad}`} aria-busy='true'>
+      <div className={styles.heroSkeleton} />
+      <div className={styles.loadingMessage} role='status'>
+        <span className={styles.loadingSpinner} aria-hidden='true' />
+        <div>
+          <strong>Carregando dados do jogo</strong>
+          <span>A primeira abertura pode levar alguns segundos.</span>
+        </div>
+      </div>
+    </main>
+  );
+}
 
 function GamePage() {
   const { id } = useParams();

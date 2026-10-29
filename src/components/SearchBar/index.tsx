@@ -2,8 +2,9 @@ import { useEffect, useRef, useState } from 'react';
 import styles from './styles.module.css';
 import type { SteamGame } from '../../types/SteamGame';
 import { MagnifyingGlassIcon, XCircleIcon } from '@phosphor-icons/react';
-import { getGameIdBySteamAppId, instantSearchGames } from '../../api/games';
+import { instantSearchGames } from '../../api/games';
 import { useNavigate } from 'react-router';
+import { flushSync } from 'react-dom';
 
 type SearchBarProps = {
   search: string;
@@ -22,6 +23,7 @@ function SearchBar({
 
   const searchContainerRef = useRef<HTMLFormElement>(null);
   const inputRef = useRef<HTMLInputElement>(null);
+  const searchRequestRef = useRef(0);
 
   const [searchResults, setSearchResults] = useState<SteamGame[]>([]);
   const [isSearching, setIsSearching] = useState(false);
@@ -30,9 +32,11 @@ function SearchBar({
   useEffect(() => {
     const query = search.trim();
     const controller = new AbortController();
+    const requestId = ++searchRequestRef.current;
 
     if (!query) {
       setSearchResults([]);
+      setIsSearching(false);
       return;
     }
 
@@ -40,13 +44,15 @@ function SearchBar({
       try {
         setIsSearching(true);
         const results = await instantSearchGames(query, controller.signal);
-        setSearchResults(results ?? []);
+        if (requestId === searchRequestRef.current) {
+          setSearchResults(results ?? []);
+        }
       } catch (error) {
         if (error instanceof DOMException && error.name === 'AbortError') return;
         console.error('Erro na busca:', error);
-        setSearchResults([]);
+        if (requestId === searchRequestRef.current) setSearchResults([]);
       } finally {
-        setIsSearching(false);
+        if (requestId === searchRequestRef.current) setIsSearching(false);
       }
     }, 300);
 
@@ -104,17 +110,12 @@ function SearchBar({
     setIsSearchOpen(value.trim().length > 0);
   }
 
-  async function handleSelectGame(steamAppId: number) {
-    try {
-      const data = await getGameIdBySteamAppId(steamAppId);
-
+  function handleSelectGame(steamAppId: number) {
+    flushSync(() => {
       setIsSearchOpen(false);
       setSearch('');
-
-      navigate(`/games/${data.gameId}`);
-    } catch (error) {
-      console.error('Erro ao buscar jogo:', error);
-    }
+      navigate(`/games/steam/${steamAppId}`);
+    });
   }
 
   return (

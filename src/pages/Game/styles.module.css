@@ -288,6 +288,116 @@
   box-shadow: 0 0 0 4px var(--accent-soft);
 }
 
+.initialLoad {
+  position: relative;
+  min-height: 420px;
+}
+
+.loadingMessage {
+  position: absolute;
+  top: 12rem;
+  left: 50%;
+  display: flex;
+  align-items: center;
+  gap: 1.2rem;
+  width: max-content;
+  max-width: calc(100% - 3.2rem);
+  padding: 1.4rem 1.8rem;
+  border: 1px solid var(--border-hover);
+  border-radius: var(--radius);
+  background: rgba(17, 20, 27, 0.86);
+  box-shadow: var(--shadow-lg);
+  backdrop-filter: blur(12px);
+  transform: translateX(-50%);
+}
+
+.loadingMessage div {
+  display: grid;
+  gap: 0.25rem;
+}
+
+.loadingMessage strong {
+  color: var(--text);
+  font-size: 1.4rem;
+}
+
+.loadingMessage span:last-child {
+  color: var(--muted);
+  font-size: 1.2rem;
+}
+
+.loadingSpinner {
+  width: 2rem;
+  height: 2rem;
+  flex-shrink: 0;
+  border: 2px solid var(--border-hover);
+  border-top-color: var(--accent);
+  border-radius: 50%;
+  animation: loadingSpin 0.8s linear infinite;
+}
+
+@keyframes loadingSpin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+.loadError {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.8rem;
+  max-width: 560px;
+  margin: 5rem auto;
+  padding: 3.2rem;
+  border: 1px dashed var(--border-hover);
+  border-radius: var(--radius-lg);
+  color: var(--muted);
+  text-align: center;
+}
+
+.loadError > svg {
+  color: var(--xp);
+}
+
+.loadError strong {
+  color: var(--text);
+  font-size: 1.8rem;
+}
+
+.loadError p {
+  font-size: 1.35rem;
+}
+
+.loadActions {
+  display: flex;
+  gap: 0.8rem;
+  margin-top: 1rem;
+}
+
+.loadActions button {
+  padding: 0.8rem 1.2rem;
+  border: 1px solid var(--border-hover);
+  border-radius: 8px;
+  background: var(--card);
+  color: var(--text);
+  font: inherit;
+  cursor: pointer;
+  transition:
+    border-color 0.2s ease,
+    color 0.2s ease;
+}
+
+.loadActions button:first-child {
+  border-color: var(--accent);
+  color: var(--accent);
+}
+
+.loadActions button:hover {
+  border-color: var(--accent);
+  color: var(--accent);
+}
+
 .sortContainer {
   display: inline-flex;
   align-items: center;

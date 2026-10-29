@@ -2,7 +2,7 @@ import './styles/global.css';
 import { HomePage } from './pages/Home';
 import { BrowserRouter, Route, Routes } from 'react-router';
 import SearchPage from './pages/Search';
-import GamePage from './pages/Game';
+import GamePage, { SteamGameLoadingPage } from './pages/Game';
 import NotFound from './pages/NotFound';
 import Layout from './components/Layout';
 import RegisterPage from './pages/Register';
@@ -26,6 +26,10 @@ function App() {
           <Route element={<Layout />}>
             <Route path='/' element={<HomePage />} />
             <Route path='/search' element={<SearchPage />} />
+            <Route
+              path='/games/steam/:steamAppId'
+              element={<SteamGameLoadingPage />}
+            />
             <Route path='/games/:id' element={<GamePage />} />
             <Route
               path='/games/:gameId/achievements/:achievementId/guide'
