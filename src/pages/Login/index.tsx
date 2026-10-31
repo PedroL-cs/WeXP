@@ -5,6 +5,7 @@ import Logo from '../../components/Logo';
 import AuthShowcase from '../../components/AuthShowcase';
 import { useAuth } from '../../contexts/AuthContext';
 import { login as loginRequest } from '../../api/auth';
+import { authFeedback, focusAuthField, validateLogin, type AuthFieldErrors } from '../../utils/authValidation';
 
 function LoginPage() {
   const navigate = useNavigate();
@@ -13,12 +14,24 @@ function LoginPage() {
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
   const [rememberMe, setRememberMe] = useState(false);
+  const [fieldErrors, setFieldErrors] = useState<AuthFieldErrors>({});
+  const [formError, setFormError] = useState('');
+  const [submitting, setSubmitting] = useState(false);
 
   const { login } = useAuth();
 
   async function handleSubmit(event: FormEvent) {
     event.preventDefault();
+    if (submitting) return;
+    const errors = validateLogin(username, password);
+    setFieldErrors(errors);
+    setFormError('');
+    if (Object.keys(errors).length) {
+      focusAuthField(errors, ['login', 'password']);
+      return;
+    }
 
+    setSubmitting(true);
     try {
       const data = await loginRequest(username, password);
 
@@ -33,7 +46,12 @@ function LoginPage() {
         { replace: true },
       );
     } catch (error) {
-      alert(error instanceof Error ? error.message : 'Erro ao fazer login.');
+      const feedback = authFeedback(error, ['login', 'password']);
+      setFieldErrors(feedback.fieldErrors);
+      setFormError(feedback.message);
+      focusAuthField(feedback.fieldErrors, ['login', 'password']);
+    } finally {
+      setSubmitting(false);
     }
   }
 
@@ -54,17 +72,27 @@ function LoginPage() {
 
           <p className={styles.subtitle}>Entre na sua conta para continuar.</p>
 
-          <form onSubmit={handleSubmit} className={styles.form}>
+          <form onSubmit={handleSubmit} className={styles.form} noValidate aria-busy={submitting}>
+            {formError && <p className={styles.formError} role='alert'>{formError}</p>}
             <div className={styles.inputGroup}>
-              <label htmlFor='username'>Usuário</label>
+              <label htmlFor='login'>Usuário</label>
 
               <input
-                id='username'
+                id='login'
                 type='text'
+                autoComplete='username'
+                required
+                aria-invalid={Boolean(fieldErrors.login)}
+                aria-describedby={fieldErrors.login ? 'login-error' : undefined}
                 value={username}
                 placeholder='Digite seu usuário'
-                onChange={event => setUsername(event.target.value)}
+                onChange={event => {
+                  setUsername(event.target.value);
+                  setFieldErrors(current => ({ ...current, login: undefined }));
+                  setFormError('');
+                }}
               />
+              {fieldErrors.login && <p id='login-error' className={styles.fieldError} role='alert'>{fieldErrors.login}</p>}
             </div>
 
             <div className={styles.inputGroup}>
@@ -73,10 +101,19 @@ function LoginPage() {
               <input
                 id='password'
                 type='password'
+                autoComplete='current-password'
+                required
+                aria-invalid={Boolean(fieldErrors.password)}
+                aria-describedby={fieldErrors.password ? 'password-error' : undefined}
                 value={password}
                 placeholder='Digite sua senha'
-                onChange={event => setPassword(event.target.value)}
+                onChange={event => {
+                  setPassword(event.target.value);
+                  setFieldErrors(current => ({ ...current, password: undefined }));
+                  setFormError('');
+                }}
               />
+              {fieldErrors.password && <p id='password-error' className={styles.fieldError} role='alert'>{fieldErrors.password}</p>}
             </div>
 
             <div className={styles.formOptions}>
@@ -93,8 +130,8 @@ function LoginPage() {
               {/* <Link to='/forgot-password'>Esqueceu sua senha?</Link> */}
             </div>
 
-            <button type='submit' className={styles.loginButton}>
-              Entrar
+            <button type='submit' className={styles.loginButton} disabled={submitting}>
+              {submitting ? 'Entrando...' : 'Entrar'}
             </button>
           </form>
 

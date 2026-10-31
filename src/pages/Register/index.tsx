@@ -12,6 +12,7 @@ import Logo from '../../components/Logo';
 import AuthShowcase from '../../components/AuthShowcase';
 import { register as registerRequest } from '../../api/auth';
 import { useAuth } from '../../contexts/AuthContext';
+import { authFeedback, focusAuthField, validateRegistration, type AuthField, type AuthFieldErrors } from '../../utils/authValidation';
 import {
   birthDateCursor,
   birthDateDigits,
@@ -29,9 +30,17 @@ function RegisterPage() {
   const [password, setPassword] = useState('');
   const [birthDate, setBirthDate] = useState('');
   const [dateTouched, setDateTouched] = useState(false);
+  const [fieldErrors, setFieldErrors] = useState<AuthFieldErrors>({});
+  const [formError, setFormError] = useState('');
+  const [submitting, setSubmitting] = useState(false);
   const dateInput = useRef<HTMLInputElement>(null);
   const dateSelection = useRef<number | null>(null);
-  const birthDateError = dateTouched ? getBirthDateError(birthDate) : '';
+  const birthDateError = fieldErrors.birthDate || (dateTouched ? getBirthDateError(birthDate) : '');
+
+  function clearError(field: AuthField) {
+    setFieldErrors(current => ({ ...current, [field]: undefined }));
+    setFormError('');
+  }
 
   useLayoutEffect(() => {
     if (dateSelection.current === null) return;
@@ -52,6 +61,7 @@ function RegisterPage() {
     input.value = value;
     input.setSelectionRange(cursor, cursor);
     setBirthDate(value);
+    clearError('birthDate');
   }
 
   function changeBirthDate(event: ChangeEvent<HTMLInputElement>) {
@@ -89,12 +99,17 @@ function RegisterPage() {
 
   async function handleSubmit(event: FormEvent) {
     event.preventDefault();
+    if (submitting) return;
     setDateTouched(true);
-    if (getBirthDateError(birthDate)) {
-      dateInput.current?.focus();
+    const errors = validateRegistration({ username, email, login, password, birthDate });
+    setFieldErrors(errors);
+    setFormError('');
+    if (Object.keys(errors).length) {
+      focusAuthField(errors, ['username', 'email', 'login', 'password', 'birthDate']);
       return;
     }
 
+    setSubmitting(true);
     try {
       const data = await registerRequest(
         username,
@@ -107,7 +122,12 @@ function RegisterPage() {
       authenticate(data.token, true);
       navigate('/');
     } catch (error) {
-      alert(error instanceof Error ? error.message : 'Erro ao criar usuário.');
+      const feedback = authFeedback(error, ['username', 'email', 'login', 'password', 'birthDate']);
+      setFieldErrors(feedback.fieldErrors);
+      setFormError(feedback.message);
+      focusAuthField(feedback.fieldErrors, ['username', 'email', 'login', 'password', 'birthDate']);
+    } finally {
+      setSubmitting(false);
     }
   }
 
@@ -128,17 +148,24 @@ function RegisterPage() {
 
           <p className={styles.subtitle}>Preencha seus dados para começar.</p>
 
-          <form onSubmit={handleSubmit} className={styles.form}>
+          <form onSubmit={handleSubmit} className={styles.form} noValidate aria-busy={submitting}>
+            {formError && <p className={styles.formError} role='alert'>{formError}</p>}
             <div className={styles.inputGroup}>
               <label htmlFor='username'>Nome de exibição</label>
 
               <input
                 id='username'
                 type='text'
+                autoComplete='nickname'
+                required
+                maxLength={100}
+                aria-invalid={Boolean(fieldErrors.username)}
+                aria-describedby={fieldErrors.username ? 'username-error' : undefined}
                 value={username}
                 placeholder='Como você aparece no site'
-                onChange={event => setUsername(event.target.value)}
+                onChange={event => { setUsername(event.target.value); clearError('username'); }}
               />
+              {fieldErrors.username && <p id='username-error' className={styles.fieldError} role='alert'>{fieldErrors.username}</p>}
             </div>
 
             <div className={styles.inputGroup}>
@@ -147,10 +174,15 @@ function RegisterPage() {
               <input
                 id='email'
                 type='email'
+                autoComplete='email'
+                required
+                aria-invalid={Boolean(fieldErrors.email)}
+                aria-describedby={fieldErrors.email ? 'email-error' : undefined}
                 value={email}
                 placeholder='Digite seu e-mail'
-                onChange={event => setEmail(event.target.value)}
+                onChange={event => { setEmail(event.target.value); clearError('email'); }}
               />
+              {fieldErrors.email && <p id='email-error' className={styles.fieldError} role='alert'>{fieldErrors.email}</p>}
             </div>
 
             <div className={styles.inputGroup}>
@@ -159,10 +191,18 @@ function RegisterPage() {
               <input
                 id='login'
                 type='text'
+                autoComplete='username'
+                required
+                minLength={3}
+                maxLength={30}
+                aria-invalid={Boolean(fieldErrors.login)}
+                aria-describedby={fieldErrors.login ? 'login-hint login-error' : 'login-hint'}
                 value={login}
                 placeholder='Usado para entrar na sua conta'
-                onChange={event => setLogin(event.target.value)}
+                onChange={event => { setLogin(event.target.value); clearError('login'); }}
               />
+              <p id='login-hint' className={styles.inputHint}>Use de 3 a 30 caracteres.</p>
+              {fieldErrors.login && <p id='login-error' className={styles.fieldError} role='alert'>{fieldErrors.login}</p>}
             </div>
 
             <div className={styles.formRow}>
@@ -172,10 +212,17 @@ function RegisterPage() {
                 <input
                   id='password'
                   type='password'
+                  autoComplete='new-password'
+                  required
+                  minLength={8}
+                  aria-invalid={Boolean(fieldErrors.password)}
+                  aria-describedby={fieldErrors.password ? 'password-hint password-error' : 'password-hint'}
                   value={password}
                   placeholder='Digite sua senha'
-                  onChange={event => setPassword(event.target.value)}
+                  onChange={event => { setPassword(event.target.value); clearError('password'); }}
                 />
+                <p id='password-hint' className={styles.inputHint}>Use pelo menos 8 caracteres.</p>
+                {fieldErrors.password && <p id='password-error' className={styles.fieldError} role='alert'>{fieldErrors.password}</p>}
               </div>
 
               <div className={styles.inputGroup}>
@@ -193,8 +240,8 @@ function RegisterPage() {
                   aria-invalid={Boolean(birthDateError)}
                   aria-describedby={
                     birthDateError
-                      ? 'birthDateHint birthDateError'
-                      : 'birthDateHint'
+                      ? 'birthDateError'
+                      : undefined
                   }
                   value={birthDate}
                   onChange={changeBirthDate}
@@ -218,8 +265,8 @@ function RegisterPage() {
               </div>
             </div>
 
-            <button type='submit' className={styles.registerButton}>
-              Criar conta
+            <button type='submit' className={styles.registerButton} disabled={submitting}>
+              {submitting ? 'Criando conta...' : 'Criar conta'}
             </button>
           </form>
 

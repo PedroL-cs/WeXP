@@ -1,23 +1,34 @@
-import { apiFetch, apiUrl } from './apiFetch';
+import { apiUrl } from './apiFetch';
+import { ApiError, throwApiError } from './apiError';
 
-export async function login(login: string, password: string) {
-  // Login must also work when a previous session's token has expired.
-  const response = await fetch(apiUrl('/api/v1/auth/login'), {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({
-      login,
-      password,
-    }),
-  });
-
-  const data = await response.json();
-
+async function authRequest(path: string, body: object, fallback: string) {
+  let response: Response;
+  try {
+    // Public auth requests must not attach a stale session token.
+    response = await fetch(apiUrl(path), {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(body),
+    });
+  } catch {
+    throw new ApiError('Não foi possível conectar ao servidor. Verifique sua conexão e tente novamente.', 0);
+  }
+  if (response.status >= 500) {
+    throw new ApiError('O serviço está temporariamente indisponível. Tente novamente em instantes.', response.status);
+  }
   if (!response.ok) {
-    throw new Error(data.message ?? 'Usuário ou senha inválidos.');
+    return throwApiError(response, response.status === 401 ? 'Usuário ou senha inválidos.' : fallback);
   }
 
+  const data = await response.json().catch(() => null);
+  if (typeof data?.token !== 'string' || !data.token.trim()) {
+    throw new ApiError('Não foi possível confirmar sua sessão. Tente novamente.', response.status);
+  }
   return data;
+}
+
+export async function login(login: string, password: string) {
+  return authRequest('/api/v1/auth/login', { login, password }, 'Não foi possível entrar. Confira seus dados e tente novamente.');
 }
 
 export async function register(
@@ -27,22 +38,11 @@ export async function register(
   password: string,
   birthDate: string,
 ) {
-  const response = await apiFetch('/api/v1/auth/register', {
-    method: 'POST',
-    body: JSON.stringify({
-      username,
-      email,
-      login,
-      password,
-      birthDate,
-    }),
-  });
-
-  const data = await response.json();
-
-  if (!response.ok) {
-    throw new Error(data.message ?? 'Erro ao criar usuário.');
-  }
-
-  return data;
+  return authRequest('/api/v1/auth/register', {
+    username,
+    email,
+    login,
+    password,
+    birthDate,
+  }, 'Não foi possível criar sua conta. Confira os dados e tente novamente.');
 }

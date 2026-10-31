@@ -125,6 +125,21 @@
   line-height: 1.5;
 }
 
+.formError {
+  padding: 1.2rem;
+  border: 1px solid var(--danger);
+  border-radius: var(--radius-sm);
+  background: var(--danger-bg);
+  color: var(--danger);
+  font-size: 1.25rem;
+  line-height: 1.5;
+}
+
+.registerButton:disabled {
+  opacity: 0.65;
+  cursor: wait;
+}
+
 .formOptions {
   display: flex;
   align-items: center;
