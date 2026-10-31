@@ -53,6 +53,7 @@ import org.springframework.security.core.userdetails.UserDetailsService;
 import java.util.List;
 
 import static org.mockito.ArgumentMatchers.*;
+import static org.hamcrest.Matchers.hasItem;
 import static org.mockito.Mockito.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
@@ -123,7 +124,9 @@ class ApiControllerTests {
                         .content("{}"))
                 .andExpect(status().isBadRequest())
                 .andExpect(jsonPath("$.message").exists())
-                .andExpect(jsonPath("$.errors").isArray());
+                .andExpect(jsonPath("$.errors").isArray())
+                .andExpect(jsonPath("$.errors[?(@.field == 'login')].message").value(hasItem("O usuário é obrigatório")))
+                .andExpect(jsonPath("$.errors[?(@.field == 'password')].message").value(hasItem("A senha é obrigatória")));
 
         verifyNoInteractions(authService);
     }
@@ -161,7 +164,11 @@ class ApiControllerTests {
                                 }
                                 """))
                 .andExpect(status().isBadRequest())
-                .andExpect(jsonPath("$.errors").isArray());
+                .andExpect(jsonPath("$.errors").isArray())
+                .andExpect(jsonPath("$.errors[?(@.field == 'login')].message").value(hasItem("O nome de usuário deve ter entre 3 e 30 caracteres")))
+                .andExpect(jsonPath("$.errors[?(@.field == 'username')].message").value(hasItem("O nome de exibição é obrigatório")))
+                .andExpect(jsonPath("$.errors[?(@.field == 'email')].message").value(hasItem("O e-mail deve ser válido")))
+                .andExpect(jsonPath("$.errors[?(@.field == 'password')].message").value(hasItem("A senha deve ter no mínimo 8 caracteres")));
 
         verifyNoInteractions(authService);
     }

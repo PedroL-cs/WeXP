@@ -23,8 +23,8 @@ public class RegisterRequestDto {
     @Email(message = "O e-mail deve ser válido")
     private String email;
 
-    @NotBlank(message = "O nome completo é obrigatório")
-    @Size(max = 100, message = "O nome completo não pode exceder 100 caracteres")
+    @NotBlank(message = "O nome de exibição é obrigatório")
+    @Size(max = 100, message = "O nome de exibição não pode exceder 100 caracteres")
     private String username;
 
     @NotBlank(message = "A senha é obrigatória")
