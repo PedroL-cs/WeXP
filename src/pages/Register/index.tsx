@@ -124,7 +124,7 @@ function RegisterPage() {
     } catch (error) {
       const feedback = authFeedback(error, ['username', 'email', 'login', 'password', 'birthDate']);
       setFieldErrors(feedback.fieldErrors);
-      setFormError(feedback.message);
+      setFormError(Object.keys(feedback.fieldErrors).length ? '' : feedback.message);
       focusAuthField(feedback.fieldErrors, ['username', 'email', 'login', 'password', 'birthDate']);
     } finally {
       setSubmitting(false);
@@ -196,12 +196,12 @@ function RegisterPage() {
                 minLength={3}
                 maxLength={30}
                 aria-invalid={Boolean(fieldErrors.login)}
-                aria-describedby={fieldErrors.login ? 'login-hint login-error' : 'login-hint'}
+                aria-describedby={fieldErrors.login ? 'login-error' : 'login-hint'}
                 value={login}
                 placeholder='Usado para entrar na sua conta'
                 onChange={event => { setLogin(event.target.value); clearError('login'); }}
               />
-              <p id='login-hint' className={styles.inputHint}>Use de 3 a 30 caracteres.</p>
+              {!fieldErrors.login && <p id='login-hint' className={styles.inputHint}>Use de 3 a 30 caracteres.</p>}
               {fieldErrors.login && <p id='login-error' className={styles.fieldError} role='alert'>{fieldErrors.login}</p>}
             </div>
 
@@ -216,12 +216,12 @@ function RegisterPage() {
                   required
                   minLength={8}
                   aria-invalid={Boolean(fieldErrors.password)}
-                  aria-describedby={fieldErrors.password ? 'password-hint password-error' : 'password-hint'}
+                  aria-describedby={fieldErrors.password ? 'password-error' : 'password-hint'}
                   value={password}
                   placeholder='Digite sua senha'
                   onChange={event => { setPassword(event.target.value); clearError('password'); }}
                 />
-                <p id='password-hint' className={styles.inputHint}>Use pelo menos 8 caracteres.</p>
+                {!fieldErrors.password && <p id='password-hint' className={styles.inputHint}>Use pelo menos 8 caracteres.</p>}
                 {fieldErrors.password && <p id='password-error' className={styles.fieldError} role='alert'>{fieldErrors.password}</p>}
               </div>
 
