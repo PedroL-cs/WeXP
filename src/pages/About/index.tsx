@@ -102,13 +102,15 @@ function AboutPage() {
           </p>
         </div>
 
-        <div className={styles.stack} aria-label='Tecnologias utilizadas'>
-          <span>React</span>
-          <span>TypeScript</span>
-          <span>Spring Boot</span>
-          <span>PostgreSQL</span>
-          <span>Supabase</span>
-          <span>Steam API</span>
+        <div className={styles.reactMark}>
+          <svg viewBox='0 0 256 256' role='img' aria-label='Símbolo do React'>
+            <circle cx='128' cy='128' r='11' fill='currentColor' />
+            <g fill='none' stroke='currentColor' strokeWidth='7'>
+              <ellipse cx='128' cy='128' rx='110' ry='42' />
+              <ellipse cx='128' cy='128' rx='110' ry='42' transform='rotate(60 128 128)' />
+              <ellipse cx='128' cy='128' rx='110' ry='42' transform='rotate(120 128 128)' />
+            </g>
+          </svg>
         </div>
       </section>
     </main>

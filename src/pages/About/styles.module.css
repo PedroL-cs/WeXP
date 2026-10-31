@@ -186,21 +186,19 @@
   font-size: 1.6rem;
 }
 
-.stack {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 1rem;
-  align-content: center;
+.reactMark {
+  display: grid;
+  place-items: center;
+  padding: 1.6rem;
+  color: var(--accent);
 }
 
-.stack span {
-  padding: 1rem 1.4rem;
-  border: 1px solid var(--border-hover);
-  border-radius: 999px;
-  background: var(--card);
-  color: var(--text-soft);
-  font-family: var(--font-mono);
-  font-size: 1.2rem;
+.reactMark svg {
+  display: block;
+  width: clamp(16rem, 20vw, 24rem);
+  max-width: 100%;
+  height: auto;
+  filter: drop-shadow(0 0 20px var(--accent-soft));
 }
 
 @media (max-width: 900px) {
