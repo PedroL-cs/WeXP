@@ -89,6 +89,12 @@ public class UserEntity implements UserDetails {
         return this.login;
     }
 
+    // UserDetails.getUsername() is the login; use this accessor for public presentation.
+    @JsonIgnore
+    public String getDisplayName() {
+        return this.username;
+    }
+
     @Override
     @NullMarked
     public boolean isAccountNonExpired() {

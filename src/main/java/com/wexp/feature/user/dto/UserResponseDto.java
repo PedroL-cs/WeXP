@@ -29,9 +29,9 @@ public class UserResponseDto {
 
     public UserResponseDto(UserEntity user) {
         this.publicId = user.getPublicId();
-        this.login = user.getUsername();
+        this.login = user.getLogin();
         this.email = user.getEmail();
-        this.username= user.getUsername();
+        this.username = user.getDisplayName();
         this.bio = user.getBio();
         this.birthDate = user.getBirthDate();
         this.avatar = ImageService.url("user", user.getPublicId(), "profile");

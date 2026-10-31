@@ -40,7 +40,7 @@ public class GuideRevisionResponse {
         this.changeSummary = revision.getChangeSummary();
         this.status = revision.getStatus();
         this.createdAt = revision.getCreatedAt();
-        this.author = revision.getAuthor().getUsername();
+        this.author = revision.getAuthor().getDisplayName();
         this.baseRevisionId = revision.getBaseRevision() == null ? null : revision.getBaseRevision().getPublicId();
     }
 

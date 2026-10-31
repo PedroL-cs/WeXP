@@ -11,7 +11,7 @@ import java.time.LocalDate;
 @Getter
 @Setter
 public class UpdateUserRequestDto {
-    @Size(max = 100, message = "O nome completo não pode exceder 100 caracteres")
+    @Size(max = 100, message = "O nome de exibição não pode exceder 100 caracteres")
     private String username;
 
     @Size(max = 500, message = "A bio não pode exceder 500 caracteres")

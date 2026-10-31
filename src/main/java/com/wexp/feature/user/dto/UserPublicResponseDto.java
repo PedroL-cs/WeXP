@@ -17,7 +17,7 @@ public class UserPublicResponseDto {
 
     public UserPublicResponseDto(UserEntity user) {
         this.publicId = user.getPublicId();
-        this.username = user.getUsername();
+        this.username = user.getDisplayName();
         this.bio = user.getBio();
         this.avatar = ImageService.url("user", user.getPublicId(), "profile");
     }

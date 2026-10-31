@@ -29,7 +29,7 @@ public record GuideResponseDto(
                 guide.getActiveRevision() == null ? guide.getContent() : guide.getActiveRevision().getContent(),
                 guide.getVersion(),
                 guide.getAchievementPublicId(),
-                guide.getActiveRevision() == null ? guide.getAuthorUsername() : guide.getActiveRevision().getAuthor().getUsername(),
+                guide.getActiveRevision() == null ? guide.getAuthorUsername() : guide.getActiveRevision().getAuthor().getDisplayName(),
                 guide.getCreatedAt(),
                 guide.getUpdatedAt(),
                 guide.getActiveRevision() == null ? null : guide.getActiveRevision().getPublicId(),

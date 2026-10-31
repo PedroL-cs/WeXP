@@ -81,6 +81,6 @@ public class GuideEntity {
 
     @JsonProperty("author")
     public String getAuthorUsername() {
-        return this.author != null ? this.author.getUsername() : null;
+        return this.author != null ? this.author.getDisplayName() : null;
     }
 }
